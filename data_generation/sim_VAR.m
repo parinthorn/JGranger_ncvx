@@ -14,7 +14,7 @@ function [x] = sim_VAR(A,T,noise_var,seed,is_double)
 n = size(A,1);
 p = size(A,3);
 K = size(A,4);
-
+ADD = 100;
 % optvargin = size(varargin,2);
 
 if nargin<3
@@ -29,22 +29,25 @@ elseif nargin<5
 elseif nargin>6
     error('exceed number of input')
 end
-rng(seed);
+
 if is_double
-    u = sqrt(noise_var)*randn(n,T);
-    x = zeros(n,T,K);
+    u = sqrt(noise_var)*randn(n,T+ADD);
+    x = zeros(n,T+ADD,K);
     matA = reshape(A,[n,n*p,K]);
 else
-    u = (single(sqrt(noise_var)*randn(n,T)));
-    x = (single(zeros(n,T,K)));
+    u = (single(sqrt(noise_var)*randn(n,T+ADD)));
+    x = (single(zeros(n,T+ADD,K)));
     matA = (single(reshape(A,[n,n*p,K])));
 end
 
 for kk=1:K
+    rng(seed(kk));
     AK = matA(:,:,kk);
-for tt=p+1:T
+for tt=p+1:T+ADD
     x(:,tt,kk) = AK*reshape(x(:,tt-1:-1:tt-p),n*p,1);
     x(:,tt,kk) = x(:,tt) + u(:,tt);
 end
+
 end
+x = x(:,ADD+1:end,:);
 x = x-mean(x,2);
