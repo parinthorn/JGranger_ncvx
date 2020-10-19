@@ -92,7 +92,7 @@ for ii=1:GridSize
             fprintf('max iteration exceed at grid (%d,%d)\n',ii,jj)
         end
     end
-    M.stat.model_selection_score(ii,:) = score;
+    M.stat.score(ii,:) = score;
     M.A_reg(:,:,1:p,:,ii,:) = A_reg;
     M.A(:,:,1:p,:,ii,:) = A;
     M.nz_ind(ii,:) = nz_ind;
@@ -101,7 +101,5 @@ for ii=1:GridSize
     M.flag(ii,:) = flag;
     M.ls_flag(ii,:) = ls_flag;
 end
-[~,M.index.bic] = min([M.stat.model_selection_score.bic]);
-[~,M.index.aicc] = min([M.stat.model_selection_score.aicc]);
 M.time = toc(t1);
 end

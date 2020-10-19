@@ -29,23 +29,24 @@ elseif nargin<5
 elseif nargin>6
     error('exceed number of input')
 end
-
+rng(sum(seed));
 if is_double
-    u = sqrt(noise_var)*randn(n,T+ADD);
+    u = sqrt(noise_var)*randn(n,T+ADD,K);
     x = zeros(n,T+ADD,K);
     matA = reshape(A,[n,n*p,K]);
 else
-    u = (single(sqrt(noise_var)*randn(n,T+ADD)));
+    u = (single(sqrt(noise_var)*randn(n,T+ADD,K)));
     x = (single(zeros(n,T+ADD,K)));
     matA = (single(reshape(A,[n,n*p,K])));
 end
 
 for kk=1:K
-    rng(seed(kk));
+    
     AK = matA(:,:,kk);
 for tt=p+1:T+ADD
+    
     x(:,tt,kk) = AK*reshape(x(:,tt-1:-1:tt-p),n*p,1);
-    x(:,tt,kk) = x(:,tt) + u(:,tt);
+    x(:,tt,kk) = x(:,tt,kk) + u(:,tt,kk);
 end
 
 end
