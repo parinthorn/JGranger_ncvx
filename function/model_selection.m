@@ -1,9 +1,9 @@
-function score = model_selection(y,A)
+function score = model_selection(Y,A)
 
 [n,~,p,K] = size(A);
 df = length(find(A));
-fitting = log_likelihood_var(y,A,n,p,K);
-Num = size(y,2);
+fitting = log_likelihood_var(Y,A,n,p,K);
+Num = size(Y,2);
 score.bic = fitting + log(Num)*df;
 score.aic = fitting + 2*df;
 score.aicc = score.aic + (2*df^2+2*df)/(Num-df-1);
