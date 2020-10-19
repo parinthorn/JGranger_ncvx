@@ -6,16 +6,16 @@ inpath = './data_compare/';
 
 type = 2; %D type
 cd = 1; %common density set to 10%
-T = 1450;
+T = 100;
 p = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([inpath,'model_K',int2str(K)]) % struct E
 [~,~,dd,m] = size(E);
-GridSize = 30;
+GridSize = 3;
 for ii=1:dd
-    for jj=1:1
+    for jj=1:10
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
@@ -29,6 +29,6 @@ for ii=1:dd
         M.stat.accuracy.differential.score = performance_score(M.stat.accuracy.differential.confusion_matrix);
         [M.stat.accuracy.selected_common] = compare_sparsity(model.ind_common,M.ind_common{M.index.bic},n,K,'single_common');
         [M.stat.accuracy.selected_differential] = compare_sparsity(model.ind_differential,M.ind_differential{M.index.bic},n,K,'single_differential');
-        M.stat.accuracy.detail = {'TP','TN','FP','FN'};
+        
     end
 end
