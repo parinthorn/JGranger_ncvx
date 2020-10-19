@@ -1,6 +1,8 @@
 function [A,ind_nz,VAR_spectrum,seed] = gen_VAR(n,p,density,diffdensity,GENERATION_TYPE,S)
   THRESH = 0.4;
   GAIN = 0.4;
+  CONVERGE = 0;
+  while (~CONVERGE)
 seed = randi(1000000);
 rng(seed)
 if GENERATION_TYPE==2
@@ -39,6 +41,9 @@ if (GENERATION_TYPE==0)||(GENERATION_TYPE==2) % Generate common structure with g
         if (max(abs(eigs(AA))) < 1)
             VAR_spectrum = eig(full(AA));
             MAX_EIG = 0;
+            CONVERGE = 1;
+        elseif ii>20
+            break
         end
     end
 elseif (GENERATION_TYPE==1) % Generate Similar model
@@ -64,8 +69,12 @@ elseif (GENERATION_TYPE==1) % Generate Similar model
         if max(abs(eigs(AA))) < 1
             VAR_spectrum = eig(full(AA));
             MAX_EIG = 0;
+            CONVERGE = 1;
+        elseif ii>20
+            break
         end
     end
 end
 ind_nz = find(A(:,:,1));
+  end
 end
