@@ -1,11 +1,11 @@
-function M = gen_multi_VAR(PARAMETER,opts,varargin)
+function model = gen_multi_VAR(PARAMETER,opts,varargin)
 % gen_VAR_param generates multiple sparse VAR parameters [A_1, ..., A_p]
 % y_k(t) = A_k_1*y_k(t-1) + ... + A_k_p*y_k(t-p) + u(t)
 % Where 'k' is k th model
 % Input parameters are
 % 'PARAMETER' = [n p k]
 % 'opts' : a struct that contains field
-%          '.diff_density : differential level on similar structure, all
+%          '.differential_density : differential level on similar structure, all
 %          similar model have same differential level
 %          '.common_density' : nonzero common_density of VAR coefficient
 %          '.type' : 'common', 'similar', 'differential' or manually
@@ -23,9 +23,13 @@ n = PARAMETER(1);
 p = PARAMETER(2);
 K = PARAMETER(3);
 common_density = opts.common_density;
-diff_density = opts.diff_density;
-M = struct();
-M.info.dim = [n,p,K];
+differential_density = opts.differential_density;
+model.common_density = opts.common_density;
+model.differential_density = opts.differential_density;
+model.type = opts.type;
+
+model = struct();
+model.dim = [n,p,K];
 if numel(varargin) > 0
     DMAT = varargin{1};
 end
@@ -40,28 +44,37 @@ switch opts.type
     tmp = [1 2;repmat([1 1],K-1,1)];
 end
 
-M.A = zeros(n,n,p,K); % allocate ground truth VAR parameter
-M.info.common_density = opts.common_density;
-M.info.type = opts.type;
-M.info.diff_density = opts.diff_density;
-if opts.diff_density ==0
-  opts.diff_density = 0;
-end
+model.A = zeros(n,n,p,K); % allocate ground truth VAR parameter
 
 % our strategy to generate K VAR models that
 % 1. C type: all K models share same pattern but can have different value of VAR coefficient
 % 2. D type: add differential part to C type
 % 3. S type: make the parameter in C type similar
+model.ind_nz = cell(K,1);
 for kk=1:K
     fprintf('Group %d\n',kk)
     if exist('DMAT','var')
-        [M.info.ind_nz{kk},M.A(:,:,:,kk),M.info.spectral_radius{kk},M.info.seed(kk)] = gen_VAR(n,p,common_density,diff_density,1,DMAT(:,:,:,kk)); % look for generated C model
+        [model.A(:,:,:,kk),model.ind_nz{kk},model.VAR_spectrum{kk},model.seed(kk)] = gen_VAR(n,p,common_density,differential_density,1,DMAT(:,:,:,kk)); % look for generated C model
     else
-        [M.info.ind_nz{kk},M.A(:,:,:,kk)] = gen_VAR(n,p,common_density,diff_density,tmp(kk,2),M.A(:,:,:,tmp(kk,1)));
+        [model.A(:,:,:,kk),model.ind_nz{kk},model.VAR_spectrum{kk},model.seed(kk)] = gen_VAR(n,p,common_density,differential_density,tmp(kk,2),model.A(:,:,:,tmp(kk,1)));
 
     end
 end
 if strcmp(opts.type,'similar')
-    M.A = M.A(:,:,:,2:end);
+    model.A = model.A(:,:,:,2:end);
 end
+
+% generating common index, differential index, removing off diagonal index
+diag_ind = 1:n+1:n^2;
+model.ind_common = setdiff(1:n^2,diag_ind);
+model.ind_differential = cell(K,1);
+for kk=1:K
+  model.ind_common = intersect(ind_common,model.ind_nz{kk})
+end
+for kk=1:K
+  tmp = setdiff(model.ind_nz{kk},diag_ind); % remove diagonal parts
+  model.ind_differential{kk} = setdiff(tmp,ind_common); % remove common part, so that
+                                                  % the remaining is differential part
+end
+
 end
