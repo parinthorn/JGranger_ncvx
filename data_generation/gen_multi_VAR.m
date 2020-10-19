@@ -27,15 +27,14 @@ differential_density = opts.differential_density;
 model.common_density = opts.common_density;
 model.differential_density = opts.differential_density;
 model.type = opts.type;
-
-model = struct();
 model.dim = [n,p,K];
 if numel(varargin) > 0
     DMAT = varargin{1};
 end
-switch opts.type
+switch model.type
   case 'common'
     tmp = [1 2;repmat([1 0],K-1,1)];
+    model.differential_density = 0;
   case 'similar'
     K=K+1; % if all K-1 models are similar to the first one, the first one will not have any differential part
            % so we generate K+1 models and truncate the first model
@@ -69,11 +68,11 @@ diag_ind = 1:n+1:n^2;
 model.ind_common = setdiff(1:n^2,diag_ind);
 model.ind_differential = cell(K,1);
 for kk=1:K
-  model.ind_common = intersect(ind_common,model.ind_nz{kk})
+  model.ind_common = intersect(model.ind_common,model.ind_nz{kk});
 end
 for kk=1:K
   tmp = setdiff(model.ind_nz{kk},diag_ind); % remove diagonal parts
-  model.ind_differential{kk} = setdiff(tmp,ind_common); % remove common part, so that
+  model.ind_differential{kk} = setdiff(tmp,model.ind_common); % remove common part, so that
                                                   % the remaining is differential part
 end
 

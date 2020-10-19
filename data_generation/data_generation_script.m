@@ -7,7 +7,7 @@ outpath = './data_compare/';
 n = 20;
 p = 1;
 K = 50;
-realization = 50;
+realization = 100;
 
 common_density = [0.1;0.2];
 differential_density = [0.01;0.05];
