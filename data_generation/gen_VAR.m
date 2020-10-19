@@ -1,4 +1,4 @@
-function [ind_nz,A,VAR_spectrum,seed] = gen_VAR(n,p,density,diffdensity,GENERATION_TYPE,S)
+function [A,ind_nz,VAR_spectrum,seed] = gen_VAR(n,p,density,diffdensity,GENERATION_TYPE,S)
   THRESH = 0.4;
   GAIN = 0.4;
 seed = randi(1000000);
