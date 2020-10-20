@@ -26,7 +26,8 @@ else
   error('must be atmost 5 input')
 end
 Lambda = logspace(-3,0,GridSize);
-tmp(K)= struct();
+H = zeros(n*p,T-p,K);
+Y = zeros(n,T-p,K);
 disp('Generating H matrix')
 for kk=1:K
     [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
@@ -46,7 +47,7 @@ M.lambda_crit = Lmax;
 M.lambda_range = [Lambda(1) Lambda(end)];
 M.GridSize = GridSize;
 M.flag = zeros(GridSize);
-ALG_PARAMETER.PRINT_RESULT=1;
+ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.L1 = P;
 ALG_PARAMETER.L2 = P;
@@ -63,8 +64,8 @@ for ii=1:GridSize
     ind_common = cell(1,GridSize);
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
-    nz_ind = cell(1,GridSize);
-    for jj=1:GridSize
+    ind_nz = cell(1,GridSize);
+    parfor jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
@@ -75,17 +76,17 @@ for ii=1:GridSize
         end
         [x_est, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_est),n,p,K); % convert to (n,n,p,K) format
-        A_reg(:,:,1:p,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
+        A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_est));
         A_cls =devect(full(x_cls),n,p,K);
-        A(:,:,1:p,:,1,jj) = A_cls;
+        A(:,:,:,:,1,jj) = A_cls;
         score(1,jj) = model_selection(Y,A_cls);
         tmp_nz_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K
           tmp_nz_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
         end
-        nz_ind(1,jj) = {tmp_nz_ind};
+        ind_nz(1,jj) = {tmp_nz_ind};
         [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_nz_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
         flag(1,jj) = history.flag;
         if flag(1,jj) ==-1
@@ -95,7 +96,7 @@ for ii=1:GridSize
     M.stat.model_selection_score(ii,:) = score;
     M.A_reg(:,:,1:p,:,ii,:) = A_reg;
     M.A(:,:,1:p,:,ii,:) = A;
-    M.nz_ind(ii,:) = nz_ind;
+    M.ind_nz(ii,:) = ind_nz;
     M.ind_common(ii,:) = ind_common;
     M.ind_differential(ii,:) = ind_differential;
     M.flag(ii,:) = flag;
