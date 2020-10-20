@@ -31,4 +31,4 @@ for m=1:length(model)
         end
     end
 end
-save([outpath,['model_allcase_K',int2str(K)]],'E')
+save([outpath,['model_K',int2str(K)]],'E')
