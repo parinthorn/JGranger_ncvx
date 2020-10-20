@@ -7,10 +7,10 @@
 ## (output for each setting takes up about 5mb)
 
 ## In order to have this code produce the paper figures, you will need to:
-##    1) Unpack the 'ADHD200.zip' file, and 
+##    1) Unpack the 'ADHD200.zip' file, and
 ##    2) Have the 'ADHD200' folder in the same directory as this source code.
 
-if (!exists("initial_path")) initial_path <- getwd()
+if (!exists("initial_path")) initial_path <- getwd() #
 if (exists("initial_path")) setwd(initial_path)
 
 ## Where all the customized functions (for estimation, performance metrics calculation, etc) are contained.
@@ -59,12 +59,12 @@ region_names <- c("L Auditory Cortex",
                   "L Ant Intraparietal Sulcus",
                   "R Ant Intraparietal Sulcus")
 
-##  R - Right, 
-##  L - Left, 
-##  Ant - Anterior, 
+##  R - Right,
+##  L - Left,
+##  Ant - Anterior,
 ##  Post - Posterior,
-##  Fr - Frontal, 
-##  PreFr - Prefrontal, 
+##  Fr - Frontal,
+##  PreFr - Prefrontal,
 ##  M - Medial,
 ##  Sup - Superior,
 ##  Inf - Inferior,
@@ -183,7 +183,7 @@ for (GN in 1:n.groups){
 
 
 ## Reading the estimates saved as .rds files as a result of executing 'MARCH_2019_SUBMISSION_ADHD_Study_Estimation.R' file
-## Accumulating them in order to calculate the proportions of times each effect was selected 
+## Accumulating them in order to calculate the proportions of times each effect was selected
 ## (for both common and individual components)
 ## Additionally reading the number of iterations needed for convergence of two-stage algorithm
 
@@ -192,7 +192,7 @@ for (GN in 1:n.groups){
   Group.Common.Est[[GN]] <- readRDS(paste(final_path,"/Common_Estimates_GN=",GN,".rds",sep=""))
   Ind.Est[[GN]] <- readRDS(paste(final_path,"/Individ_Estimates_GN=",GN,".rds",sep=""))
   n.iter[[GN]] <- readRDS(paste(final_path,"/NumberIter_GN=",GN,".rds",sep=""))
-  
+
   for (k in 1:K){
     for (i in 1:R){Ind.Prop.Resamp[[GN]][[k]] <- Ind.Prop.Resamp[[GN]][[k]] + (Ind.Est[[GN]][[k]][[i]] != 0)}
     Ind.Prop.Resamp[[GN]][[k]] <- Ind.Prop.Resamp[[GN]][[k]]/R
@@ -252,7 +252,7 @@ for (GN in 1:n.groups){
 region_names_0 <- paste(region_names,
                         "                                                   ", sep="")
 
-region_names_1 <- paste("                                                                          ", 
+region_names_1 <- paste("                                                                          ",
                         region_names,
                         sep="")
 nodes <- c(region_names_0,region_names_1)
@@ -273,7 +273,7 @@ for (GN in 1:n.groups){
   from <- NULL
   to <- NULL
   clr <- NULL
-  
+
   for(j in 1:p)
     for(i in 1:p)
       if (adj.mat[i,j] != 0){
@@ -285,11 +285,11 @@ for (GN in 1:n.groups){
         from <- c(from,region_names_0[j])
         to <- c(to,region_names_1[i])
       }
-  
+
   NodeList <- data.frame(nodes, x ,y)
   EdgeList <- data.frame(from, to)
   a <- graph_from_data_frame(vertices = NodeList, d= EdgeList, directed = TRUE)
-  
+
  ## Uncomment if you'd like it saved to a file.
  # pdf(paste(group_name[GN],"_Fancy_graph.pdf",sep=""))
   plot(a,asp=0.2,
@@ -322,19 +322,19 @@ for (GN in 1:n.groups){
 #     from <- NULL
 #     to <- NULL
 #     clr <- NULL
-#     
+#
 #     for(j in 1:p)
 #       for(i in 1:p)
 #         if (adj.mat[i,j] != 0){
 #           from <- c(from,region_names_0[j])
 #           to <- c(to,region_names_1[i])
 #         }
-#     
+#
 #     NodeList <- data.frame(nodes, x ,y)
 #     if (is.null(from) & is.null(to)) {from=region_names[1]; to=region_names[1]}
 #     EdgeList <- data.frame(from, to)
 #     a <- graph_from_data_frame(vertices = NodeList, d= EdgeList, directed = TRUE)
-#     
+#
 #     plot(a,asp=0.2,
 #          rescale=F,
 #          xlim=c(-1,6),ylim=c(0,p),
@@ -347,7 +347,7 @@ for (GN in 1:n.groups){
 #                     phenotypic[[GN]][[k]][1,11],
 #                     " Sex:",phenotypic[[GN]][[k]][1,15],
 #                     " Age:",phenotypic[[GN]][[k]][1,14],sep=""),
-#          edge.arrow.size=0.5) 
+#          edge.arrow.size=0.5)
 #   }
 #   dev.off()
 # }
@@ -369,14 +369,14 @@ magnitudes.selected <- list()
 magnitudes.selected.diag <- list()
 magnitudes.selected.offdiag <- list()
 
-for (GN in 1:n.groups){ 
+for (GN in 1:n.groups){
   mags <- NULL
   mags.diag <- NULL
   mags.offdiag <- NULL
   mags.selected <- NULL
   mags.selected.diag <- NULL
   mags.selected.offdiag <- NULL
-  
+
   for (k in 1:K)
     for (b in 1:R){
       ### ALL NON-ZEROS
@@ -447,7 +447,7 @@ for (GN in 1:n.groups){
     age <- c(age,phenotypic[[GN]][[k]][1,14])
     gender <- c(gender,as.character(phenotypic[[GN]][[k]][1,15]))
   }
-  ages[[GN]] <- age 
+  ages[[GN]] <- age
   genders[[GN]] <- gender
 }
 
