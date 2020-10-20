@@ -12,11 +12,11 @@ set.seed(2)
 
 save.results <- TRUE                        # Do we save R objects with true/estimated matrices?
 
-p <- 15                                     # number of variables per subject
+p <- 10                                     # number of variables per subject
 print(c("p",p))
-t.set <- c(300)                              # number of observed time points per subject
+t.set <- c(100)                              # number of observed time points per subject
 print(c("t.set:",t.set))
-K.set <- c(5)                              # number of subjects per group
+K.set <- c(3)                              # number of subjects per group
 print(c("K.set:",K.set))
 heter <- c("low","moderate","none")[2]      # level of heterogeneity: low (1%), moderate (2-3%), none (0%)
 print(c("heter:",heter))
@@ -378,6 +378,7 @@ for(K in K.set){
 
           ### Initializing response vector and data matrix for standard regression problems for the first stage
           Y <- numeric(K*(t-D))
+          stop('nononono')
           Xbeta <- X.list %*% seplasso.result[[j]]
           for (k in 1:K){
             Y[(k-1)*(t-D) + (1:(t-D))] <- C.list[1:(t-D),j + (k-1)*p] - Xbeta[(k-1)*(t-D) + (1:(t-D))]
