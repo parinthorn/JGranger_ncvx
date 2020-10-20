@@ -3,7 +3,7 @@
 ###########
 
 ## Where all the customized functions (for estimation, performance metrics calculation, etc) are contained.
-source("MARCH_2019_SUBMISSION_Group_Lasso_Paper_Functions.R")
+source("MARCH_2019_SUBMISSION_Group_Lasso_Paper_Functions.R") #
 
 set.seed(2)
 
@@ -72,7 +72,7 @@ if (p<=20){
   ed <- 0.05
   print(c("ed:",ed))
   if (heter == "moderate"){
-    comm <- 0.03; 
+    comm <- 0.03;
     print(c("comm:",comm))
   }
 }
@@ -174,14 +174,14 @@ if (method.name %in% c("OurMethod_CONVERGENCE")){
   TN.Rand.pen.comm <- rep(0,rep)
   Matt.Coef.Rand.pen.comm <- rep(0,rep)
   Frob.Rand.pen.comm <- rep(0,rep)
-  
+
   FP.Rand.pen.ind <- rep(0,rep)
   FN.Rand.pen.ind <- rep(0,rep)
   TP.Rand.pen.ind <- rep(0,rep)
   TN.Rand.pen.ind <- rep(0,rep)
   Matt.Coef.Rand.pen.ind <- rep(0,rep)
   Frob.Rand.pen.ind <- rep(0,rep)
-  
+
   n.iter <- c()
 }
 
@@ -198,19 +198,19 @@ for (r in rep.set){
   if (method.name %in% c("Sparse_Lasso", "GroupBridge")){
     namedir <- paste(method.name, "_Simul_Results_Thresh=",Thresh2,"_p=",p,"_t=",train,"_K=",K,"_Rep=",r,"_ActualRep=",actual.rep,"_SNR=",SNR,"_criter=",criter,"_heter=",heter,"_signs=",length(signs),"_max_eig_comm=",max_eig_comm,"_max_eig_ind=",max_eig_ind,"_min_elem=",min_elem,sep="")
   }
-  
+
   Final.Est <- append(Final.Est, readRDS(paste(namedir,"/Final_Est.rds",sep="")))
   A.true.all <- append(A.true.all, readRDS(paste(namedir,"/A_true.rds",sep="")))
-  
+
   if (method.name %in% c("OurMethod_CONVERGENCE")){
     Final.Comm.Est <- append(Final.Comm.Est, readRDS(paste(namedir,"/Common_Est.rds",sep="")))
     Final.Ind.Est <- append(Final.Ind.Est, readRDS(paste(namedir,"/Ind_Est.rds",sep="")))
-    
+
     A.comm.all <- append(A.comm.all, readRDS(paste(namedir,"/A_true_comm.rds",sep="")))
     A.ind.all <- append(A.ind.all, readRDS(paste(namedir,"/A_true_ind.rds",sep="")))
     n.iter <- append(n.iter, readRDS(paste(namedir,"/N_Iter.rds",sep="")))
   }
-  
+
 }
 
 
@@ -220,11 +220,11 @@ for (r in rep.set){
 #########################################################
 
 for (run in 1:length(Final.Est)){
-  
+
   #######
   #### METRICS FOR FULL ESTIMATE (needed for all methods)
   #######
-  
+
   true.vec <- NULL
   Rand.pen.vec <- NULL
   for (k in 1:K){
@@ -233,7 +233,7 @@ for (run in 1:length(Final.Est)){
     true.vec <- c(true.vec,A.bind)
     Rand.pen.vec <- c(Rand.pen.vec,vec(Final.Est[[run]][[k]]))
   }
-  
+
   Measures.Joint <- Measures.Vec(Rand.pen.vec,as.matrix(true.vec))
   FP.Rand.pen[run] <- Measures.Joint$FP
   FN.Rand.pen[run] <- Measures.Joint$FN
@@ -244,15 +244,15 @@ for (run in 1:length(Final.Est)){
                                            TN.Rand.pen[run],
                                            FN.Rand.pen[run])
   Frob.Rand.pen[run] <- Measures.Joint$Frob
-  
-  
+
+
   ## Common and individual component metrics - needed only for our two-stage approach.
-  
+
   if (method.name %in% c("OurMethod_CONVERGENCE")){
     #######
     #### METRICS FOR COMMON COMPONENT ESTIMATE
     #######
-    
+
     true.vec.comm <- NULL
     Rand.pen.vec.comm <- NULL
     for (k in 1:K){
@@ -261,7 +261,7 @@ for (run in 1:length(Final.Est)){
       true.vec.comm <- c(true.vec.comm,A.bind)
       Rand.pen.vec.comm <- c(Rand.pen.vec.comm,vec(Final.Comm.Est[[run]][[k]]))
     }
-    
+
     Measures.Joint <- Measures.Vec(Rand.pen.vec.comm,as.matrix(true.vec.comm))
     FP.Rand.pen.comm[run] <- Measures.Joint$FP
     FN.Rand.pen.comm[run] <- Measures.Joint$FN
@@ -272,11 +272,11 @@ for (run in 1:length(Final.Est)){
                                                   TN.Rand.pen.comm[run],
                                                   FN.Rand.pen.comm[run])
     Frob.Rand.pen.comm[run] <- Measures.Joint$Frob
-    
+
     #######
     #### METRICS FOR INDIVIDUAL COMPONENT ESTIMATE
     #######
-    
+
     true.vec.ind <- NULL
     Rand.pen.vec.ind <- NULL
     for(k in 1:K){
@@ -285,7 +285,7 @@ for (run in 1:length(Final.Est)){
       true.vec.ind <- c(true.vec.ind,A.bind)
       Rand.pen.vec.ind <- c(Rand.pen.vec.ind,vec(Final.Ind.Est[[run]][[k]]))
     }
-    
+
     Measures.Joint <- Measures.Vec(Rand.pen.vec.ind,as.matrix(true.vec.ind))
     FP.Rand.pen.ind[run] <- Measures.Joint$FP
     FN.Rand.pen.ind[run] <- Measures.Joint$FN
@@ -340,4 +340,4 @@ if (!(method.name %in% c("OurMethod_CONVERGENCE"))){
 
 cat("\n")
 cat("\\hline")
-cat('\n') 
+cat('\n')
