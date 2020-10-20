@@ -6,7 +6,7 @@ outpath = '../formulation_D_result/';
 
 type = 2; %D type
 cd = 1; %common density set to 10%
-T = 1250;
+T = 100;
 p = 1;
 K = 5;
 n = 20; % time-series channels
