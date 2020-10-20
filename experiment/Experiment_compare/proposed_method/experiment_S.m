@@ -12,7 +12,7 @@ K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 Dtmp = diffmat(n,p,K);
-D = sparse(D*P);
+D = sparse(Dtmp*P);
 load([inpath,'model_K',int2str(K)]) % struct E
 [~,~,dd,m] = size(E);
 GridSize = 30;
@@ -35,7 +35,7 @@ for ii=1:dd
         
         [M.stat.accuracy.total.confusion_matrix] = compare_sparsity(model.ind_nz,M.ind_nz,n,K,'differentialROC');
         M.stat.accuracy.total.score = performance_score(M.stat.accuracy.total.confusion_matrix);
-        M.stat.bias = squeeze(sqrt(sum(bsxfun(@minus, M.A,model.A).^2,[1,2,3,4]))./sqrt(sum(model.A.^2,'all'));
+        M.stat.bias = squeeze(sqrt(sum(bsxfun(@minus, M.A,model.A).^2,[1,2,3,4]))./sqrt(sum(model.A.^2,'all')));
         M.stat.accuracy.detail = {'TP','TN','FP','FN'};
         save([outpath,'result_formulationS_',int2str(ii),'percent','_',int2str(jj)])
     end
