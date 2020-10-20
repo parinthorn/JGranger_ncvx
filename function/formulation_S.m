@@ -54,7 +54,7 @@ ALG_PARAMETER.L2 = D;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
-ALG_PARAMETER.Ts = 100;
+ALG_PARAMETER.Ts = 200;
 t1 = tic;
 for ii=1:GridSize
     a1 = Lambda(ii);
@@ -64,7 +64,7 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind_nz = cell(1,GridSize);
-    parfor jj=1:GridSize
+    for jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
@@ -76,7 +76,7 @@ for ii=1:GridSize
         [x_reg, Px,Dx, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
-        x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off')
+        x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off');
         A_cls =devect(full(x_cls),n,p,K);
         A(:,:,:,:,1,jj) = A_cls;
         score(1,jj) = model_selection(Y,A_cls);

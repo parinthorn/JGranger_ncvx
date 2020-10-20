@@ -1,8 +1,15 @@
 function score = performance_score(stat)
-TP=stat(:,:,1);
-TN=stat(:,:,2);
-FP=stat(:,:,3);
-FN=stat(:,:,4);
+if size(stat,3) ==4
+    TP=stat(:,:,1);
+    TN=stat(:,:,2);
+    FP=stat(:,:,3);
+    FN=stat(:,:,4);
+else
+    TP=stat(1);
+    TN=stat(2);
+    FP=stat(3);
+    FN=stat(4);
+end
 
 score.FPR = FP./(FP+TN);
 score.TPR = TP./(TP+FN);
