@@ -2,15 +2,17 @@
 clear
 clc
 inpath = './data_compare/';
-outpath = '../formulation_D_result/';
+outpath = '../formulation_S_result/';
 
-type = 2; %D type
+type = 3; %S type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
+Dtmp = diffmat(n,p,K);
+D = sparse(D*P);
 load([inpath,'model_K',int2str(K)]) % struct E
 [~,~,dd,m] = size(E);
 GridSize = 30;
@@ -20,7 +22,7 @@ for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = formulation_D(y,P,p,GridSize);
+        M = formulation_S(y,P,D,p,GridSize);
         A_select = M.A(:,:,:,:,M.index.bic);
         
         % performance eval
@@ -33,11 +35,8 @@ for ii=1:dd
         
         [M.stat.accuracy.total.confusion_matrix] = compare_sparsity(model.ind_nz,M.ind_nz,n,K,'differentialROC');
         M.stat.accuracy.total.score = performance_score(M.stat.accuracy.total.confusion_matrix);
-        
+        M.stat.bias = squeeze(sqrt(sum(bsxfun(@minus, M.A,model.A).^2,[1,2,3,4]))./sqrt(sum(model.A.^2,'all'));
         M.stat.accuracy.detail = {'TP','TN','FP','FN'};
-
-        M.stat.bias = squeeze(sqrt(sum(bsxfun(@minus, M.A,model.A).^2,[1,2,3,4]))./sqrt(sum(model.A.^2,'all')));
-                
-        save([outpath,'result_formulationD_',int2str(ii),'percent','_',int2str(jj)])
+        save([outpath,'result_formulationS_',int2str(ii),'percent','_',int2str(jj)])
     end
 end
