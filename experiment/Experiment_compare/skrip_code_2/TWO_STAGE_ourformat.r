@@ -7,9 +7,9 @@ p <- 20
 t <- 100
 K <- 5
 density = c(1,5)
+realz <- 100
 for (dd in 1:2){
 for (itr in 1:realz){
-itr <- 1
 namedir <- './data_R_formulationD/'
 tmp <- read.csv(file = paste(namedir,'data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
 DATA <-as.matrix(tmp)
@@ -303,8 +303,8 @@ for(k in 1:K){
 #saveRDS(Final.Est,paste(namedir,"/",itr,"_","Final_Est.rds",sep=""))
 #saveRDS(Final.Comm.Est,paste(namedir,"/",itr,"_","Common_Est.rds",sep=""))
 #saveRDS(Final.Ind.Est,paste(namedir,"/",itr,"_","Ind_Est.rds",sep=""))
-write.csv(Final.Est,paste(namedir,density[dd],"percent",itr,"_","Final_Est.csv",sep=""))
-write.csv(Final.Comm.Est,paste(namedir,density[dd],"percent",itr,"_","Common_Est.csv",sep=""))
-write.csv(Final.Ind.Est,paste(namedir,density[dd],"percent",itr,"_","Ind_Est.csv",sep=""))
+write.csv(Final.Est,paste(namedir,"Final_Est_",density[dd],"percent_",itr,".csv",sep=""))
+write.csv(Final.Comm.Est,paste(namedir,"Common_Est_",density[dd],"percent_",itr,".csv",sep=""))
+write.csv(Final.Ind.Est,paste(namedir,"Ind_Est_",density[dd],"percent_",itr,".csv",sep=""))
 }
 }

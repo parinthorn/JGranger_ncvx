@@ -10,7 +10,7 @@ mkdir(outpath)
 
 
 type = 2; %D type
-cd = 1; %common density set to 10%
+cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
 K = 5;
