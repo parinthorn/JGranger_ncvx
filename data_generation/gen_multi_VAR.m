@@ -59,8 +59,16 @@ for kk=1:K
 
     end
 end
-if strcmp(opts.type,'similar')
+if strcmp(opts.type,'similar') % we generated first model and the rest is similar to the first one
+                               % the first one will not have any
+                               % differential part compare to others.
+                               % To generalize, we remove first model.
     model.A = model.A(:,:,:,2:end);
+    model.ind_nz = model.ind_nz(2:end);
+    model.VAR_spectrum = model.VAR_spectrum(2:end);
+    model.seed = model.seed(2:end);
+    
+    K=K-1;
 end
 
 % generating common index, differential index, removing off diagonal index
