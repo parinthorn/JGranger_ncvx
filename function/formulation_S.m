@@ -1,4 +1,4 @@
-function M = formulation_D(y,P,varargin)
+function M = formulation_S(y,P,D,varargin)
 %% This program estimates Ground truth with their original model
 % Input are
 %             y : 3D array [n,Num,K] which is dimension of timeseries,
@@ -50,7 +50,7 @@ M.flag = zeros(GridSize);
 ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.L1 = P;
-ALG_PARAMETER.L2 = P;
+ALG_PARAMETER.L2 = D;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
@@ -60,7 +60,6 @@ for ii=1:GridSize
     a1 = Lambda(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
-    ls_flag = zeros(1,GridSize);
     ind_common = cell(1,GridSize);
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
@@ -74,10 +73,10 @@ for ii=1:GridSize
         else
           x0 = xLS;
         end
-        [x_reg, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
+        [x_reg, Px,Dx, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
-        [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));
+        x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off')
         A_cls =devect(full(x_cls),n,p,K);
         A(:,:,:,:,1,jj) = A_cls;
         score(1,jj) = model_selection(Y,A_cls);
@@ -100,7 +99,6 @@ for ii=1:GridSize
     M.ind_common(ii,:) = ind_common;
     M.ind_differential(ii,:) = ind_differential;
     M.flag(ii,:) = flag;
-    M.ls_flag(ii,:) = ls_flag;
 end
 [~,M.index.bic] = min([M.stat.model_selection_score.bic]);
 [~,M.index.aicc] = min([M.stat.model_selection_score.aicc]);
