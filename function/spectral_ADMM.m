@@ -142,19 +142,19 @@ for k=1:MAXITERS
         bkcor = delta_G'*delta_y/(norm(delta_G,2)*norm(delta_y,2));
         if (history.r_norm(k-1) < history.eps_pri(k-1))&&(qq==0.5)
             IS_ADAPTIVE = 0;
-            disp('----------------TURN ADAPTIVE OFF----------------')
+%             disp('----------------TURN ADAPTIVE OFF----------------')
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1)) && (abs((history.rho(k-1)-history.rho(k0))/history.rho(k0))<1e-3)&&(qq==0.5)
-            disp('--------------PRIMAL DUAL MAY DIVERGE------------')
+%             disp('--------------PRIMAL DUAL MAY DIVERGE------------')
             rho = rho*2;
             L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
             L = sparse(L); U = L';
         elseif (primal_rate<=eps_rate)&&(qq==0.5)
-            disp('---------------PENALTY NOT ADAPTIVE--------------')
+%             disp('---------------PENALTY NOT ADAPTIVE--------------')
             rho = rho*2;
             L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
             L = sparse(L); U = L';
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1))
-            disp('----------------PRIMAL INFEASIBLE----------------')
+%             disp('----------------PRIMAL INFEASIBLE----------------')
             rho = rho*2;
             L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
             L = sparse(L); U = L';
