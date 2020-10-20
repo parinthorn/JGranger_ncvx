@@ -1,7 +1,7 @@
-### Executive file for simulation studies 
+### Executive file for simulation studies
 
 ## Where all the customized functions (for estimation, performance metrics calculation, etc) are contained.
-source("MARCH_2019_SUBMISSION_Group_Lasso_Paper_Functions.R")
+source("MARCH_2019_SUBMISSION_Group_Lasso_Paper_Functions.R") #
 
 set.seed(2)
 
@@ -69,7 +69,7 @@ if (p<=20){
   ed <- 0.05
   print(c("ed:",ed))
   if (heter == "moderate"){
-    comm <- 0.03; 
+    comm <- 0.03;
     print(c("comm:",comm))
   }
 }
@@ -137,27 +137,27 @@ intercept <- FALSE
 
 ## Looping through different numbers K of subjects per group.
 for(K in K.set){
-  
+
   ### For VAR of order D we will store the estimates for a single subject in the following (D*p)xp matrix:
   ### A_{(D*p)xp} = [A1_pxp,]
   ###                ...,
   ###               [AD_pxp ]
-  
+
   Final.Est <- make.list(make.list(matrix(0,D*p,p),K),actual.rep)
   A.true.all <- make.list(make.list(matrix(0,D*p,p),K),actual.rep)
   A.comm.all <- make.list(matrix(0,D*p,p),actual.rep)
   A.ind.all <- make.list(make.list(matrix(0,D*p,p),K),actual.rep)
-  
+
   ## Looping through various lengths T of time series.
   for(train in t.set){
-    
+
     t <- train
     ptm <- proc.time()
-    
+
     ######
     ### Initializing vectors of metrics (see Section 3)
     ######
-    
+
     ## Metrics for full estimate A^hat (= A^comm + A^ind)
     FP.Rand.pen <- rep(0,actual.rep)
     FN.Rand.pen <- rep(0,actual.rep)
@@ -165,8 +165,8 @@ for(K in K.set){
     TN.Rand.pen <- rep(0,actual.rep)
     Matt.Coef.Rand.pen <- rep(0,actual.rep)
     Frob.Rand.pen <- rep(0,actual.rep)
-    
-    
+
+
     ## Setting up/Creating the folder to save the results into.
     if (save.results){
       if (method.name != "Sparse_Group_Lasso"){
@@ -175,192 +175,192 @@ for(K in K.set){
       if (method.name == "Sparse_Group_Lasso"){
         namedir <- paste(getwd(),"/", method.name, "_Simul_Results_Thresh=",Thresh2,"_p=",p,"_t=",train,"_K=",K,"_Rep=",rep,"_ActualRep=",actual.rep,"_SNR=",SNR,"_criter=CV_alpha=",alpha,"_heter=",heter,"_signs=",length(signs),"_max_eig_comm=",max_eig_comm,"_max_eig_ind=",max_eig_ind,"_min_elem=",min_elem,sep="")
       }
-      dir.create(namedir) 
+      dir.create(namedir)
     }
-    
-    
+
+
     ## If we want to generate "rep" replicates, but only do the estimation for last "actual.rep":
     ##    1. We just generate (rep - actual.rep) replicates first.
     if (actual.rep != rep){
-      
+
       for (run in 1:(rep-actual.rep)){
         print(c("run",run))
-        
+
         repeat{
           #####
           ## Generating VAR transition matrices
           #####
-          
+
           A.true <- A.setup(p,
                             D=D,
-                            ed=ed,  
+                            ed=ed,
                             signs=signs,
                             pos.diag=pos.diag,
-                            comm=comm,  
-                            max_eig_comm=max_eig_comm, 
+                            comm=comm,
+                            max_eig_comm=max_eig_comm,
                             max_eig_ind=max_eig_ind,
                             min_elem = min_elem,
                             K=K)
-          
+
           A.list <- list()
-          
+
           for (d in 1:D){
             A.full <- list()
             for (k in 1:K) A.full[[k]] <- A.true$A.true[[k]][[d]]
             A.list[[d]] <- block.diag(A.full)
           }
-          
+
           Sigma <- list()
           for(i in 1:K) Sigma[[i]] <- diag(1,p)
-          
+
           Sigma.full <- block.diag(Sigma)
-          
+
           ################################
           ####### DATA GENERATION ########
           ################################
-          
+
           DATA <- gen_dat(T=t,
                           A=A.list,
                           SNR=SNR,
                           Sigma_error=Sigma.full)
-          
+
           print(max(abs(DATA)))
           #  hist(DATA)
           if (max(abs(DATA))<10) break;                  ### making sure generated time series doesn't go overboard with magnitudes of matrix values (happens occasionally)
         }
       }
     }
-    
+
     ##    2. Then, for the remaining "actual.rep" replicates, we generate the data AND conduct the selected estimation method.
     for(run in 1:actual.rep){
       print(c("run",run))
-      
+
       repeat{
         #####
         ## Generating VAR transition matrices
         #####
-        
+
         A.true <- A.setup(p,
                           D=D,
-                          ed=ed,  
+                          ed=ed,
                           signs=signs,
                           pos.diag=pos.diag,
-                          comm=comm,  
-                          max_eig_comm=max_eig_comm, 
+                          comm=comm,
+                          max_eig_comm=max_eig_comm,
                           max_eig_ind=max_eig_ind,
                           min_elem = min_elem,
                           K=K)
         A.true.all[[run]] <- A.true$A.true
         A.comm.all[[run]] <- A.true$A.comm
         A.ind.all[[run]] <- A.true$A.ind
-        
+
         A.list <- list()
-        
+
         for (d in 1:D){
           A.full <- list()
           for (k in 1:K) A.full[[k]] <- A.true$A.true[[k]][[d]]
           A.list[[d]] <- block.diag(A.full)
         }
-        
+
         Sigma <- list()
         for(i in 1:K){
           #Sigma[[i]] <- diag(runif(p,0,1))
           Sigma[[i]] <- diag(1,p)
         }
-        
+
         Sigma.full <- block.diag(Sigma)
-        
+
         ################################
         ####### DATA GENERATION ########
         ################################
-        
+
         DATA <- gen_dat(T=t,
                         A=A.list,
                         SNR=SNR,
                         Sigma_error=Sigma.full)
-        
+
         print(max(abs(DATA)))
         #  hist(DATA)
         if (max(abs(DATA))<10) break;                  ### making sure generated time series doesn't go overboard with magnitudes of matrix values (happens occasionally)
       }
-      
-      
+
+
       ### Calculating maximum likelihood estimates of sigma^2 for each subject
       # print("Calculating estimates for sigma_1^2,...,sigma_K^2")
       sigma2 <- rep(0,K)
       sds <- apply(DATA,1,function(x) sd(x))
-      
+
       for (k in 1:K) sigma2[k] <- OLS.tseries(DATA[(k-1)*p + 1:p,],D=D)$sigma2
-      
+
       if (method.name == "Sparse_Lasso"){
         for (k in 1:K){
           # print(k)
           sigma2[k] <- OLS.tseries(DATA[(k-1)*p + 1:p,],D=D)$sigma2
-          
+
           est <- Sparse.tseries(DATA[(k-1)*p + 1:p,],
                                 sigma2=sigma2[k],
                                 criter=criter)$beta.hat
-          
+
           Final.Est[[run]][[k]] <- matrix(sparsify(est, Thresh2),
                                           byrow=T,
                                           nrow=p)
         }
       }
-      
-      
+
+
       if (method.name != "Sparse_Lasso"){
       # print("Generated")
-      
+
       ### Initializing vectors for final estimates
-      
+
       Group.Est <- make.list(matrix(0,D*p,p),K)
       Sep.Est.Second <-  make.list(matrix(0,D*p,p),K)
       Group.Final <- make.list(matrix(0,D*p,p),K)
-      
+
       A.list <- list()
-      
+
       for (d in 1:D){
         A.full <- list()
         for (k in 1:K) A.full[[k]] <- A.true$A.true[[k]][[d]]
         A.list[[d]] <- block.diag(A.full)
       }
-      
+
       Sigma <- list()
       for(i in 1:K) Sigma[[i]] <- diag(1,p)               # simply setting the error covariance to be identity matrix
-      
+
       Sigma.full <- block.diag(Sigma)
-      
+
       #############################
       ### FULL PROBLEM SETUP   ####
       #############################
-      
-      M.setup <- mat.setup(DATA,t,K,p,D=D) 
+
+      M.setup <- mat.setup(DATA,t,K,p,D=D)
       C.list <- M.setup$C
       X.list <- M.setup$X
-      
+
       ### Vector of group number assignments for group lasso
       group <- c(1:(D*p))
       if (K>1){
         for (j in 2:K) group <- c(group,1:(D*p))
       }
-      
+
       ## Initializing vectors to contain estimates during algorithm iterations
       method.result <- make.list(numeric(D*K*p),p)
       gl.zeros <- list()
-      
+
       for (j in 1:p){
         print(paste("j:",j,sep=""))
-        
+
         ### Initializing response vector and data matrix for standard regression problems for the first stage
         Y <- numeric(K*(t-D))
         for (k in 1:K){
           Y[(k-1)*(t-D) + (1:(t-D))] <- C.list[1:(t-D),j + (k-1)*p]
         }
-        
+
         ### Doing group lasso optimization
         D.sigma <- sqrt(diag(c(sapply(sigma2, function(x) return(rep(x,(t-D)))))))
-        
-        
+
+
         ####
         if (method.name == "Sparse_Group_Lasso"){
           seed.stuff <- .Random.seed
@@ -374,15 +374,15 @@ for(K in K.set){
                         standardize = F)
           #verbose=T)
           .Random.seed <- seed.stuff
-          
+
           r.cv$fit$beta
           #est <- r.cv$fit$beta[order(group),]
-          est <- matrix(0, 
+          est <- matrix(0,
                         nrow=nrow(r.cv$fit$beta),
                         ncol=ncol(r.cv$fit$beta))
-          
+
           est[order(group),] <- r.cv$fit$beta
-          
+
           cv.err <- r.cv$lldiff
           method.est.out <- est[,which.min(cv.err)]
         }
@@ -391,11 +391,11 @@ for(K in K.set){
                        solve(D.sigma) %*% Y,
                        group=group,
                        family="gaussian")
-          
+
           lambda_G.path <- r$lambda
           est <- r$beta[-1,]
           method.result.df <- r$df
-          
+
           ### Tuning parameter selection
           if (criter == "AIC")
             method.est.out <- AIC(as.matrix(est),X.list,as.matrix(Y),p=p,K=K,lambda.path=lambda_G.path,df.path=method.result.df)
@@ -403,37 +403,37 @@ for(K in K.set){
             method.est.out <- BIC(as.matrix(est),X.list,as.matrix(Y),p=p,K=K,df.path=method.result.df,lambda.path=lambda_G.path)
           if (criter == "AICc")
             method.est.out <- AICc(as.matrix(est),X.list,as.matrix(Y),p=p,K=K,df.path=method.result.df,lambda.path=lambda_G.path)
-          
+
           # method.result[[j]] <- sparsify(method.est.out$Est, Thresh2)
           lambda.group <- method.est.out$lambda1
           method.est.out <- method.est.out$Est
         }
-        
+
         #method.result[[j]] <- sparsify(method.est.out$Est, Thresh2)
         method.result[[j]] <- sparsify(method.est.out, Thresh2)
         #lambda.group <- lambda_G.path[which.min(cv.err)]
-        
+
         ### Recording estimates
         for (k in 1:K) Group.Est[[k]][j,] <- method.result[[j]][(k-1)*p+(D-1)*(p) + (1:p)]
-      }   
-      
-      
+      }
+
+
       for(k in 1:K){
         Group.Final[[k]] <- sparsify(Group.Est[[k]],Thresh2)
         Final.Est[[run]][[k]] <- Group.Final[[k]]
       }
-      
+
     }
-      
-      
+
+
       #########################################################
       ############## CALCULATING PERFORMANCE METRICS   ########
       #########################################################
-      
+
       #######
       #### METRICS FOR FULL ESTIMATE
       #######
-      
+
       true.vec <- NULL
       Rand.pen.vec <- NULL
       for (k in 1:K){
@@ -443,7 +443,7 @@ for(K in K.set){
         # Rand.pen.vec <- c(Rand.pen.vec,vec(Group.Final[[k]]))
         Rand.pen.vec <- c(Rand.pen.vec,vec(Final.Est[[run]][[k]]))
       }
-      
+
       Measures.Joint <- Measures.Vec(Rand.pen.vec,as.matrix(true.vec))
       FP.Rand.pen[run] <- Measures.Joint$FP
       FN.Rand.pen[run] <- Measures.Joint$FN
@@ -455,25 +455,25 @@ for(K in K.set){
                                                FN.Rand.pen[run])
       Frob.Rand.pen[run] <- Measures.Joint$Frob
     }
-    
+
     ###############################################
     #### Saving all the estimates to .rds files ###
     ###############################################
-    
+
     if (save.results){
       saveRDS(Final.Est,paste(namedir,"/Final_Est.rds",sep=""))
       saveRDS(A.true.all,paste(namedir,"/A_true.rds",sep=""))
     }
-    
+
     time.taken <- proc.time() - ptm
     #print("Time taken:")
     #print(time.taken)
-    
+
     ##################################################
     ### Printing all the metrics in a format for latex table:
     ### FP, FN, Matthews for full estimates
     ##################################################
-    
+
     cat("\n")
     cat("\n")
     print(method.name)
@@ -487,10 +487,7 @@ for(K in K.set){
         "\\\\",sep="")
     cat("\n")
     cat("\\hline")
-    cat('\n') 
-    
+    cat('\n')
+
   }
 }
-
-
-
