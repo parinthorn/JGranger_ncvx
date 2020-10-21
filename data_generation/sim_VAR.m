@@ -41,12 +41,11 @@ else
 end
 
 for kk=1:K
-    
+
     AK = matA(:,:,kk);
 for tt=p+1:T+ADD
-    
-    x(:,tt,kk) = AK*reshape(x(:,tt-1:-1:tt-p),n*p,1);
-    x(:,tt,kk) = x(:,tt,kk) + u(:,tt,kk);
+
+    x(:,tt,kk) = AK*reshape(x(:,tt-1:-1:tt-p,kk),n*p,1) + u(:,tt,kk);
 end
 
 end
