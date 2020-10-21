@@ -36,7 +36,7 @@ score(ii).differential.F1 = 0;
     for jj=1:m
         % performance eval
         model = E{type,cd,ii,jj};
-        D = readtable([inpath,'Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
+        D = readtable([inpath,'K5_Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
         D = table2array(D);
         D = D(:,2:end); % D = size (n,n*K), p=1
         A = reshape(D,[n,n,K]);
@@ -70,7 +70,7 @@ score(ii).differential.F1 = 0;
     end
 end
 
-save([outpath,'skrip_formulationD_accuracy'],'score')
+% save([outpath,'skrip_formulationD_accuracy'],'score')
 
 
 

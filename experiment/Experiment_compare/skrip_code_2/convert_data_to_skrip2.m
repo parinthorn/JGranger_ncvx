@@ -13,7 +13,7 @@ type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-K = 50;
+K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([inpath,'model_K',int2str(K)]) % struct E
