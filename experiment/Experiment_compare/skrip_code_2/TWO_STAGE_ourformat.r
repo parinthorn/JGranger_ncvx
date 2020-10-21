@@ -5,7 +5,7 @@
 D <-1
 p <- 20
 t <- 100
-K <- 50
+K <- 5
 density = c(1,5)
 realz <- 100
 for (dd in 1:2){
