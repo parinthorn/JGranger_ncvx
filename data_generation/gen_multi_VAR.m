@@ -24,10 +24,11 @@ p = PARAMETER(2);
 K = PARAMETER(3);
 common_density = opts.common_density;
 differential_density = opts.differential_density;
+model.dim = [n,p,K];
 model.common_density = opts.common_density;
 model.differential_density = opts.differential_density;
 model.type = opts.type;
-model.dim = [n,p,K];
+
 if numel(varargin) > 0
     DMAT = varargin{1};
 end
@@ -49,25 +50,28 @@ model.A = zeros(n,n,p,K); % allocate ground truth VAR parameter
 % 1. C type: all K models share same pattern but can have different value of VAR coefficient
 % 2. D type: add differential part to C type
 % 3. S type: make the parameter in C type similar
-model.ind_nz = cell(K,1);
+model.ind = cell(K,1);
+model.seed = randi(100000000); % seed
+rng(model.seed)
 for kk=1:K
     fprintf('Group %d\n',kk)
     if exist('DMAT','var')
-        [model.A(:,:,:,kk),model.ind_nz{kk},model.VAR_spectrum{kk},model.seed(kk)] = gen_VAR(n,p,common_density,differential_density,1,DMAT(:,:,:,kk)); % look for generated C model
+        [model.A(:,:,:,kk),model.ind{kk},model.VAR_spectrum{kk},model.ind_VAR{kk}] = gen_VAR(n,p,common_density,differential_density,1,DMAT(:,:,:,kk)); % look for generated C model
     else
-        [model.A(:,:,:,kk),model.ind_nz{kk},model.VAR_spectrum{kk},model.seed(kk)] = gen_VAR(n,p,common_density,differential_density,tmp(kk,2),model.A(:,:,:,tmp(kk,1)));
+        [model.A(:,:,:,kk),model.ind{kk},model.VAR_spectrum{kk},model.ind_VAR{kk}] = gen_VAR(n,p,common_density,differential_density,tmp(kk,2),model.A(:,:,:,tmp(kk,1)));
 
     end
+    model.GC(:,:,kk) = sqrt(sum(model.A(:,:,:,kk).^2,3));
 end
 if strcmp(opts.type,'similar') % we generated first model and the rest is similar to the first one
                                % the first one will not have any
                                % differential part compare to others.
                                % To generalize, we remove first model.
     model.A = model.A(:,:,:,2:end);
-    model.ind_nz = model.ind_nz(2:end);
+    model.GC = model.GC(:,:,2:end);
+    model.ind = model.ind(2:end);
+    model.ind_VAR = model.ind_VAR(2:end);
     model.VAR_spectrum = model.VAR_spectrum(2:end);
-    model.seed = model.seed(2:end);
-    
     K=K-1;
 end
 
@@ -76,12 +80,12 @@ diag_ind = 1:n+1:n^2;
 model.ind_common = setdiff(1:n^2,diag_ind);
 model.ind_differential = cell(K,1);
 for kk=1:K
-  model.ind_common = intersect(model.ind_common,model.ind_nz{kk});
+  model.ind_common = intersect(model.ind_common,model.ind{kk});
 end
 for kk=1:K
-  tmp = setdiff(model.ind_nz{kk},diag_ind); % remove diagonal parts
+  tmp = setdiff(model.ind{kk},diag_ind); % remove diagonal parts
   model.ind_differential{kk} = setdiff(tmp,model.ind_common); % remove common part, so that
                                                   % the remaining is differential part
 end
-
+model = orderfields(model,[1 4 2 3 9 6 11 12 8 10 5 7]);
 end

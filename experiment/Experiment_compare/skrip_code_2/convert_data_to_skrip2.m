@@ -16,7 +16,7 @@ p = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
-load([inpath,'model_K',int2str(K)]) % struct E
+load([inpath,'model_K',int2str(K),'_p',int2str(p)]) % struct E
 [~,~,dd,m] = size(E);
 GridSize = 30;
 mname = {'1','5'};
