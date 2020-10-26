@@ -6,7 +6,8 @@ Num = T-p;
 %% Create G
 
 G = [];
-blkH = zeros(Num,n*p,K);BLKH = zeros(Num,n*p*K,K);
+%blkH = zeros(Num,n*p,K);
+BLKH = zeros(Num,n*p*K,K);
 E1 = zeros(K,1); E1(1) = 1;
 for k=1:K,
     H0 = zeros(n,Num,p);
@@ -17,7 +18,7 @@ for k=1:K,
     vecH = H0(ind);
 
     TMP = zeros(n*p*K*Num,1);
-    [tmp2,IND] = blocksub(TMP,p,p*(K-1));
+    [~,IND] = blocksub(TMP,p,p*(K-1));
     TMP(IND) = vecH;
     TMP = reshape(TMP,n*p*K,Num);
     TMP = TMP';
