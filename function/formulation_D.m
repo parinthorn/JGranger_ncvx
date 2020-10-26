@@ -85,6 +85,7 @@ for ii=1:GridSize
         diag_ind=1:n+1:n^2;
         for kk=1:K
           tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
+%           ind_VAR{kk} = find(A);
         end
         ind(1,jj) = {tmp_ind};
         [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
@@ -93,28 +94,30 @@ for ii=1:GridSize
             fprintf('max iteration exceed at grid (%d,%d)\n',ii,jj)
         end
     end
-    E.stat.model_selection_score(ii,:) = score;
-    E.A_reg(:,:,1:p,:,ii,:) = A_reg;
-    E.A(:,:,1:p,:,ii,:) = A;
-    E.ind(ii,:) = ind;
-    E.ind_common(ii,:) = ind_common;
-    E.ind_differential(ii,:) = ind_differential;
-    E.flag(ii,:) = flag;
-    E.ls_flag(ii,:) = ls_flag;
+    tmp_struct.stat.model_selection_score(ii,:) = score;
+    tmp_struct.A_reg(:,:,1:p,:,ii,:) = A_reg;
+    tmp_struct.A(:,:,1:p,:,ii,:) = A;
+    tmp_struct.ind(ii,:) = ind;
+    tmp_struct.ind_common(ii,:) = ind_common;
+    tmp_struct.ind_differential(ii,:) = ind_differential;
+    tmp_struct.flag(ii,:) = flag;
+    tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-[~,M.index.bic] = min([E.stat.model_selection_score.bic]);
-[~,M.index.aicc] = min([E.stat.model_selection_score.aicc]);
+[~,M.index.bic] = min([tmp_struct.stat.model_selection_score.bic]);
+[~,M.index.aicc] = min([tmp_struct.stat.model_selection_score.aicc]);
 for ii=1:GridSize
   for jj=1:GridSize
-    M.model(ii,jj).stat.model_selection_score = E.stat.model_selection_score(ii,jj);
-    M.model(ii,jj).A_reg = E.A_reg(:,:,1:p,:,ii,jj);
-    M.model(ii,jj).A = E.A(:,:,1:p,:,ii,jj);
+    M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
+    M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,:,ii,jj);
+    M.model(ii,jj).A = tmp_struct.A(:,:,1:p,:,ii,jj);
     M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
-    M.model(ii,jj).ind_VAR = find(M.model(ii,jj).A);
-    M.model(ii,jj).ind = E.ind(ii,jj);
-    M.model(ii,jj).ind_common = E.ind_common(ii,jj);
-    M.model(ii,jj).ind_differential = E.ind_differential(ii,jj);
-    M.model(ii,jj).flag = E.flag(ii,jj);
+    for kk=1:K
+        M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk,ii,jj));
+    end
+    M.model(ii,jj).ind = tmp_struct.ind(ii,jj);
+    M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
+    M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
+    M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
   end
 end
 

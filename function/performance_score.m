@@ -15,4 +15,7 @@ score.FPR = FP./(FP+TN);
 score.TPR = TP./(TP+FN);
 score.ACC = (TP+TN)./(TP+FN+TN+FP);
 score.F1 = 2*TP./(2*TP+FP+FN);
+tmp = sqrt((TP+FP).*(TP+FN).*(TN+FP).*(TN+FN));
+tmp(tmp==0) = inf;
+score.MCC = (TP.*TN-FP.*FN)./tmp;
 end

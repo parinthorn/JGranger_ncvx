@@ -12,8 +12,9 @@ p = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
-load([modelpath,'model_K',int2str(K)]) % struct E
+load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
+m=20;
 GridSize = 30;
 mname = {'1','5'};
 
@@ -49,7 +50,7 @@ score(ii).differential.F1 = 0;
         common_score = performance_score(common_confusion);
         differential_confusion = compare_sparsity(model.ind_differential,ind_differential{1},n,K,'single_differential');
         differential_score = performance_score(differential_confusion);
-        total_confusion = compare_sparsity(model.ind_nz,ind_nz,n,K,'single_differential');
+        total_confusion = compare_sparsity(model.ind,ind_nz,n,K,'single_differential');
         total_score = performance_score(total_confusion);
         total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
         score(ii).total.TPR = score(ii).total.TPR+total_score.TPR/m;
