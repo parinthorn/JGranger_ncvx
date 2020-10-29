@@ -228,6 +228,7 @@ if PRINT_RESULT
 end
 % return sparse result
 % x2((x3==0)) = 0;
+z1(z2==0)=0;
 X = reshape(x,p,K,n^2); % x1 is not sparse
 X2 = reshape(z1,p,K,n^2-n); % x2 is offdiagonal entries only and sparse
 IND_offdiag = setdiff((1:n^2)',(1:n+1:n^2)','rows');
