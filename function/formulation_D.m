@@ -55,6 +55,7 @@ ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
 ALG_PARAMETER.Ts = 100;
+ALG_PARAMETER.is_chol = 1;
 t1 = tic;
 for ii=1:GridSize
     a1 = Lambda(ii);
@@ -65,7 +66,7 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor jj=1:GridSize
+    for jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;

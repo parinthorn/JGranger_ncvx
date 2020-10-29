@@ -11,7 +11,7 @@ p = 3;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
-load([inpath,'model_K',int2str(K)]) % struct E
+load([inpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
 GridSize = 30;
 mname = {'1','5'};
@@ -21,6 +21,6 @@ for ii=1:dd
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = formulation_D(y,P,p,GridSize);
-        save([outpath,'result_formulationD_',mname{ii},'percent','_',int2str(jj),'_p',int2str(p)],'M')
+%         save([outpath,'result_formulationD_',mname{ii},'percent','_',int2str(jj),'_p',int2str(p)],'M')
     end
 end
