@@ -14,27 +14,28 @@ n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
-m=20;
+% m=20;
 GridSize = 30;
 mname = {'1','5'};
 
 for ii=1:dd
-    score(ii).total.TPR = 0;
-score(ii).total.FPR = 0;
-score(ii).total.ACC = 0;
-score(ii).total.F1 = 0;
-score(ii).bias = 0;
-
-    score(ii).common.TPR = 0;
-score(ii).common.FPR = 0;
-score(ii).common.ACC = 0;
-score(ii).common.F1 = 0;
-
-    score(ii).differential.TPR = 0;
-score(ii).differential.FPR = 0;
-score(ii).differential.ACC = 0;
-score(ii).differential.F1 = 0;
+%     score(ii).total.TPR = 0;
+% score(ii).total.FPR = 0;
+% score(ii).total.ACC = 0;
+% score(ii).total.F1 = 0;
+% score(ii).bias = 0;
+% 
+%     score(ii).common.TPR = 0;
+% score(ii).common.FPR = 0;
+% score(ii).common.ACC = 0;
+% score(ii).common.F1 = 0;
+% 
+%     score(ii).differential.TPR = 0;
+% score(ii).differential.FPR = 0;
+% score(ii).differential.ACC = 0;
+% score(ii).differential.F1 = 0;
     for jj=1:m
+        fprintf('(%d,%d)\n',ii,jj)
         % performance eval
         model = E{type,cd,ii,jj};
         D = readtable([inpath,'K5_Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
@@ -53,25 +54,28 @@ score(ii).differential.F1 = 0;
         total_confusion = compare_sparsity(model.ind,ind_nz,n,K,'single_differential');
         total_score = performance_score(total_confusion);
         total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
-        score(ii).total.TPR = score(ii).total.TPR+total_score.TPR/m;
-        score(ii).total.FPR = score(ii).total.FPR+total_score.FPR/m;
-        score(ii).total.ACC = score(ii).total.ACC+total_score.ACC/m;
-        score(ii).total.F1 = score(ii).total.F1+total_score.F1/m;
-        score(ii).bias = score(ii).bias+total_score.bias/m;
+        score(ii).total.TPR(jj) = total_score.TPR;
+        score(ii).total.FPR(jj) = total_score.FPR;
+        score(ii).total.ACC(jj) = total_score.ACC;
+        score(ii).total.F1(jj) = total_score.F1;
+        score(ii).total.MCC(jj) = total_score.MCC;
+        score(ii).bias(jj) =total_score.bias;
         
-        score(ii).common.TPR = score(ii).common.TPR+common_score.TPR/m;
-        score(ii).common.FPR = score(ii).common.FPR+common_score.FPR/m;
-        score(ii).common.ACC = score(ii).common.ACC+common_score.ACC/m;
-        score(ii).common.F1 = score(ii).common.F1+common_score.F1/m;
+        score(ii).common.TPR(jj) = common_score.TPR;
+        score(ii).common.FPR(jj) = common_score.FPR;
+        score(ii).common.ACC(jj) = common_score.ACC;
+        score(ii).common.F1(jj) = common_score.F1;
+         score(ii).common.MCC(jj) = common_score.MCC;
         
-        score(ii).differential.TPR = score(ii).differential.TPR+differential_score.TPR/m;
-        score(ii).differential.FPR = score(ii).differential.FPR+differential_score.FPR/m;
-        score(ii).differential.ACC = score(ii).differential.ACC+differential_score.ACC/m;
-        score(ii).differential.F1 = score(ii).differential.F1+differential_score.F1/m;
+        score(ii).differential.TPR(jj) = differential_score.TPR;
+        score(ii).differential.FPR(jj) = differential_score.FPR;
+        score(ii).differential.ACC(jj) = differential_score.ACC;
+        score(ii).differential.F1(jj) = differential_score.F1;
+        score(ii).differential.MCC(jj) = differential_score.MCC;
     end
 end
 
-% save([outpath,'skrip_formulationD_accuracy'],'score')
+save([outpath,'skrip_formulationD_accuracy'],'score')
 
 
 
