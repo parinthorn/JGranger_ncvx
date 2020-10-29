@@ -87,7 +87,8 @@ z2old = z2;
 y1old = y1;
 y2old = y2;
 objx0 = 0.5*norm(G*x-b)^2 + a1*normpq(z1,pp,qq,m1)+a2*normpq(z2,pp,qq,m2);
-L = chol(GtG+rho*(L1tL1pL2tL2),'lower'); 
+L = chol(GtG+rho*(L1tL1pL2tL2),'lower'); % option 1
+% option 2: parallel block diagonal
 L = sparse(L); U = L';
 y1hatk0 = y1hat;
 y2hatk0 = y2hat;
