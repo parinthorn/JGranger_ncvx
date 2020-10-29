@@ -37,6 +37,7 @@ m1 = PARAMETER.dim(4);
 m2 = PARAMETER.dim(5);
 L1 = sparse(PARAMETER.L1);
 L2 = sparse(PARAMETER.L2);
+is_chol = PARAMETER.is_chol;
 
 rho = PARAMETER.rho_init;
 epscor = PARAMETER.epscor;
@@ -87,9 +88,10 @@ z2old = z2;
 y1old = y1;
 y2old = y2;
 objx0 = 0.5*norm(G*x-b)^2 + a1*normpq(z1,pp,qq,m1)+a2*normpq(z2,pp,qq,m2);
-L = chol(GtG+rho*(L1tL1pL2tL2),'lower'); % option 1
-% option 2: parallel block diagonal
+if is_chol
+L = chol(GtG+rho*(L1tL1pL2tL2),'lower'); 
 L = sparse(L); U = L';
+end
 y1hatk0 = y1hat;
 y2hatk0 = y2hat;
 y1k0 = y1;
@@ -103,8 +105,12 @@ for k=1:MAXITERS
     % x1-update
 %     c = Gtb+ P'*(rhotilde*(x2+x3)-(z1+z2));
     c = Gtb+ L1t*(rho*z1+y1) + L2t*(rho*z2+y2); 
-    
+    if is_chol
+
     x = U \ (L \ c);
+    else
+        x = (GtG+rho*(L1tL1pL2tL2))\c;
+    end
     % x2-update
     
     L1x = L1*x;
@@ -143,36 +149,37 @@ for k=1:MAXITERS
         bkcor = delta_G'*delta_y/(norm(delta_G,2)*norm(delta_y,2));
         if (history.r_norm(k-1) < history.eps_pri(k-1))&&(qq==0.5)
             IS_ADAPTIVE = 0;
+            rho_change = 0;
 %             disp('----------------TURN ADAPTIVE OFF----------------')
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1)) && (abs((history.rho(k-1)-history.rho(k0))/history.rho(k0))<1e-3)&&(qq==0.5)
 %             disp('--------------PRIMAL DUAL MAY DIVERGE------------')
             rho = rho*2;
-            L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
-            L = sparse(L); U = L';
+            rho_change = 1;
         elseif (primal_rate<=eps_rate)&&(qq==0.5)
 %             disp('---------------PENALTY NOT ADAPTIVE--------------')
             rho = rho*2;
-            L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
-            L = sparse(L); U = L';
+            rho_change = 1;
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1))
 %             disp('----------------PRIMAL INFEASIBLE----------------')
             rho = rho*2;
-            L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
-            L = sparse(L); U = L';
-
+            rho_change = 1;
         elseif (akcor > epscor) &&  (bkcor>epscor)
             rho = sqrt(ak*bk);
-            L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
-            L = sparse(L); U = L';
+            rho_change = 1;
         elseif (akcor > epscor) &&  (bkcor<=epscor)
             rho = ak;
-            L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
-            L = sparse(L); U = L';
+            rho_change = 1;
         elseif (akcor <= epscor) &&  (bkcor>epscor)
             rho = bk;
+            rho_change = 1;
+
+        end
+        
+        if (rho_change)&&(is_chol)
             L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
             L = sparse(L); U = L';
         end
+        
         y1hatk0 = y1hat;
         y2hatk0 = y2hat;
         xk0 = xold;
@@ -229,7 +236,6 @@ if PRINT_RESULT
 end
 % return sparse result
 % x2((x3==0)) = 0;
-z1(z2==0)=0;
 X = reshape(x,p,K,n^2); % x1 is not sparse
 X2 = reshape(z1,p,K,n^2-n); % x2 is offdiagonal entries only and sparse
 IND_offdiag = setdiff((1:n^2)',(1:n+1:n^2)','rows');
