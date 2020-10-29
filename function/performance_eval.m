@@ -6,6 +6,42 @@ GridSize = M.GridSize;
 % struct variable. e.g. M(1:2,1:2).A. [M.A] will return [M(1,1).A (2,1).A M(1,2).A M(2,2).A]
 % The bracket affect the type of M.A, [M.A] is the same type as A, {M.A}
 % collects all [M.A] in cell.
+if numel((M.model))==GridSize
+    ind_common = reshape([M.model.ind_common],[GridSize 1]);
+    ind_differential = reshape([M.model.ind_differential],[GridSize 1]);
+    ind_total = reshape([M.model.ind],[GridSize 1]);
+    ind_VAR = reshape({M.model.ind_VAR},[GridSize 1]);
+    
+    for ii=1:GridSize
+            
+            
+            [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii},n,K,'single_common');
+            
+            [stat.accuracy.differential.confusion_matrix] = compare_sparsity(GTmodel.ind_differential,ind_differential{ii},n,K,'single_differential');
+            
+            
+            
+            
+            [stat.accuracy.total.confusion_matrix] = compare_sparsity(GTmodel.ind,ind_total{ii},n,K,'single_differential');
+            
+            [stat.accuracy.VAR_coeff.confusion_matrix] = compare_sparsity(GTmodel.ind_VAR,ind_VAR{ii},n,K,'single_differential');
+            
+            
+            model_acc(ii).common = performance_score(squeeze(stat.accuracy.common.confusion_matrix));
+            
+            model_acc(ii).differential = performance_score(squeeze(stat.accuracy.differential.confusion_matrix));
+            
+            model_acc(ii).total = performance_score(squeeze(stat.accuracy.total.confusion_matrix));
+            
+            model_acc(ii).VAR_coeff = performance_score(squeeze(stat.accuracy.VAR_coeff.confusion_matrix));
+            
+            model_acc(ii).bias = sqrt(sum((GTmodel.A-M.model(ii).A).^2,'all')/sum(M.model(ii).A.^2,'all'));
+    end
+    return
+end
+
+
+
 ind_common = reshape([M.model.ind_common],[GridSize GridSize]);
 ind_differential = reshape([M.model.ind_differential],[GridSize GridSize]);
 ind_total = reshape([M.model.ind],[GridSize GridSize]);
