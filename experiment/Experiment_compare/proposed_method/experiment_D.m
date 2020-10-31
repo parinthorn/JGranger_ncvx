@@ -16,7 +16,7 @@ n = 20; % time-series channels
 % load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 load([inpath,'test_model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
-realz = 5;
+realz = 10;
 GridSize = 30;
 mname = {'1','5'};
 for ii=1:dd
@@ -26,5 +26,6 @@ for ii=1:dd
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = formulation_D(y,P,p_est,GridSize);
 %         save([outpath,'result_formulationD_',mname{ii},'percent','_',int2str(jj),'_p',int2str(p)],'M')
+        save([outpath,'result_test_formulationD_',mname{ii},'percent','_',int2str(jj),'_p',int2str(p)],'M')
     end
 end
