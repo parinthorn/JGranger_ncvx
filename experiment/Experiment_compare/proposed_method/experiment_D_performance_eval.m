@@ -28,4 +28,4 @@ for ii=1:length(mname)
         
     end
 end
-save([resultpath,'formulation_D_result_all'],'model_acc')
+save([resultpath,'formulation_D_result_all'],'R')

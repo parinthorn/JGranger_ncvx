@@ -113,7 +113,7 @@ for ii=1:GridSize
     M.model(ii,jj).A = tmp_struct.A(:,:,1:p,:,ii,jj);
     M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
     for kk=1:K
-        M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk,ii,jj));
+        M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk));
     end
     M.model(ii,jj).ind = tmp_struct.ind(ii,jj);
     M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);

@@ -51,7 +51,9 @@ ind_VAR = reshape({M.model.ind_VAR},[GridSize GridSize]);
 
 for ii=1:GridSize
     for jj=1:GridSize
-        
+        if sub2ind([30,30],ii,jj)==M.index.bic
+            disp('stop')
+        end
         
         [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii,jj},n,K,'single_common');
         
