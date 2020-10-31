@@ -50,13 +50,19 @@ T=100;
 GTmodel = E{type,cd,dd,realz};
 y = sim_VAR(GTmodel.A,T,1,GTmodel.seed,0);
 [P,~] = offdiagJSS(n,p,K);
-M_test = formulation_D(y,P,p,30);
-save('./temporal_file/estimated_model_demo','M_test')
+% M_test = formulation_D(y,P,p,30);
+% save('./temporal_file/estimated_model_demo','M_test')
+load('./temporal_file/estimated_model_demo')
 %%
 
 
 bic_index = M_test.index.bic;
-estimated_model = M_test.model(bic_index);
+
+
+for ii=1:30
+    for jj=1:30
+        
+        estimated_model = M_test.model(ii,jj);
 
 GC_estim = estimated_model.GC;
 TP=0;
@@ -84,5 +90,20 @@ score.F1 = 2*TP./(2*TP+FP+FN);
 
 [stat] = compare_sparsity(ind_true,ind,n,K,'single_differential');
 
-performance_score(squeeze(stat))
+result = performance_score(squeeze(stat));
+FPR(ii,jj) = result.FPR;
+TPR(ii,jj) = result.TPR;
+    end
+end
+%%
+figure;
+plot(FPR,TPR)
+hold on
+scatter(FPR(bic_index),TPR(bic_index),'xr')
+hold off
+%%
 
+plot_group_GC(GC_estim)
+sgtitle('estimated GC (bic selected)')
+plot_group_GC(GTmodel.GC)
+sgtitle('ground truth GC')
