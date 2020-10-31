@@ -16,13 +16,16 @@ for ii=1:length(mname)
         GTmodel = E{2,3,ii,jj};
         fname = [resultpath,'result_formulationD_',mname{ii},'percent_lag1_K5_',int2str(jj)];
         load(fname)
-        model_acc = performance_eval(M,GTmodel);
-        R.F1(ii,jj) =model_acc(M.index.bic).total.F1;
-        R.MCC(ii,jj) =model_acc(M.index.bic).total.MCC;
-        R.TPR(ii,jj) =model_acc(M.index.bic).total.TPR;
-        R.FPR(ii,jj) =model_acc(M.index.bic).total.FPR;
-        R.ACC(ii,jj) =model_acc(M.index.bic).total.ACC;
+%         model_acc = performance_eval(M,GTmodel);
+%         R.F1(ii,jj) =model_acc(M.index.bic).total.F1;
+%         R.MCC(ii,jj) =model_acc(M.index.bic).total.MCC;
+%         R.TPR(ii,jj) =model_acc(M.index.bic).total.TPR;
+%         R.FPR(ii,jj) =model_acc(M.index.bic).total.FPR;
+%         R.ACC(ii,jj) =model_acc(M.index.bic).total.ACC;
+        
+         model_acc(ii,jj).result = performance_eval(M,GTmodel);
+         model_acc(ii,jj).M = M;
         
     end
 end
-save([resultpath,'formulation_D_result'],'R')
+save([resultpath,'formulation_D_result_all'],'model_acc')
