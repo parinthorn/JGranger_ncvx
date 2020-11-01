@@ -47,14 +47,14 @@ performance_score(squeeze(stat))
 %%
 clear
 clc
-load('D:\JGranger_ncvx\data_compare\model_K5_p1.mat')
+load('D:\JGranger_ncvx\data_compare\test_model_K5_p2.mat')
 type = 2;
-cd = 3;
+cd = 2;
 dd = 2;
 realz = 1;
 n=20;
 K=5;
-p=1;
+p=2;
 T=100;
 GridSize = 10;
 
@@ -116,7 +116,7 @@ scatter(FPR(bic_index),TPR(bic_index),'xr')
 hold off
 %%
 
-plot_group_GC(M_test.model(1).GC)
+plot_group_GC(M_test.model(bic_index).GC)
 sgtitle('estimated GC (bic selected)')
 plot_group_GC(GTmodel.GC)
 sgtitle('ground truth GC')
