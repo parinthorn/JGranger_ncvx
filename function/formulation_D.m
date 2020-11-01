@@ -72,7 +72,7 @@ for ii=1:GridSize
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM(gc, yc, P,P,a1, Lambda(jj),2,1, cvx_param,xLS);
+          [x0, ~, ~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,1, cvx_param);
         else
           x0 = xLS;
         end
