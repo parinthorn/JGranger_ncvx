@@ -154,17 +154,17 @@ for k=1:MAXITERS
             rho_change = 1;
             rho = rho*multiplier;
             
-            disp('----------------TURN ADAPTIVE OFF----------------')
+%             disp('----------------TURN ADAPTIVE OFF----------------')
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1))&&(qq==0.5)% && (abs((history.rho(k-1)-history.rho(k0-1))/history.rho(k0-1))<1e-3)
-            disp('--------------PRIMAL DUAL MAY DIVERGE------------')
+%             disp('--------------PRIMAL DUAL MAY DIVERGE------------')
             rho = rho*multiplier;
             rho_change = 1;
         elseif (primal_rate<=eps_rate)&&(qq==0.5)
-            disp('---------------PENALTY NOT ADAPTIVE--------------')
+%             disp('---------------PENALTY NOT ADAPTIVE--------------')
             rho = rho*multiplier;
             rho_change = 1;
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1))
-            disp('----------------PRIMAL INFEASIBLE----------------')
+%             disp('----------------PRIMAL INFEASIBLE----------------')
             rho = rho*multiplier;
             rho_change = 1;
         elseif (akcor > epscor) &&  (bkcor>epscor)
