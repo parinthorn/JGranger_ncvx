@@ -116,7 +116,7 @@ scatter(FPR(bic_index),TPR(bic_index),'xr')
 hold off
 %%
 
-plot_group_GC(M_test.model(1).GC)
+plot_group_GC(M_test.model(bic_index).GC)
 sgtitle('estimated GC (bic selected)')
 plot_group_GC(GTmodel.GC)
 sgtitle('ground truth GC')
