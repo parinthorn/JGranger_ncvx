@@ -1,4 +1,5 @@
 function [stat] = compare_sparsity(ind_true,ind,n,K,toggle)
+
 switch toggle
     case 'commonROC'
         GridSize = size(ind,1);
@@ -33,11 +34,11 @@ switch toggle
             end
         end
     case 'single_common'
-
-            TP = length(intersect(ind_true,ind));
-            FN = length(setdiff(ind_true,ind));
-            FP = length(setdiff(ind,ind_true));
-            TN = n^2-n-TP-FN-FP;
+        
+        TP = length(intersect(ind_true,ind));
+        FN = length(setdiff(ind_true,ind));
+        FP = length(setdiff(ind,ind_true));
+        TN = n^2-n-TP-FN-FP;
     case 'single_differential'
         TP = 0;
         FN = 0;

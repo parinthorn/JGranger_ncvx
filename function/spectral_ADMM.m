@@ -38,6 +38,7 @@ m2 = PARAMETER.dim(5);
 L1 = sparse(PARAMETER.L1);
 L2 = sparse(PARAMETER.L2);
 is_chol = PARAMETER.is_chol;
+multiplier = PARAMETER.multiplier;
 
 rho = PARAMETER.rho_init;
 epscor = PARAMETER.epscor;
@@ -100,7 +101,7 @@ z1k0 = z1;
 z2k0 = z2;
 xk0 = x;
 
-k0 = 1;
+k0 = 2;
 for k=1:MAXITERS
     % x1-update
 %     c = Gtb+ P'*(rhotilde*(x2+x3)-(z1+z2));
@@ -119,9 +120,10 @@ for k=1:MAXITERS
     % x3-update
     L2x = L2*x;
     z2 = prox_pq_eff(L2x-y2/rho,a2/rho,[pp,qq,m2]);
+    
     y1 = y1 + rho*(-L1x+z1);
     y2 = y2 + rho*(-L2x+z2);
-    if  (k>2) && (mod(k,Ts)==0)&& IS_ADAPTIVE %&& (history.r_norm(k-1) > history.eps_pri(k-1))
+    if  (k>3) && (mod(k,Ts)==0)&& IS_ADAPTIVE %&& (history.r_norm(k-1) > history.eps_pri(k-1))
         primal_rate = abs((history.r_norm(k-1)-history.r_norm(k0))/history.r_norm(k0));
         dual_rate = abs((history.s_norm(k-1)-history.s_norm(k0))/history.s_norm(k0));
         y1hat =  y1old + rho*(-L1x+z1old);
@@ -149,19 +151,21 @@ for k=1:MAXITERS
         bkcor = delta_G'*delta_y/(norm(delta_G,2)*norm(delta_y,2));
         if (history.r_norm(k-1) < history.eps_pri(k-1))&&(qq==0.5)
             IS_ADAPTIVE = 0;
-            rho_change = 0;
-%             disp('----------------TURN ADAPTIVE OFF----------------')
-        elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1)) && (abs((history.rho(k-1)-history.rho(k0))/history.rho(k0))<1e-3)&&(qq==0.5)
-%             disp('--------------PRIMAL DUAL MAY DIVERGE------------')
-            rho = rho*2;
+            rho_change = 1;
+            rho = rho*multiplier;
+            
+            disp('----------------TURN ADAPTIVE OFF----------------')
+        elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1))&&(qq==0.5)% && (abs((history.rho(k-1)-history.rho(k0-1))/history.rho(k0-1))<1e-3)
+            disp('--------------PRIMAL DUAL MAY DIVERGE------------')
+            rho = rho*multiplier;
             rho_change = 1;
         elseif (primal_rate<=eps_rate)&&(qq==0.5)
-%             disp('---------------PENALTY NOT ADAPTIVE--------------')
-            rho = rho*2;
+            disp('---------------PENALTY NOT ADAPTIVE--------------')
+            rho = rho*multiplier;
             rho_change = 1;
         elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1))
-%             disp('----------------PRIMAL INFEASIBLE----------------')
-            rho = rho*2;
+            disp('----------------PRIMAL INFEASIBLE----------------')
+            rho = rho*multiplier;
             rho_change = 1;
         elseif (akcor > epscor) &&  (bkcor>epscor)
             rho = sqrt(ak*bk);
@@ -172,12 +176,15 @@ for k=1:MAXITERS
         elseif (akcor <= epscor) &&  (bkcor>epscor)
             rho = bk;
             rho_change = 1;
+        else
+            rho_change = 0;
 
         end
         
         if (rho_change)&&(is_chol)
             L = chol(GtG+rho*(L1tL1pL2tL2),'lower');
             L = sparse(L); U = L';
+            
         end
         
         y1hatk0 = y1hat;
@@ -197,6 +204,7 @@ for k=1:MAXITERS
     % stopping criterion
     
     obj = 0.5*norm(G*x-b)^2 + a1*normpq(z1,pp,qq,m1)+a2*normpq(z2,pp,qq,m2);
+    history.nz_count(k) = length(union(find(L1x),find(L2x)));
     history.objval(k) = obj;
     history.r_norm(k) = norm([L1x-z1;L2x-z2]);
     history.s_norm(k)  = norm(rho*At*([z1 - z1old;z2-z2old]));
@@ -235,7 +243,7 @@ if PRINT_RESULT
     history.tpi = t_end/k;
 end
 % return sparse result
-% x2((x3==0)) = 0;
+z1((z2==0)) = 0;
 X = reshape(x,p,K,n^2); % x1 is not sparse
 X2 = reshape(z1,p,K,n^2-n); % x2 is offdiagonal entries only and sparse
 IND_offdiag = setdiff((1:n^2)',(1:n+1:n^2)','rows');
