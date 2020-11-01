@@ -83,8 +83,8 @@ for kk=1:K
   model.ind_common = intersect(model.ind_common,model.ind{kk});
 end
 for kk=1:K
-  tmp = setdiff(model.ind{kk},diag_ind); % remove diagonal parts
-  model.ind_differential{kk} = setdiff(tmp,model.ind_common); % remove common part, so that
+  model.ind{kk} = setdiff(model.ind{kk},diag_ind); % remove diagonal parts
+  model.ind_differential{kk} = setdiff(model.ind{kk},model.ind_common); % remove common part, so that
                                                   % the remaining is differential part
 end
 model = orderfields(model,[1 4 2 3 9 6 11 12 8 10 5 7]);

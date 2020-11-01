@@ -5,10 +5,9 @@ close all
 outpath = './data_compare/';
 
 n = 20;
-Lags = [1,3];
-p = 1;
+p = 2;
 K = 5;
-realization = 100;
+realization = 20;
 common_density = [0.01;0.05;0.1;0.2]; % for p=1
 % common_density = [0.01;0.05]; % for p=3
 differential_density = [0.01;0.05];
@@ -33,4 +32,4 @@ for m=1:length(model)
         end
     end
 end
-save([outpath,['model_K',int2str(K),'_p',int2str(p)]],'E')
+save([outpath,['test_model_K',int2str(K),'_p',int2str(p)]],'E')

@@ -45,22 +45,33 @@ score.F1 = 2*TP./(2*TP+FP+FN);
 
 performance_score(squeeze(stat))
 %%
+clear
+clc
+load('D:\JGranger_ncvx\data_compare\model_K5_p1.mat')
+type = 2;
+cd = 3;
+dd = 2;
+realz = 1;
+n=20;
+K=5;
+p=1;
 T=100;
+GridSize = 10;
 
 GTmodel = E{type,cd,dd,realz};
 y = sim_VAR(GTmodel.A,T,1,GTmodel.seed,0);
 [P,~] = offdiagJSS(n,p,K);
-% M_test = formulation_D(y,P,p,30);
+M_test = formulation_D(y,P,p,GridSize);
 % save('./temporal_file/estimated_model_demo','M_test')
-load('./temporal_file/estimated_model_demo')
+% load('./temporal_file/estimated_model_demo')
 %%
 
 
 bic_index = M_test.index.bic;
 
 
-for ii=1:30
-    for jj=1:30
+for ii=1:GridSize
+    for jj=1:GridSize
         
         estimated_model = M_test.model(ii,jj);
 
@@ -75,10 +86,12 @@ for kk=1:K
     ind{kk} = setdiff(ind{kk},1:n+1:n^2);
     disp(length(setdiff(ind{kk},estimated_model.ind{1}{kk})))
     ind_true{kk} = find(GTmodel.GC(:,:,kk));
+    ind_true{kk} = setdiff(ind_true{kk},1:n+1:n^2);
     TP = TP+ length(intersect(ind{kk},ind_true{kk}));
     FN = FN+ length(setdiff(ind_true{kk},ind{kk}));
     FP = FP+ length(setdiff(ind{kk},ind_true{kk}));
 end
+ind_true = GTmodel.ind;
 TN = (n^2-n)*K-TP-FN-FP;
 
 
@@ -103,7 +116,7 @@ scatter(FPR(bic_index),TPR(bic_index),'xr')
 hold off
 %%
 
-plot_group_GC(GC_estim)
+plot_group_GC(M_test.model(1).GC)
 sgtitle('estimated GC (bic selected)')
 plot_group_GC(GTmodel.GC)
 sgtitle('ground truth GC')
