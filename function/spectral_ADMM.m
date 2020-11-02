@@ -204,7 +204,7 @@ for k=1:MAXITERS
     % stopping criterion
     
     obj = 0.5*norm(G*x-b)^2 + a1*normpq(z1,pp,qq,m1)+a2*normpq(z2,pp,qq,m2);
-    history.nz_count(k) = (length(union(find(z1),find(z2))));
+    history.nz_count(k) = length(find(z1))+length(find(z2));
     history.objval(k) = obj;
     history.r_norm(k) = norm([L1x-z1;L2x-z2]);
     history.s_norm(k)  = norm(rho*At*([z1 - z1old;z2-z2old]));

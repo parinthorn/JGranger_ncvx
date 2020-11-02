@@ -87,7 +87,6 @@ for ii=1:GridSize
         diag_ind=1:n+1:n^2;
         for kk=1:K
           tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
-%           ind_VAR{kk} = find(A);
         end
         ind(1,jj) = {tmp_ind};
         [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
