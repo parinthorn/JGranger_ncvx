@@ -54,7 +54,7 @@ dd = 2;
 realz = 1;
 n=20;
 K=5;
-p=2;
+p=1;
 T=100;
 GridSize = 10;
 
@@ -82,11 +82,10 @@ FP=0;
 FN=0;
 
 for kk=1:K
-    ind{kk} = find(GC_estim(:,:,kk));
-    ind{kk} = setdiff(ind{kk},1:n+1:n^2);
-    disp(length(setdiff(ind{kk},estimated_model.ind{1}{kk})))
-    ind_true{kk} = find(GTmodel.GC(:,:,kk));
-    ind_true{kk} = setdiff(ind_true{kk},1:n+1:n^2);
+%     ind{kk} = find(GC_estim(:,:,kk));
+%     ind{kk} = setdiff(ind{kk},1:n+1:n^2);
+    ind{kk} = estimated_model.ind{1}{kk};
+    ind_true{kk} =GTmodel.ind{kk};
     TP = TP+ length(intersect(ind{kk},ind_true{kk}));
     FN = FN+ length(setdiff(ind_true{kk},ind{kk}));
     FP = FP+ length(setdiff(ind{kk},ind_true{kk}));
