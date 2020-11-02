@@ -5,9 +5,9 @@ close all
 outpath = './data_compare/';
 
 n = 20;
-p = 2;
-K = 5;
-realization = 20;
+p = 1;
+K = 15;
+realization = 5;
 common_density = [0.01;0.05;0.1;0.2]; % for p=1
 % common_density = [0.01;0.05]; % for p=3
 differential_density = [0.01;0.05];

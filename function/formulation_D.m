@@ -47,7 +47,7 @@ M.lambda_crit = Lmax;
 M.lambda_range = [Lambda(1) Lambda(end)];
 M.GridSize = GridSize;
 M.flag = zeros(GridSize);
-ALG_PARAMETER.PRINT_RESULT=0;
+ALG_PARAMETER.PRINT_RESULT=1;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.L1 = P;
 ALG_PARAMETER.L2 = P;
@@ -67,7 +67,7 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor jj=1:GridSize
+    for jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;

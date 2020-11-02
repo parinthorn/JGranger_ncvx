@@ -28,4 +28,4 @@ for ii=1:length(mname)
         
     end
 end
-save([resultpath,'formulation_D_result_all'],'R')
+save([resultpath,'formulation_D_result_total'],'R')
