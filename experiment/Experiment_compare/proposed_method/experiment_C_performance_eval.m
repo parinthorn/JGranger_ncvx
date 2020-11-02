@@ -17,11 +17,11 @@ for ii=1:length(mname)
         fname = [resultpath,'formulationC_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
-        R.F1(ii,jj) =model_acc(M.index.bic).total.F1;
-        R.MCC(ii,jj) =model_acc(M.index.bic).total.MCC;
-        R.TPR(ii,jj) =model_acc(M.index.bic).total.TPR;
-        R.FPR(ii,jj) =model_acc(M.index.bic).total.FPR;
-        R.ACC(ii,jj) =model_acc(M.index.bic).total.ACC;
+        R.F1(ii,jj) =model_acc(M.index.bic).common.F1;
+        R.MCC(ii,jj) =model_acc(M.index.bic).common.MCC;
+        R.TPR(ii,jj) =model_acc(M.index.bic).common.TPR;
+        R.FPR(ii,jj) =model_acc(M.index.bic).common.FPR;
+        R.ACC(ii,jj) =model_acc(M.index.bic).common.ACC;
         
     end
 end
