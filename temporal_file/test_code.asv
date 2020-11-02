@@ -47,17 +47,17 @@
 %% estimate new result
 clear
 clc
-load('./data_compare/test_model_K15_p1.mat')
+load('./data_compare/model_K5_p3.mat')
 type = 2;
-cd = 3;
+cd = 2;
 dd = 2;
 realz = 1;
 
 
-T=70;
+T=100;
 GTmodel = E{type,cd,dd,realz};
 n = GTmodel.dim(1);
-p=2;
+p=3;
 K = GTmodel.dim(3);
 y = sim_VAR(GTmodel.A,T,1,GTmodel.seed,1);
 [P,~] = offdiagJSS(n,p,K);
