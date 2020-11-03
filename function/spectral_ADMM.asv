@@ -39,7 +39,6 @@ L1 = sparse(PARAMETER.L1);
 L2 = sparse(PARAMETER.L2);
 is_chol = PARAMETER.is_chol;
 multiplier = PARAMETER.multiplier;
-toggle = PARAMETER.toggle;
 
 rho = PARAMETER.rho_init;
 epscor = PARAMETER.epscor;
@@ -258,17 +257,9 @@ switch toggle
         Dplus(D==-1) = 0;
         Dminus(D==1) = 0;
         Indplus = Dplus*Ind;
-        Indminus = abs(Dminus*Ind);
-        change = 1;
-        count_change = 0;
-        while change
-            count_change = count_change+1;
-            tmp = x(Indminus(z2==0));
-            x(Indminus(z2==0))=x(Indplus(z2==0));
-            if all(tmp==x(Indminus(z2==0)),'all')
-                change = 0;
-            end
-        end
+        Indminus = Dminus*Ind;
+        x(Indminus(Dx==0))=x()
+
 end
 
 if all(z1==0,'all')
