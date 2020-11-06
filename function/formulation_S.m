@@ -25,7 +25,7 @@ elseif len_varargin ==2
 else
   error('must be atmost 5 input')
 end
-Lambda = logspace(-3,0,GridSize);
+Lambda = logspace(-6,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
@@ -54,53 +54,76 @@ ALG_PARAMETER.L2 = D;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
-ALG_PARAMETER.Ts = 200;
+ALG_PARAMETER.Ts = 100;
+ALG_PARAMETER.is_chol = 1;
+ALG_PARAMETER.multiplier = 2;
+ALG_PARAMETER.toggle = 'formulationS';
 t1 = tic;
 for ii=1:GridSize
     a1 = Lambda(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
+    ls_flag = zeros(1,GridSize);
     ind_common = cell(1,GridSize);
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
-    ind_nz = cell(1,GridSize);
+    ind = cell(1,GridSize);
     for jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM(gc, yc, P,P,a1, Lambda(jj),2,1, cvx_param,xLS);
+          [x0, ~, ~,~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,1, cvx_param);
         else
           x0 = xLS;
         end
-        [x_reg, Px,Dx, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
+        [x_reg, Px,Dx, ~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
+        
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off');
         A_cls =devect(full(x_cls),n,p,K);
         A(:,:,:,:,1,jj) = A_cls;
+        error('please insert model_selection for formulationS')
         score(1,jj) = model_selection(Y,A_cls);
-        tmp_nz_ind = cell(1,K);
+        tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K
-          tmp_nz_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
+          tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
         end
-        ind_nz(1,jj) = {tmp_nz_ind};
-        [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_nz_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
+        ind(1,jj) = {tmp_ind};
+        [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
         flag(1,jj) = history.flag;
         if flag(1,jj) ==-1
             fprintf('max iteration exceed at grid (%d,%d)\n',ii,jj)
         end
     end
-    M.stat.model_selection_score(ii,:) = score;
-    M.A_reg(:,:,1:p,:,ii,:) = A_reg;
-    M.A(:,:,1:p,:,ii,:) = A;
-    M.ind_nz(ii,:) = ind_nz;
-    M.ind_common(ii,:) = ind_common;
-    M.ind_differential(ii,:) = ind_differential;
-    M.flag(ii,:) = flag;
+    tmp_struct.stat.model_selection_score(ii,:) = score;
+    tmp_struct.A_reg(:,:,1:p,:,ii,:) = A_reg;
+    tmp_struct.A(:,:,1:p,:,ii,:) = A;
+    tmp_struct.ind(ii,:) = ind;
+    tmp_struct.ind_common(ii,:) = ind_common;
+    tmp_struct.ind_differential(ii,:) = ind_differential;
+    tmp_struct.flag(ii,:) = flag;
+    tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-[~,M.index.bic] = min([M.stat.model_selection_score.bic]);
-[~,M.index.aicc] = min([M.stat.model_selection_score.aicc]);
+[~,M.index.bic] = min([tmp_struct.stat.model_selection_score.bic]);
+[~,M.index.aicc] = min([tmp_struct.stat.model_selection_score.aicc]);
+for ii=1:GridSize
+  for jj=1:GridSize
+    M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
+    M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,:,ii,jj);
+    M.model(ii,jj).A = tmp_struct.A(:,:,1:p,:,ii,jj);
+    M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
+    for kk=1:K
+        M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk));
+    end
+    M.model(ii,jj).ind = tmp_struct.ind(ii,jj);
+    M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
+    M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
+    M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
+  end
+end
+
 M.time = toc(t1);
 end
