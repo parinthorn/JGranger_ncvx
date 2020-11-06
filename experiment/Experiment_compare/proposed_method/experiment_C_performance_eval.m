@@ -17,12 +17,13 @@ for ii=1:length(mname)
         fname = [resultpath,'formulationC_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
-        R.F1(ii,jj) =model_acc(M.index.bic).common.F1;
-        R.MCC(ii,jj) =model_acc(M.index.bic).common.MCC;
-        R.TPR(ii,jj) =model_acc(M.index.bic).common.TPR;
-        R.FPR(ii,jj) =model_acc(M.index.bic).common.FPR;
-        R.ACC(ii,jj) =model_acc(M.index.bic).common.ACC;
+        toggle = 'common';
+        R.F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
+        R.MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
+        R.TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
+        R.FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
+        R.ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
         
     end
 end
-save([resultpath,'formulation_C_result'],'R')
+% save([resultpath,'formulation_C_result'],'R')
