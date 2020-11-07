@@ -59,7 +59,7 @@ ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
 t1 = tic;
-for ii=1:GridSize
+for ii=12:GridSize
     a1 = Lambda(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
@@ -68,7 +68,7 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    for jj=1:GridSize
+    for jj=18:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;

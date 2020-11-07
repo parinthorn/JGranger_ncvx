@@ -73,14 +73,15 @@ load('./data_compare/model_K5_p1.mat')
 GridSize = 30;
 type = 2;
 cd = 3;
-dd = 2;
+dd = 1;
 mname = {'1','5'};
 p_est = 1;
 realz = 2;
 GTmodel = E{type,cd,dd,realz};
 n = GTmodel.dim(1);
 K = GTmodel.dim(3);
-load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\result_formulationD_',mname{dd},'percent_lag',int2str(p_est),'_K5_',int2str(realz),'.mat']); 
+% load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\result_formulationD_',mname{dd},'percent_lag',int2str(p_est),'_K5_',int2str(realz),'.mat']); 
+load(['D:\parinthorn_thesis\formulation_D_result\result_formulationD_',mname{dd},'percent_lag',int2str(p_est),'_K5_',int2str(realz),'.mat']);
 M_test = M;
 %%
 bic_index = M_test.index.bic;
