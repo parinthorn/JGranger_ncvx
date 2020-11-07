@@ -224,11 +224,11 @@ for k=1:MAXITERS
         history.fit = 0.5*norm(G*x-b)^2;
         break;
     end
-%     counting_nz_index = k:-1:max([k-5*Ts,1]);
-%     if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
-%         history.fit = 0.5*norm(G*x-b)^2;
-%         break
-%     end
+    counting_nz_index = k:-1:max([k-10*Ts,1]);
+    if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
+        history.fit = 0.5*norm(G*x-b)^2;
+        break
+    end
     xold = x;
     z1old = z1;
     z2old = z2;
@@ -257,8 +257,10 @@ switch toggle
         Dplus=D;Dminus=D;
         Dplus(D==-1) = 0;
         Dminus(D==1) = 0;
+        Dminus = abs(Dminus);
         Indplus = Dplus*Ind;
         Indminus = abs(Dminus*Ind);
+        
         change = 1;
         count_change = 0;
         while change
@@ -269,6 +271,8 @@ switch toggle
                 change = 0;
             end
         end
+        fused_index=intersect(union(unique(Indplus(Dplus*x~=0)),unique(Indminus(Dminus*x~=0))),union(Indplus(D*x==0),Indminus(D*x==0)));
+        df_fused = length(fused_index)/p;
 end
 
 if all(z1==0,'all')
