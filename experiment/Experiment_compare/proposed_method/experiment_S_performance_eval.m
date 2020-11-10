@@ -17,28 +17,15 @@ for ii=1:length(mname)
         fname = [resultpath,'result_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
-        toggle = 'total';
+        toggle_list = {'total','common','differential'};
+        for tt = 1:length(toggle_list)
+            toggle = toggle_list{tt};
         R.(toggle).F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
         R.(toggle).MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
         R.(toggle).TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
         R.(toggle).FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
         R.(toggle).ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
- 
-        toggle = 'common';
-        R.(toggle).F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
-        R.(toggle).MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
-        R.(toggle).TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
-        R.(toggle).FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
-        R.(toggle).ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;      
-
-        toggle = 'differential';
-        R.(toggle).F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
-        R.(toggle).MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
-        R.(toggle).TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
-        R.(toggle).FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
-        R.(toggle).ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
-%          model_acc(ii,jj).result = performance_eval(M,GTmodel);
-%          model_acc(ii,jj).M = M;
+        end
         
     end
 end
