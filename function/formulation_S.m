@@ -58,8 +58,17 @@ ALG_PARAMETER.Ts = 100;
 ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
+
+Ind = (1:1:(size(D,2)))';
+Dplus=D;Dminus=D;
+Dplus(D==-1) = 0;
+Dminus(D==1) = 0;
+Dminus = abs(Dminus);
+Indplus_in = Dplus*Ind;
+Indminus_in = abs(Dminus*Ind);
+
 t1 = tic;
-for ii=12:GridSize
+for ii=1:GridSize % test 12
     a1 = Lambda(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
@@ -68,7 +77,9 @@ for ii=12:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    for jj=18:GridSize
+    parfor jj=1:GridSize %test 18
+        Indplus = Indplus_in;
+        Indminus = Indminus_in;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
@@ -77,15 +88,21 @@ for ii=12:GridSize
         else
           x0 = xLS;
         end
-        [x_reg, Px,Dx, ~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
-        
+        [x_reg, Px,Dx, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off');
         A_cls =devect(full(x_cls),n,p,K);
+        fused_index=intersect( ...
+            union(unique(Indplus(Dplus*x_cls~=0)), ...
+                  unique(Indminus(Dminus*x_cls~=0))), ...
+            union(Indplus(D*x_cls==0), ...
+                  Indminus(D*x_cls==0)));
+        tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
+        df = length(find(x_cls))-length(unique(tmp(1,:)));
         A(:,:,:,:,1,jj) = A_cls;
-        error('please insert model_selection for formulationS')
-        score(1,jj) = model_selection(Y,A_cls);
+%         error('please insert model_selection for formulationS')
+        score(1,jj) = model_selection_S(Y,A_cls,df);
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K

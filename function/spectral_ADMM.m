@@ -252,27 +252,33 @@ switch toggle
     case 'formulationD'
         z1((z2==0)) = 0;
     case 'formulationS'
-        D = L2;
-        Ind = (1:1:(size(D,2)))';
-        Dplus=D;Dminus=D;
-        Dplus(D==-1) = 0;
-        Dminus(D==1) = 0;
-        Dminus = abs(Dminus);
-        Indplus = Dplus*Ind;
-        Indminus = abs(Dminus*Ind);
-        
-        change = 1;
-        count_change = 0;
-        while change
-            count_change = count_change+1;
-            tmp = x(Indminus(z2==0));
-            x(Indminus(z2==0))=x(Indplus(z2==0));
-            if all(tmp==x(Indminus(z2==0)),'all')
-                change = 0;
-            end
-        end
-        fused_index=intersect(union(unique(Indplus(Dplus*x~=0)),unique(Indminus(Dminus*x~=0))),union(Indplus(D*x==0),Indminus(D*x==0)));
-        df_fused = length(fused_index)/p;
+        % Do nothing because the similarity will eventually shown by
+        % constraint LS solver.
+%         D = L2;
+%         Ind = (1:1:(size(D,2)))';
+%         Dplus=D;Dminus=D;
+%         Dplus(D==-1) = 0;
+%         Dminus(D==1) = 0;
+%         Dminus = abs(Dminus);
+%         Indplus = Dplus*Ind;
+%         Indminus = abs(Dminus*Ind);
+%         
+%         change = 1;
+%         count_change = 0;
+%         while change
+%             count_change = count_change+1;
+%             tmp = x(Indminus(z2==0));
+%             x(Indminus(z2==0))=x(Indplus(z2==0));
+%             if all(tmp==x(Indminus(z2==0)),'all')
+%                 change = 0;
+%             end
+%         end
+%         for fused_index=(z2==0)
+%             x(Indminus(fused_index))=x(Indplus(fused_index));
+%         end
+            
+        % the script below extract the fused index out of the vector x
+
 end
 
 if all(z1==0,'all')
