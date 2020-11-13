@@ -1,20 +1,20 @@
 # Copyright 2017, Andrey Skripnikov, All rights reserved.
 
-setwd("/home/usdandres/Downloads/Revision/")
-source("Paper.functions.R")
+#setwd("/home/usdandres/Downloads/Revision/")
+source("./function.R")
 
 
 set.seed(2)
 
 ###########
-## Code for simulated experiment: 
+## Code for simulated experiment:
 ## comparing joint and separate approaches for estimating TWO simulated Granger networks.
 ## (code needs some adjustments for higher number K of networks)
 ##
 ## Here is the layout of the code:
 ##   1. User-defined parameters(all variable descriptions are given next to parameters)
-##   2. Data generation(both stationary transition matrices, 
-##                      both error covariance matrices that follow K-factor model, 
+##   2. Data generation(both stationary transition matrices,
+##                      both error covariance matrices that follow K-factor model,
 ##                      both simulated time series following the VAR model)
 ##   3. Separate estimation.
 ##   4. Joint estimation.
@@ -23,12 +23,12 @@ set.seed(2)
 ##
 ## Separate estimation is done in Simul.Data.Separate.Main() function
 ## that takes no arguments but uses global variables.
-## Summary of what it does: 
+## Summary of what it does:
 ##     - initializes both error covariance matrices with identities,
-##     - estimates transition matrix for each entity separately via l1-estimation 
+##     - estimates transition matrix for each entity separately via l1-estimation
 ##   and AIC criterion for tuning parameter selection,
 ##     - uses the transition matrix estimates to get residuals,
-##     - use residuals as data to estimate error inverse covariance matrices 
+##     - use residuals as data to estimate error inverse covariance matrices
 ##   with help of L-factor model and graphical lasso separately,
 ##     - plug-in the resulting inverse error covariance estimates and re-estimate
 ##   transition matrices separately for each entity via l1-estimation and AIC
@@ -37,8 +37,8 @@ set.seed(2)
 ##
 ## Joint estimation is done in Simul.Data.Joint.Main() function
 ## that takes no arguments but uses global variables.
-## 
-## Summary of what it does: 
+##
+## Summary of what it does:
 ##     - uses the estimates of inverse error covariances from the separate estimation process
 ##       (just plugs them in)
 ##     - combines both entites into one standardized dataset, sets up the generalized
@@ -49,7 +49,7 @@ set.seed(2)
 ##     - the fusion of parameters is done with help of ADMM algorithm, described
 ##       in detail in the paper and in Paper.functions.R,
 ##     - refitting the estimate using the structure(skeleton) of the original
-##     estimate: get rid of columns of data matrix(that COMBINES entities) 
+##     estimate: get rid of columns of data matrix(that COMBINES entities)
 ##     that correspond to zero elements in the original estimate,
 ##     fit a regression with a tiny sparsity penalty
 ##     (to shrink elements a little bit, but so that none of them are 0)
@@ -69,7 +69,7 @@ K <- 2                     # number of entities
 p <- 10                     # number of variables per entity
 train <- 30                  # number of training points per entity
 
-rep <- 50                       # Number of replicates
+rep <- 1                       # Number of replicates
 skip <- 0                       # For code reproducibility: in case I'd like to rerun 50 replicates for the same seed,
 # but running them in a single program would take too long, and I have to break it into chunks of 5-10 replicates.
 
@@ -85,7 +85,7 @@ ed <- 0.04               # off-diagonal edge density shared for both entities
 comm <- 0.02               # off-diagonal edge density specific for each entity
 Results <- matrix(0,rep,10) # performance measures put into one vector:
 # Pred.Err.Joint, FP.Joint, FN.Joint, Matt.Coef.Joint,
-# Frob.Joint, Pred.Err.Sep, FP.Sep, FN.Sep, 
+# Frob.Joint, Pred.Err.Sep, FP.Sep, FN.Sep,
 # Matt.Coef.Sep, Frob.Sep
 
 Results.General <- matrix(0,rep,6) # performance measures put into one vector:
@@ -117,7 +117,7 @@ fused.thresh <- 0.01  # threshold for differences between elements
 n.iter <- 1            # number of sequential iterations
 
 
-### lambda grid parameters  
+### lambda grid parameters
 knots1 <- 15                                           # controls lower bound of lambda1 path
 knots2 <- 20                                           # controls lower bound of lambda2 path
 L1 <- NULL                                              # length of lambda1 grid(NULL means we calculate lambda1 path automatically)
@@ -133,7 +133,7 @@ L2 <- length(lambda2.path)
 ConstThresh <- TRUE         # whether to use the hard threshold for final estimates
 Thresh <- 0.1               # the value of hard threshold for the final estimate
 #criter.sep <- "AIC"        # the criterion to use for tuning parameter selection
-df <- 2                     # for AIC.dist 
+df <- 2                     # for AIC.dist
 
 
 ################################################
@@ -245,7 +245,7 @@ connList <- connListCalc(p) #the list of correspondence for joint estimation
 
 Pred.Err.Sep.True <- numeric(rep)
 
-## We simply generate 'skip' simulations, and discard them, 
+## We simply generate 'skip' simulations, and discard them,
 ## to get to the 'skip+1'st one, while retaining the seeded order.
 
 if (skip != 0){
@@ -262,42 +262,42 @@ if (skip != 0){
 
 for(run in 1:rep){
   print(c("run",run))
-  
+
   ##########################################
   #### GENERATING SIMULATED DATA    ########
   ##########################################
   repeat{
     fail <- 0
     Simul.Obj <- Gener.Simul.Data()
-    
+
     A11.true <- Simul.Obj$A.true[[1]]
     A22.true <- Simul.Obj$A.true[[2]]
     A.true[[run]] <- list(A11.true,A22.true)
-    
+
     ## vectorized versions of matrices, by row
     A11.true.vec <- matrix(t(A11.true),1,p^2)
     A22.true.vec <- matrix(t(A22.true),1,p^2)
     A.true.vec <- cbind(A11.true.vec,A22.true.vec)
-    
+
     Sigma.true <- Simul.Obj$Sigma.true
     Sigma.Inv.true <- Simul.Obj$Sigma.Inv.true
-    
+
     GenData.train <- Simul.Obj$GenData.train
     GenData.test <- Simul.Obj$GenData.test
-    
+
     GenData.train[,train]
     GenData.test
     #mean((block.diag(A.true) %*% GenData.train[,train] - GenData.test)^2)
-    
+
     ##########################################
     ##### SEPARATE ESTIMATION  ###############
     ##########################################
-    
+
     Separate.Est.Obj <- Simul.Data.Separate.Main()
     if (fail == 0) break;
   }
-  
-  
+
+
   lambda1.picked.A11[run] <- Separate.Est.Obj$lambda1.picked[1]
   ind1.picked.A11[run] <- Separate.Est.Obj$ind1.picked[1]
   lambda1.picked.A22[run] <- Separate.Est.Obj$lambda1.picked[2]
@@ -318,34 +318,34 @@ for(run in 1:rep){
   Matt.Coef.Sep[run] <- Separate.Est.Obj$Matt.Coef.Sep
   Frob.Sep[run] <- Separate.Est.Obj$Frob.Sep
   Sigma.Inv.est <- Separate.Est.Obj$Sigma.Inv.est
-  
+
   AUROC.Sep.Mean[run] <- Separate.Est.Obj$AUROC.Sep.Mean
   Pred.Err.Sep.Mean[run] <- Separate.Est.Obj$Pred.Err.Sep.Mean
   Frob.Sep.Mean[run] <- Separate.Est.Obj$Frob.Sep.Mean
-  
+
   Results[run,6:10] <-   c(Pred.Err.Sep[run],
                            FP.Sep[run],
                            FN.Sep[run],
                            Matt.Coef.Sep[run],
                            Frob.Sep[run])
-  
+
   Results.General[run,4:6] <-   c(Pred.Err.Sep.Mean[run],
                                   AUROC.Sep.Mean[run],
                                   Frob.Sep.Mean[run])
-  
+
   Sep.Est[[run]] <- Separate.Est.Obj$Sep.Est
-  
+
   #############################################
   ######   JOINT ESTIMATION  ##################
   #############################################
-  
+
   if (init == "sep") A.init <- c(matrix(Sep.Est[[run]][[1]],byrow=TRUE),matrix(Sep.Est[[run]][[2]],byrow=TRUE))
   if (init == "0") A.init <- rep(0,2*(p^2))
   if (init == "1") A.init <- c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE))
-  
+
   Joint.Est.Obj <- Simul.Data.Joint.Main()
-  
-  
+
+
   Pred.Err.Joint[run] <- Joint.Est.Obj$Pred.Err.Joint
   FP.Joint[run] <- Joint.Est.Obj$FP.Joint
   FN.Joint[run] <- Joint.Est.Obj$FN.Joint
@@ -357,25 +357,25 @@ for(run in 1:rep){
   Joint.lambda2.picked[run] <- Joint.Est.Obj$Joint.lambda2.picked
   Joint.ind1.picked[run] <- Joint.Est.Obj$Joint.ind1.picked
   Joint.ind2.picked[run] <- Joint.Est.Obj$Joint.ind2.picked
-  
+
   AUROC.Joint.Mean[run] <- Joint.Est.Obj$AUROC.Joint.Mean
   Pred.Err.Joint.Mean[run] <- Joint.Est.Obj$Pred.Err.Joint.Mean
   Frob.Joint.Mean[run] <- Joint.Est.Obj$Frob.Joint.Mean
-  
+
   Results[run,1:5] <- Joint.Est.Obj$Results
-  
+
   Results.General[run,1:3] <-   c(Pred.Err.Joint.Mean[run],
                                   AUROC.Joint.Mean[run],
                                   Frob.Joint.Mean[run])
-  
+
   lambda1.path[[run]] <- Joint.Est.Obj$lambda.path
-  
-  
+
+
   Joint.Est[[run]] <- Joint.Est.Obj$Joint.Est
-  
+
   A11.true <- Simul.Obj$A.true[[1]]
   A22.true <- Simul.Obj$A.true[[2]]
-  
+
 }
 
 #### How long it took for code to run
@@ -453,11 +453,3 @@ print(sd((Frob.11+Frob.22)/2))
 print("Frobenius norm difference for Inverse Sigma estimates:")
 print(mean(Frob.11.Inv + Frob.22.Inv)/2)
 print(sd((Frob.11.Inv+Frob.22.Inv)/2))
-
-
-
-
-
-
-
-
