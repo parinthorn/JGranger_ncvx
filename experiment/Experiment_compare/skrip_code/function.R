@@ -17,17 +17,17 @@ block.diag <- function(A.list){
   p <- nrow(A.list[[1]])
   m <- ncol(A.list[[1]])
   K <- length(A.list)
-  
+
   block_matrix <- matrix(0,K*p,K*m)
   for (i in 1:K){
     block_matrix[1:p + (i-1)*p,1:m + (i-1)*m] <- A.list[[i]]
-  }  
+  }
   return(block_matrix)
 }
 
 
 ### CALCULATING AREA UNDER THE CURVE
-### FOR SUPPLIED SEQUENCE OF (FP,FN) pairs 
+### FOR SUPPLIED SEQUENCE OF (FP,FN) pairs
 ### THAT CORRESPOND TO TUNING PARAMETER VALUES
 Calc.AUC.from.FP.FN <- function(FP,FN,lambda.path,plot=F,title=NULL){
   FP.adj <- c(0,FP,1)
@@ -58,7 +58,7 @@ gen_A = function(  # returns a list of d matrices A_1, ..., A_d
   network.family = "random",  # A matrix filled randomly or with specific structure
   structure = NULL  # a pre-determined pattern of non-zero elements in generated matrix
 ){
-  
+
   A = list()
   if (is.null(structure)){
     for (lag in 1:d){
@@ -75,16 +75,16 @@ gen_A = function(  # returns a list of d matrices A_1, ..., A_d
       A[[lag]]=structure
     }
   }
-  
+
   if (stationary){
     A.big = array(0, c(p*d, p*d))
-    
+
     for (i in 1:d)
       A.big[1:p, ((i-1)*p+1):(i*p)] = max_eig*A[[i]]
-    
+
     if (d > 1)
       diag(A.big[(p+1):(p*d), 1:((d-1)*p)]) = 1
-    
+
     temp = max(abs(eigen(A.big)$values))
     count = 0
     while (temp > max_eig){
@@ -93,11 +93,11 @@ gen_A = function(  # returns a list of d matrices A_1, ..., A_d
       A.big[1:p,] = A.big[1:p,]*0.95
       temp = max(abs(eigen(A.big)$values))
     }
-    
+
     for (i in 1:d)
       A[[i]] = A.big[1:p, ((i-1)*p+1):(i*p)]
     #  print(paste("signal reduced to", round(max(abs(A.big[1:p,])), 2)))
-    
+
   }
   return(list(A=A,
               Signal=round(max(abs(A.big[1:p,])), 2))
@@ -118,25 +118,25 @@ make.stationary <- function(#returns the stationary matrix
   max_eig,   #max matrix eigenvalue allowed
   d=1            #number of matrices in the list(VAR(d))
 ){
-  
+
   A.big = array(0, c(p*d, p*d))
-  
+
   for (i in 1:d)
     A.big[1:p, ((i-1)*p+1):(i*p)] = A
-  
+
   temp = max(abs(eigen(A.big)$values))
   count = 0
-  
+
   while (temp > max_eig){
     count = count+1
     # print(paste("count:", count, "max_eigen_value:", round(temp, 2), "signal:", round(max(abs(A.big[1:p,])), 2)))
     A.big[1:p,] = A.big[1:p,]*0.95
     temp = max(abs(eigen(A.big)$values))
   }
-  
+
   for (i in 1:d)
-    A = A.big[1:p, ((i-1)*p+1):(i*p)] 
-  
+    A = A.big[1:p, ((i-1)*p+1):(i*p)]
+
   return(list(A=A,
               Signal=round(max(abs(A.big[1:p,])), 2)))
 }
@@ -155,14 +155,14 @@ A.setup <- function( # returns two transition matrices,
   comm=0.01,  #  for the case of different matrices - proportion of off-diagonal elements that don't share same position in two matrices
   max_eig #  maximum eigenvalue of transition matrices
 ){
-  
+
   ### For the case of two different transition matrices:
   ###    - if comm=0: we generate them separately;
   ###    - if comm>0: we generate a common matrix and then randomly add
   ###                 non-zero elements randomly to both transition matrices
   ###                 (that way there will be some common off-diagonal zeros as well)
-  
-  if (diff==TRUE){  
+
+  if (diff==TRUE){
     if (comm == 0){
       A.true <- list()
       for (i in 1:K){
@@ -171,20 +171,20 @@ A.setup <- function( # returns two transition matrices,
           n.iter <- n.iter + 1
           A.obj <- gen_A(p,ed=ed,max_eig=max_eig)
           Signal <- A.obj$Signal
-          if (Signal > thresh) break; 
+          if (Signal > thresh) break;
         }
         A.true[[i]] <- A.obj$A[[1]];
       }
     }
-    
-    if (comm != 0){   
+
+    if (comm != 0){
       repeat{
         A.Gen <- gen_A(p,edge_density=ed,max_eig=max_eig)
         if (A.Gen$Signal > thresh) break;
       }
-      
+
       A.true <- list()
-      
+
       for(i in 1:K){
         repeat{
           Ahet.Gen <- gen_A(p,edge_density=comm,max_eig=max_eig)
@@ -196,16 +196,16 @@ A.setup <- function( # returns two transition matrices,
     }
     return(A.true=A.true)
   }
-  
+
   ### If we want identical matrices: just generate a matrix once
   ### and copy it for the second entity.
-  
-  if (diff == FALSE){ 
+
+  if (diff == FALSE){
     A.true <- list()
     repeat{
       A.Gen <- gen_A(p,edge_density=ed,max_eig=max_eig)
       if (A.Gen$Signal > thresh) break;
-    }  
+    }
     A.true[[1]] <- A.Gen$A[[1]]
     for (i in 2:K){
       A.true[[i]] <- A.true[[1]]
@@ -229,7 +229,7 @@ gen_dat = function(  	# returns a p x T matrix of observations {X^1, ..., X^T}
   Sigma_error = NULL, # input a p x p correlation matrix; otherwise it is set to diag(error_sd) * identity
   SNR = 2,	# signal-to-noise ratio, used to determine error_sd (= abs(A[i,j])/SNR)
   A = NULL,	# a list of d adjacency matrices, as returned by gen_A
-  cut_T = 500*length(A) # time to wait before process reaches stability 
+  cut_T = 500*length(A) # time to wait before process reaches stability
 ){
   d = length(A)
   p = dim(A[[1]])[1]
@@ -238,16 +238,16 @@ gen_dat = function(  	# returns a p x T matrix of observations {X^1, ..., X^T}
     error_sd = rep(max(abs(A[[1]]))/SNR, p)
   else if (length(error_sd) == 1)
     error_sd = rep(error_sd, p)
-  
+
   if (is.null(Sigma_error))
     Sigma_error = diag(p)
   Sigma_error = diag(error_sd) %*% Sigma_error %*% diag(error_sd); #print(round(Sigma_error, 4))
-  
+
   X = t(mvrnorm(n = T+cut_T, mu = rep(0, p), Sigma = Sigma_error))
   for (tt in (d+1):(T+cut_T))
     for (lg in 1:d)
       X[,tt] = X[,tt]+A[[lg]] %*% X[,tt-lg]
-  
+
   return(X[,-seq(cut_T)])
 }
 
@@ -266,25 +266,25 @@ Sigma.Gen <- function(# returns error covariance matrix Sigma,
   L, # number of factors
   Sigma_Ux=NULL # Sigma_U matrix
 ){
-  
+
   repeat{
     if (is.null(Sigma_Ux)){
       Sigma_Ux.Inv <- diag(runif(p,1,3),p)
       Sigma_Ux <- solve(Sigma_Ux.Inv)
     }
-    
+
     U <- mvrnorm(t,rep(0,p),Sigma_Ux)
-    
+
     f <- matrix(rnorm(t*L,0,1),t,L)
     b <- matrix(rnorm(p*L,0,1),p,L)
-    
+
     Common <- b %*% t(b)
-    SnR <- sum(eigen(Common)$values)/sum(eigen(Sigma_Ux)$values)  
-    if ((SnR >= 2)) break;  
+    SnR <- sum(eigen(Common)$values)/sum(eigen(Sigma_Ux)$values)
+    if ((SnR >= 2)) break;
   }
   Sigma <- b %*% t(b) + Sigma_Ux
   Sigma.Inv <- solve(Sigma)
-  
+
   return(list(Sigma=Sigma,
               Sigma.Inv=Sigma.Inv,
               Sigma_Ux=Sigma_Ux))
@@ -305,30 +305,30 @@ factor.glasso <- function(# returns estimate of error covariance,
   lambda,  # graphical lasso parameter for Sigma_U estimation
   L        # in case we know number L of factos in advance
 ){
-  
+
   p <- nrow(eps)
   Cov.Y <- cov(t(eps))
-  
+
   if (L==0){
     L.obj <- L.est(Cov.Y,p-1)
     L.hat <- L.obj$L1
     TVE <- L.obj$TVE
   } else {eig <- eigen(Cov.Y)$values; L.hat <- L; TVE <- sum(eig[1:L.hat])/sum(eig)}
-  
+
   SVD <- eigen(Cov.Y)
   Phi_l <- diag(SVD$values[1:L.hat],L.hat)
   Lambda_est <- SVD$vectors[,1:L.hat] %*% sqrt(Phi_l)
   Sigma_Y <- Lambda_est %*% t(Lambda_est)
   Sigma_Ux_est <- Cov.Y - Sigma_Y
   Sigma_Ux_est1 <- nearPD(Sigma_Ux_est)$mat
-  
+
   gl <- glasso(as.matrix(Sigma_Ux_est1),lambda)
   Sigma_Ux_est2 <- gl$w
   Sigma_Ux_est2.Inv <- gl$wi
-  
+
   Sigma.est <- Sigma_Y + Sigma_Ux_est2
   Sigma.est.Inv <- solve(Sigma_Y + Sigma_Ux_est2)
-  
+
   return(list(Sigma.est = Sigma.est,
               Sigma.est.Inv = Sigma.est.Inv,
               Sigma_Ux.est = Sigma_Ux_est2,
@@ -352,23 +352,23 @@ L1.1step <- function(# returns estimate of error covariance,
   Data, # Data matrix
   L=0,  # number of factors(if known in advance)
   A.L1.est # sparse transition matrix estimate
-){ 
-  
+){
+
   t <- ncol(Data)
   p <- nrow(Data)
-  
+
   Response <- matrix(c(t(Data[,-1])))
   B <- matrix(Data[,-t],t-1,p,byrow=TRUE)
   X <- diag(1,p) %x% B
-  
-  ## RESIDUALS, DOING FACTOR MODELS, SVD+GLASSO 
-  
+
+  ## RESIDUALS, DOING FACTOR MODELS, SVD+GLASSO
+
   eps.L1 <- Response - X %*% (A.L1.est)
-  eps.L1 <- matrix(eps.L1,p,t-1,byrow=TRUE)  
+  eps.L1 <- matrix(eps.L1,p,t-1,byrow=TRUE)
   eps_c.L1 <- t(scale(t(eps.L1),scale=FALSE))
-  
+
   diag.est <- apply(eps_c.L1,1,sd)
-  
+
   Fac.glasso <- factor.glasso(eps_c.L1,lambda=sqrt(log(p)/t),L=L)
   Sigma.est <- Fac.glasso$Sigma.est
   Sigma.est.Inv <- Fac.glasso$Sigma.est.Inv
@@ -376,7 +376,7 @@ L1.1step <- function(# returns estimate of error covariance,
   Cov.Mat <- Fac.glasso$Cov.Mat
   L <- Fac.glasso$L
   TVE <- Fac.glasso$TVE
-  
+
   return(list(Sigma.est=Sigma.est,
               Sigma.est.Inv=Sigma.est.Inv,
               Sigma_Ux.est=Sigma_Ux.est,
@@ -394,13 +394,13 @@ L1.1step <- function(# returns estimate of error covariance,
 ########################
 
 L.est <- function(Cov.y,M){
-  
+
   criterion <- rep(0,M)
-  
+
   SVD <- eigen(Cov.y)
   eig <- SVD$values
   eig.total <- sum(eig)
-  
+
   eig.med <- mean(eig)
   for(L1 in 1:M){
     if (eig[L1] < eig.med){
@@ -408,7 +408,7 @@ L.est <- function(Cov.y,M){
       break;
     }
   }
-  
+
   return(list(L1=L1,
               TVE=TVE))
 }
@@ -428,21 +428,21 @@ sep.lasso.Inv <- function(# returns set of estimates,
   Data,          # Data matrix
   Sigma.Inv  # Inverse error covariance matrix
 ){
-  
-  Data.P <- Data.Prep.Sep.Inv(Data,Sigma.Inv) 
-  
+
+  Data.P <- Data.Prep.Sep.Inv(Data,Sigma.Inv)
+
   Glmnet.obj <- glmnet(Data.P$X,
                        Data.P$Y,
                        family="gaussian",
                        intercept=intercept,
                        standardize=standardize)
-  
+
   beta <- as.matrix(coef(Glmnet.obj)[-1,])
-  
-  ### We exclude replicates that provide solution paths with highest density 
+
+  ### We exclude replicates that provide solution paths with highest density
   ### of estimate being (fail.thresh2*100%) or lower, which is not detailed enough to select from
   if (max(Glmnet.obj$df) <= (fail.thresh*(p^2))) fail <<- 1
-  
+
   return(list(Est=beta,
               X=Data.P$X,
               Y=Data.P$Y,
@@ -459,8 +459,8 @@ sep.lasso.Inv <- function(# returns set of estimates,
 Measures.Vec <- function(# returns performance measurements of estimates
   A.est,   # estimates
   A.true   # true matrix
-){ 
-  
+){
+
   FP <- sum(!!A.est  & !A.true)/(sum(!A.true))
   FN <- sum(!A.est  & !!A.true)/(sum(!!A.true))
   TN <- 1 - FP
@@ -479,8 +479,8 @@ Measures.Vec <- function(# returns performance measurements of estimates
 #### CALCULATES STANDARDIZED FROBENIUS DIFFERENCE BETWEEN TWO MATRICES  ####
 ############################################################################
 
-Frob.comp <- function(Sigma.est,Sigma.true){   
-  return(norm(Sigma.est - Sigma.true,type="F")/norm(Sigma.true,type="F")) 
+Frob.comp <- function(Sigma.est,Sigma.true){
+  return(norm(Sigma.est - Sigma.true,type="F")/norm(Sigma.true,type="F"))
 }
 
 
@@ -532,9 +532,9 @@ softthresh <- function(a,b){
 #### Hard-thresholding function #######
 #######################################
 
-sparsify <- function(m,a){   
+sparsify <- function(m,a){
   m1 <- ifelse(abs(m)<a,0,m)
-  return(m1)  
+  return(m1)
 }
 
 
@@ -572,21 +572,21 @@ Data.Prep.Sep.Inv <- function(# returns response vector,
   #         number of variables and time points
   Data, # time series matrix, rows - variables, columns - time points
   Sigma.Inv # inverse error covariance matrix
-){   
+){
   p <- nrow(Data)
   t <- ncol(Data)
-  
+
   Sigma.Sqrt.Inv.new <- fnMatSqrt(Sigma.Inv) %x% diag(1,t-1)
-  
+
   ### Setting up all the matrices for regression problem, accounting for Sigma estimate
   Response <- matrix(c(t(Data[,-1])))
   X <- matrix(Data[,-t],t-1,p,byrow=TRUE)
   X_Sigma <- optim.product(Sigma.Sqrt.Inv.new,X,p)
   Response_Sigma <- Sigma.Sqrt.Inv.new %*% Response
-  
+
   X.full <- X_Sigma
   Y.full <- Response_Sigma
-  
+
   return(list(X=X.full,
               Y=Y.full,
               p=p,
@@ -605,17 +605,17 @@ Data.Prep.Inv <- function(# returns response vector,
   #         number of variables and time points
   Data, # time series matrix, rows - variables, columns - time points
   Sigma.Inv
-){  
-  
+){
+
   ### K1 - number of entities
   if (is.list(Sigma.Inv)) K1 <- length(Sigma.Inv)
   if (!is.list(Sigma.Inv)) K1 <- 1
-  
+
   p <- nrow(Data)/K1
   t <- ncol(Data)
   X.full <- list()
   Y.full <- NULL
-  
+
   for (k in 1:K1){
     Sigma.Sqrt.Inv.new <- fnMatSqrt(Sigma.Inv[[k]]) %x% diag(1,t-1)
     Entity <- Data[(k-1)*p + 1:p,]
@@ -623,13 +623,13 @@ Data.Prep.Inv <- function(# returns response vector,
     X_Entity <- matrix(Entity[,-t],t-1,p,byrow=TRUE)
     X_Entity_Sigma <- optim.product(Sigma.Sqrt.Inv.new,X_Entity,p)
     Response_Entity_Sigma <- Sigma.Sqrt.Inv.new %*% Response_Entity
-    
+
     X.full[[k]] <- X_Entity_Sigma
     Y.full <- c(Y.full,Response_Entity_Sigma)
   }
-  
+
   X.full <- block.diag(X.full)
-  
+
   return(list(X=X.full,
               Y=Y.full,
               p=p,
@@ -640,18 +640,18 @@ Data.Prep.Inv <- function(# returns response vector,
 
 ##########################################################
 ## function connListCalc: calculates a connection list ###
-## for generalized lasso for p vars per entity  
+## for generalized lasso for p vars per entity
 ## It matches corresponding elements of two transition matrices
 ## for the fusion penalty.
 ##########################################################
 
 connListCalc <- function(p){  # returns the connection list
-  
+
   connList <- vector("list",2*p^2)
   class(connList) <- "connListObj"
   for (i in 1:(p^2)) connList[[i]] <- as.integer(i+p^2-1)
   for (i in (p^2+1):(2*(p^2))) connList[[i]] <- as.integer(i- p^2-1)
-  
+
   return(connList=connList)
 }
 
@@ -672,7 +672,7 @@ connListCalc <- function(p){  # returns the connection list
 ###                that estimates from 'Est' correspond to,                ######
 ###  df.coef - the coefficient for degrees of freedom to be multiplied by  ######
 ###                                                                        ######
-### The functions will return:                                             ######  
+### The functions will return:                                             ######
 ###                                                                        ######
 ###  the estimate that minimizes the criterion,                            ######
 ###  the corresponding minimum value of the criterion,                     ######
@@ -691,22 +691,22 @@ connListCalc <- function(p){  # returns the connection list
 ###############################################
 
 AIC <- function(Est,X,Y,lambda.path,df.coef=2){
-  
+
   AIC <- rep(0,length(lambda.path))
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
   n <- nrow(Y)
   t <- n/p + 1
-  
+
   for(i in 1:length(lambda.path)){
     df <- sum(Est[,i] != 0)
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- df.coef*df
-    AIC[i] <- loglik.part[i] + df.part[i]  
+    AIC[i] <- loglik.part[i] + df.part[i]
   }
-  
+
   min <- which.min(AIC)
-  
+
   return(list(Est=Est[,min],
               Criter.min=AIC[min],
               Criter=AIC,
@@ -723,22 +723,22 @@ AIC <- function(Est,X,Y,lambda.path,df.coef=2){
 ###############################################
 
 AICc <- function(Est,X,Y,lambda.path){
-  
+
   AIC <- rep(0,length(lambda.path))
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
   n <- nrow(Y)
   t <- n/p + 1
-  
+
   for(i in 1:length(lambda.path)){
     df <- sum(Est[,i] != 0)
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- 2*df + 2*df*(df+1)/(n-df-1)
-    AIC[i] <- loglik.part[i] + df.part[i]  
+    AIC[i] <- loglik.part[i] + df.part[i]
   }
-  
+
   min <- which.min(AIC)
-  
+
   return(list(Est=Est[,min],
               Criter.min=AIC[min],
               Criter=AIC,
@@ -750,7 +750,7 @@ AICc <- function(Est,X,Y,lambda.path){
 
 
 #############################################
-#### AIC with DISTINCT DEGREES OF FREEDOM 
+#### AIC with DISTINCT DEGREES OF FREEDOM
 #### (we only count DISTINCT non-zero elements as degrees of freedom)
 #############################################
 
@@ -760,16 +760,16 @@ AIC.dist <- function(Est,X,Y,lambda.path,df.coef=2){
   t <- n/p + 1
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
-  
+
   for(i in 1:ncol(Est)){
-    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))  
+    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- df.coef*df
     AIC[i] <- loglik.part[i] + df.part[i]
   }
-  
+
   min <- which.min(AIC)
-  
+
   return(list(Est=Est[,min],
               Criter.min=AIC[min],
               Criter=AIC,
@@ -781,7 +781,7 @@ AIC.dist <- function(Est,X,Y,lambda.path,df.coef=2){
 
 
 #############################################
-#### AIC CORRECTED with DISTINCT DEGREES OF FREEDOM 
+#### AIC CORRECTED with DISTINCT DEGREES OF FREEDOM
 #### (we only count DISTINCT non-zero elements as degrees of freedom)
 #############################################
 
@@ -791,16 +791,16 @@ AICc.dist <- function(Est,X,Y,lambda.path){
   t <- n/p + 1
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
-  
+
   for(i in 1:ncol(Est)){
-    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))  
+    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- 2*df + 2*df*(df+1)/(n-df-1)
     AIC[i] <- loglik.part[i] + df.part[i]
   }
-  
+
   min <- which.min(AIC)
-  
+
   return(list(Est=Est[,min],
               Criter.min=AIC[min],
               Criter=AIC,
@@ -817,22 +817,22 @@ AICc.dist <- function(Est,X,Y,lambda.path){
 ###############################################
 
 BIC <- function(Est,X,Y,lambda.path){
-  
+
   BIC <- rep(0,ncol(Est))
   n <- nrow(Y)
   t <- n/p + 1
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
-  
-  for(i in 1:ncol(Est)){ 
+
+  for(i in 1:ncol(Est)){
     df <- sum(Est[,i] != 0)
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- df*log(n)
-    BIC[i] <- loglik.part[i] + df*log(n) 
+    BIC[i] <- loglik.part[i] + df*log(n)
   }
-  
+
   min <- which.min(BIC)
-  
+
   return(list(Est=Est[,min],
               Criter.min=BIC[min],
               Criter=BIC,
@@ -844,29 +844,29 @@ BIC <- function(Est,X,Y,lambda.path){
 
 
 ################################################
-### BIC criterion with DISTINCT DEGREES OF FREEDOM 
+### BIC criterion with DISTINCT DEGREES OF FREEDOM
 ### (we only count DISTINCT non-zero elements as degrees of freedom)
 #################################################
 
 
 BIC.dist <- function(Est,X,Y,lambda.path){
-  
+
   BIC <- rep(0,ncol(Est))
   n <- nrow(Y)
   t <- n/p + 1
   loglik.part <- rep(0,length(lambda.path))
   df.part <- rep(0,length(lambda.path))
-  
+
   for(i in 1:ncol(Est)){
-    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))  
+    df <- sum(Est[1:p^2,i] != 0) + sum((Est[(p^2+1):(2*p^2),i] != 0) & (Est[(p^2+1):(2*p^2),i] != Est[1:p^2,i]))
     loglik.part[i] <- 2*n*log(norm(Y - X %*% Est[,i],type="F")/sqrt(n))
     df.part[i] <- df*log(n)
     BIC[i] <- loglik.part[i] + df.part[i]
   }
-  
+
   min <- which.min(BIC)
   #print(min)
-  
+
   return(list(Est=Est[,min],
               Criter.min=BIC[min],
               Criter=BIC,
@@ -896,27 +896,27 @@ forecast.mine <- function( # returns list of forecasted values,
   Est,               # List of length K of transition matrix estimates for each entity
   H=1                # Number of forecasting steps
 ){
-  
+
   p <- nrow(Data)/K
   t <- ncol(Data)
-  l <- 1        
-  
+  l <- 1
+
   forecast.list  <- array(0, c(l, K*p, H))
-  
-  ### when we have just 1 estimate, we run the forecast just for this estimate 
-  
-  if (l==1){ 
+
+  ### when we have just 1 estimate, we run the forecast just for this estimate
+
+  if (l==1){
     forecast <- cbind(Data, array(0, c(K*p, H)))
     A <- block.diag(Est)
-    
+
     for(k in 1:H){
       forecast[,1+k] <- A %*% forecast[,(1+k)-1]
     }
-    
+
     forecast.list[1,,] <- forecast[,1+seq(H)]
     forecast.err <- array(0, c(l, K*p, H))
     MSFE <- array(0,c(l,H))
-    
+
     for (k in 1:H){
       forecast.err[,,k] <- (forecast.list[,,k] - as.matrix(Test[,k]))^2
       MSFE[,k] <- mean(forecast.err[,,k])
@@ -950,14 +950,14 @@ optim.product <- function(#returns product of M1 by M2
   nblocks){ # number of diagonal blocks in M2
   dim1 <- nrow(M1)
   Prod <- matrix(0,dim1,ncol(Block)*nblocks)
-  
+
   p <- nblocks
   t <- dim1/nblocks
-  
-  for (i in 1:nblocks) 
+
+  for (i in 1:nblocks)
     for (j in 1:nblocks)
       Prod[(i-1)*t + 1:t,(j-1)*p + 1:p] <- M1[(i-1)*t + 1:t,(j-1)*t + 1:t] %*% Block
-  
+
   return(Prod)
 }
 
@@ -968,24 +968,24 @@ optim.product <- function(#returns product of M1 by M2
 
 ADMM.precalc <- function(# returns number of columns of data matrix X,
   #         rho - Lipshitz constant for the algorithm,
-  #         Z1,Z2,W - matrices needed for completing a step of ADMM algorithm, 
-  Y, # response vector 
+  #         Z1,Z2,W - matrices needed for completing a step of ADMM algorithm,
+  Y, # response vector
   X, # data matrix
   Lm,  # matrix for the Lm*beta - gamma = 0 constraint
   rho
-){                             
-  
+){
+
   ncol_X <- ncol(X)
-  
+
   A <- Y
   B <- X
   D <- sqrt(rho/2)*Lm
   W <- fnMatSqrt(t(B)%*%B + t(D)%*%D)
-  
+
   W.inv <- fnMatInverse(W)
   Z1 <- W.inv %*% t(B) %*% A
   Z2 <- W.inv %*% t(D)
-  
+
   return(list(ncol_X=ncol_X,
               rho=rho,
               Z1=Z1,
@@ -995,21 +995,21 @@ ADMM.precalc <- function(# returns number of columns of data matrix X,
 
 
 
-################################# 
+#################################
 #### ADMM function ##############
 ####
-#### Performs ADMM optimization for our generalized sparse fused lasso criterion. 
+#### Performs ADMM optimization for our generalized sparse fused lasso criterion.
 #### In particular, for a fixed value of lambda2 (fused lasso parameter) and a grid of values for lambda1 (sparsity parameter)
 #### Update rules are as discussed in the paper
 #### If grid for sparsity parameter is not submitted(lambda1.path), calculates it automatically.
 #################################
 
 fused.ADMM <- function(# returns the fused estimates for our grid,
-  #         set of u values(from ADMM algorithm),       
+  #         set of u values(from ADMM algorithm),
   #         set of objective function values for the grid,
   #         summary for number of iterations,
   #         lambda1.path, calculated(if needed) for the sparsity parameter
-  Y,                  # Y - response vector          
+  Y,                  # Y - response vector
   X,                  # X - data matrix
   Z1,Z2,W,rho,ncol_X, # output of ADMM.precalc function
   Lm,                  # Lm - matrix for the ADMM constraint
@@ -1018,26 +1018,26 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
   lambda2,            # fusion parameter value
   A.init,         # initial value for beta
   gamma.start,        # initial value for gamma
-  u.start,            # initial value for u 
+  u.start,            # initial value for u
   eps,                # stopping criterion
   beta.true,          # true transition matrix value
   iter.thresh,        # max number of iterations of the algorithm
   fus.thresh          # hard threshold that shrinks differences between coefficients to 0
 ){
-  
+
   beta.start <- A.init
   gamma.start <- Lm %*% as.matrix(beta.start)
   beta.prev <- beta.start
   gamma.prev <- gamma.start
   u.prev <- u.start
-  
+
   obj.prev.1 <- sum((Y - X %*% beta.start)^2) + lambda2*sum(abs(gamma.start))
-  
-  
+
+
   #################################
   #### INITIALIZING THE PATH ######
   #################################
-  
+
   if (is.null(lambda1.path) == TRUE){
     C <- sqrt(rho/2)*(gamma.prev - u.prev)
     Z <- Z1 + Z2 %*% C
@@ -1047,102 +1047,102 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     lambda1.path <- lambda.path
     #print(paste(c("RANGE OF INITIAL PATH OF lambda1's:",head(lambda1.path,1),tail(lambda1.path,1),length(lambda1.path))))
   }
-  
+
   l_lambda1.path <- length(lambda1.path)
   beta.est <- matrix(0,ncol_X,l_lambda1.path)
   obj.est <- matrix(0,1,l_lambda1.path)
   u.est <- matrix(0,ncol_X/2,l_lambda1.path)
   iter <- rep(0,l_lambda1.path)
   sum.shrunk <- rep(0,l_lambda1.path)
-  
-  
+
+
   ###########
   ### RUNNING THE ADMM FOR ALL THE lambda1 VALUES
   ###########
-  
+
   ind <- 0
-  
+
   for (lambda1 in lambda1.path){
     ind <- ind + 1
     beta.prev <- beta.start
     gamma.prev <- gamma.start
     u.prev <- u.start
     obj.prev <- lambda1*sum(abs(beta.start)) + obj.prev.1
-    
+
     obj.val <- list()
     obj.val.diff <- list()
-    
+
     iter[ind] <- 0
-    
+
     obj.val[[iter[ind]+1]] <- obj.prev
     obj.val.diff[[iter[ind]+1]] <- obj.prev
-    
+
     repeat{
       iter[ind] <- iter[ind] + 1
       C <- sqrt(rho/2)*(gamma.prev - u.prev)
       Z <- Z1 + Z2 %*% C
-      
+
       ## beta update: solution to l1-optimization problem
       ## ||Z - W*beta||_2^2 + lambda1*||beta||_1
-      
+
       glm.obj <- glmnet(W,Z,lambda=lambda1,family="gaussian",standardize=standardize,intercept=intercept)
       beta.next <- as.matrix(coef(glm.obj)[-1])
       Lm.b <- Lm %*% beta.next
-      
+
       ## gamma update: proximal operator for lasso signal approximator
       ## (rho/2)*||Y - gamma||_2^2 + lambda2*||gamma|_1
-      
+
       gamma.next <- softthresh(Lm.b+u.prev,(lambda2/rho))
-      
+
       ## u update:
-      
+
       u.next <- u.prev + Lm.b - gamma.next
-      
+
       ## objective function update:
-      
-      obj.next <- sum((Y - X %*% beta.next)^2) + 
+
+      obj.next <- sum((Y - X %*% beta.next)^2) +
         lambda1*sum(abs(beta.next)) +
         lambda2*sum(abs(gamma.next))
-      
+
       obj.val[[iter[ind]+1]] <- obj.next
       obj.val.diff[[iter[ind]+1]] <- (abs(obj.next - obj.prev)/abs(obj.prev))
 
       if (((abs(obj.next - obj.prev)/abs(obj.prev))<eps) | (iter[ind]>iter.thresh)) break;
-      
+
       beta.prev <- beta.next
       gamma.prev <- gamma.next
-      u.prev <- u.next  
-      obj.prev <- obj.next      
+      u.prev <- u.next
+      obj.prev <- obj.next
     }
-    
-    
+
+
     ################################################
     ### shrinking small differences to zero   ######
     ################################################
-    
+
     ### finding the indices of CORRESPONDING elements(of two matrices) that are within fus.thresh of each other
     ### taking average of two matrices(to use for finalizing fusion), BUT ALSO SETTING TINY AVERAGES(<fus.thresh) TO ZERO
-    ### (in case we had one element at 0, corresponding element at 0.001 => 
+    ### (in case we had one element at 0, corresponding element at 0.001 =>
     ### instead of setting them both to (0+0.001)/2 = 0.0005, we just shrink that to 0, ENCOURAGING SPARSITY)
-    
+
     fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
     beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
-    
+
     beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
     beta.next[((ncol_X/2)+1):ncol_X] <- fus.shrink*beta.next.avg + (1-fus.shrink)*tail(beta.next,(ncol_X/2))
-    
+
     sum.shrunk[ind] <- sum(head(beta.next,(ncol_X/2)) == tail(beta.next,(ncol_X/2)))
-    
+
     beta.est[,ind] <- beta.next
     u.est[,ind] <- u.next
     obj.est[,ind] <- obj.next
-    
+
   }
-  
+
   #### Here I have commented the plots of matrices for the case of a single submitted value of sparsity parameter,
   #### helped me see the effects of increasing the fusion parameter(lambda2), while having lambda1 fixed.
-  
-  if (l_lambda1.path == 1){ 
+
+  if (l_lambda1.path == 1){
     if (lambda2>0){
       #print("Totals of iterations:")
       #print(iter)
@@ -1153,7 +1153,7 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
       #print("Totals of iterations:")
       #print(iter)
     }
-    
+
     # hops <- ConvertToMatrix.Full(beta.est[,1],p)
     # par(mfrow=c(1,2))
     # color2D.matplot(hops[[1]],cs1=c(0,1),cs2=c(1,0),cs3=c(1,0),
@@ -1174,37 +1174,37 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     #                 axes=FALSE)
     #                 #show.legend=TRUE,
     #                 #main = paste(c("Second entity(lambda2 run)",lambda1,lambda2)))
-    
-    
+
+
   }
-  
+
   ### here I just had plots and printouts for the lambda1.grid with fixed lambda2.
-  
+
   if (l_lambda1.path > 1){
-    
+
     if (lambda2>0){
       #print("Totals of iterations:")
       #print(iter)
       #print("Total of shrunk differences:")
       #print(sum.shrunk)
     }
-    
+
     if (lambda2==0){
       #print("Totals of iterations:")
       #print(iter)
     }
     #print(paste(c("Totals of iterations:",iter)))
-    
-    
+
+
     ##############################################
     ### PRINTOUT OF LAMBDA1 RUNS FOR JOINT  ######
     ##############################################
-    
+
     #   for(l in 1:l_lambda1.path){
     # hops <- ConvertToMatrix.Full(beta.est[,l],p)
-    # 
+    #
     # par(mfrow=c(1,2))
-    # 
+    #
     # color2D.matplot(hops[[1]],cs1=c(0,1),cs2=c(1,0),cs3=c(1,0),
     #                 show.legend=TRUE,
     #                 show.values=TRUE,
@@ -1214,8 +1214,8 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     #                 show.values=TRUE,
     #                 main = paste(c("Second entity(lambda1 run)",lambda1.path[l],lambda2)))
     # }
-    
-  } 
+
+  }
   return(list(beta.est=as.matrix(beta.est),
               u.est=u.est,
               iter=iter,
@@ -1252,15 +1252,15 @@ seq.step <- function(# returns lambda1 and lambda2 picked by the criterion,
   criter.joint.2="BIC.dist",
   A.init=c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE)) #initializes vector beta
 ){
-  
+
   ####Initialization part
-  
+
   gamma.start <- Lm %*% as.matrix(A.init)
   u.start <- rep(0,p^2)
   u.Est <- list()
-  
+
   #### Running the ADMM algorithm
-  
+
   Joint.Result <- fused.ADMM(Y=Y,
                              X=X,
                              Z1=Z1,
@@ -1277,55 +1277,55 @@ seq.step <- function(# returns lambda1 and lambda2 picked by the criterion,
                              u.start=u.start,
                              eps=eps,
                              beta.true=A.true.vec,
-                             iter.thresh=iter.thresh, 
+                             iter.thresh=iter.thresh,
                              fus.thresh=fused.thresh)
-  
+
   Joint.Result.Est <- Joint.Result$beta.est
   Joint.Result.lambda.path <- Joint.Result$lambda.path
-  
+
   #### Looking for optimal estimate depending on the criterion
   #### Getting the optimal sparsity parameter value lambda1.est
-  
+
   if (criter.joint.1 == "AIC.dist"){
-    Criter.out <- AIC.dist(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path,df.coef=df)  
+    Criter.out <- AIC.dist(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path,df.coef=df)
   }
   if (criter.joint.1 == "AICc.dist"){
-    Criter.out <- AICc.dist(Joint.Result.Est, X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)  
+    Criter.out <- AICc.dist(Joint.Result.Est, X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)
   }
   if (criter.joint.1 == "AIC"){
-    Criter.out <- AIC(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)  
+    Criter.out <- AIC(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)
   }
   if (criter.joint.1 == "AICc"){
-    Criter.out <- AICc(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)  
+    Criter.out <- AICc(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)
   }
   if (criter.joint.1 == "BIC.dist"){
-    Criter.out <- BIC.dist(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)  
+    Criter.out <- BIC.dist(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Result.lambda.path)
   }
   if (criter.joint.1 == "BIC"){
-    Criter.out <- BIC(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Resul.lambda.path)  
+    Criter.out <- BIC(Joint.Result.Est,X,as.matrix(Y),lambda.path=Joint.Resul.lambda.path)
   }
-  
-  
+
+
   Criter.J <- Criter.out$Criter.min
   Criter.val <- Criter.out$Criter
-  J.Est <- Criter.out$Est 
+  J.Est <- Criter.out$Est
   lambda1.est <- Criter.out$lambda1
   ind1.est <- Criter.out$ind
-  
-  #####  Fixing lambda1=lambda1.est and running ADMM algorithm for 
+
+  #####  Fixing lambda1=lambda1.est and running ADMM algorithm for
   #####  fusion parameter lambda2
-  
+
   Joint.Result.Est <- list()
   Criter.J <- rep(0,L2)
   Criter.val <- rep(0,L2)
   J.Est <- list()
-  
+
   it <- 0
-  
-  for (lambda2 in lambda2.path){    
+
+  for (lambda2 in lambda2.path){
     it <- it+1
     if (p>30) print(paste("Lambda2 iteration:",it))
-    
+
     Joint.Result <- fused.ADMM(Y=Y,
                                X=X,
                                Z1=Z1,
@@ -1345,37 +1345,37 @@ seq.step <- function(# returns lambda1 and lambda2 picked by the criterion,
                                beta.true=A.true.vec,
                                iter.thresh=iter.thresh,
                                fus.thresh=fused.thresh)
-    
+
     Joint.Result.Est[[it]] <- Joint.Result$beta.est
-    
+
     #### Picking estimate and value of lambda2 that minimizes corresponding criterion
-    
+
     if (criter.joint.2 == "AIC.dist"){
-      Criter.out <- AIC.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est,df.coef=df)  
+      Criter.out <- AIC.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est,df.coef=df)
     }
     if (criter.joint.2 == "AICc.dist"){
-      Criter.out <- AICc.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est) 
+      Criter.out <- AICc.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)
     }
     if (criter.joint.2 == "AIC"){
-      Criter.out <- AIC(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)  
+      Criter.out <- AIC(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)
     }
     if (criter.joint.2 == "BIC.dist"){
-      Criter.out <- BIC.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est) 
+      Criter.out <- BIC.dist(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)
     }
     if (criter.joint.2 == "BIC"){
-      Criter.out <- BIC(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)  
+      Criter.out <- BIC(Joint.Result.Est[[it]],X,as.matrix(Y),lambda.path=lambda1.est)
     }
-    
+
     Criter.J[it] <- Criter.out$Criter.min
     # Criter.val[it] <- Criter.out$Criter
-    J.Est[[it]] <- Criter.out$Est 
-  } 
-  
+    J.Est[[it]] <- Criter.out$Est
+  }
+
   #ind2.est <- which.min(Criter.val)
   ind2.est <- which.min(Criter.J)
   lambda2.est <- lambda2.path[ind2.est]
   Joint.Est <- J.Est[[ind2.est]]
-  
+
   return(list(Joint.Result.Est=Joint.Result.Est,
               lambda1.est=lambda1.est,
               ind1.est=ind1.est,
@@ -1397,63 +1397,63 @@ Gener.Simul.Data <- function(# USES A LOT OF GLOBAL VARIABLES
   #         both generated Sigma matrices and their inverses,
   #         generated training and test datasets
 ){
-  
+
   #####################################################
   ### Generating Sigma matrices from L-factor model ###
   #####################################################
-  
+
   Sigma.true <- list()
   Sigma.U <- list()
   Sigma.Inv.true <- list()
-  
+
   for(j in 1:K){
     Gen <- Sigma.Gen(p,t,L)
     Sigma.true[[j]] <- Gen$Sigma
     Sigma.U[[j]] <- Gen$Sigma_Ux
     Sigma.Inv.true[[j]] <- solve(Sigma.true[[j]])
   }
-  
+
   Sigma <- block.diag(Sigma.true)
-  
+
   ####################################################
-  ### Generating stationary transition matrices for K related VAR(1) models  
+  ### Generating stationary transition matrices for K related VAR(1) models
   ####################################################
-  
+
   A.object <- A.setup(p=p,thresh=max_eig-0.2,diff=diff,ed=ed,comm=comm,max_eig=max_eig)
-  
+
   A.true.mat <- list()
   A.true.mat[[1]] <- A.object[[1]]
-  
+
   ## getting vectorized versions of matrices, by row
   A.true.vec <- matrix(t(A.object[[1]]),1,p^2)
-  
+
   for(j in 2:K){
     A.true.mat[[j]] <- A.object[[j]]
     A.true.vec <- cbind(A.true.vec,matrix(t(A.object[[j]]),1,p^2))
   }
-  
-  
+
+
   ## Full block-diagonal matrix A with blocks A1, A2, ..., AK
-  
+
   A.full <- block.diag(A.true.mat)
   A.list <- list()
   A.list[[1]] <- A.full
-  
-  
+
+
   ##########
-  ####### DATA GENERATION 
+  ####### DATA GENERATION
   ##########
-  
+
   GenData <- gen_dat(T=t,Sigma_error=Sigma,A=A.list,SNR=SNR)
   GenData.train <- GenData[,1:train]
   GenData.test <- GenData[,train+1:h]
-  
+
   return(list(A.true=A.true.mat,
               Sigma.true=Sigma.true,
               Sigma.Inv.true=Sigma.Inv.true,
               GenData.train=GenData.train,
               GenData.test=GenData.test))
-  
+
 }
 
 
@@ -1474,78 +1474,78 @@ Simul.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
   #         performance measures of these estimates
   #         (Frobenius differences)
 ){
-  
+
   ##################################################################
   ### Calculating l1-estimates of transition matrices               ##
   ### with identity error covariance matrices                     ##
   ##################################################################
-  
+
   Entity.Sep.Est <- list()
   lambda1.picked <- numeric(K)
   ind1.picked <- numeric(K)
-  
+
   for(k in 1:K){
     Entity <- GenData.train[(k-1)*p + 1:p,]
     Entity.Sep <- sep.lasso.Inv(Entity,diag(1,p))
-    
+
     ## in case generated data leads to overly sparse glmnet solution path,
     ## return 0 and regenerate the data
-    
+
     if (fail == 1) return(0);
-    
+
     ## tuning parameter selection for separate method
     if (criter.sep == "AIC") criter.out <- AIC(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path,df.coef=df.sep)
     if (criter.sep == "AICc") criter.out <- AICc(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path)
-    
+
     Entity.Sep.Est[[k]] <- criter.out$Est
     lambda1.picked[k]  <- criter.out$lambda1
     ind1.picked[k]  <- criter.out$ind
-    
+
     if (ConstThresh == TRUE){
       Entity.Sep.Est[[k]] <- sparsify(criter.out$Est,Thresh)
     }
   }
-  
+
   ##Using residuals off these initial l1-estimates as data for error covariance estimation
   ##Apply L-factor model to estimate off-diagonal elements of inverse error covariance
   ##Apply straightforward graphical lasso to estimate diagonals of inverse error covariance
-  
+
   L1.est <- numeric(K)
   TVE1.est <- numeric(K)
   Sigma.Inv.est <- list()
   Frob <- numeric(K)
   Frob.Inv <- numeric(K)
-  
+
   Pred.Err.vec <- NULL
   Entity.list <- NULL
-  
+
   for (j in 1:sigma.iter){
     for(k in 1:K){
       Entity <- GenData.train[(k-1)*p + 1:p,]
-      Entity_1step <- L1.1step(Entity, A.L1.est=Entity.Sep.Est[[k]]) 
+      Entity_1step <- L1.1step(Entity, A.L1.est=Entity.Sep.Est[[k]])
       L1.est[k]  <- Entity_1step$L
       TVE1.est[k] <- Entity_1step$TVE
-      
+
       Sigma.Inv.est[[k]] <- Entity_1step$Sigma.est.Inv
       Frob[k]  <- Frob.comp(solve(Sigma.Inv.est[[k]]),Sigma.true[[k]])
       Frob.Inv[k]  <- Frob.comp(Sigma.Inv.est[[k]],Sigma.Inv.true[[k]])
-      
+
       Entity.Sep <- sep.lasso.Inv(Entity,Sigma.Inv.est[[k]])
       Entity.list[[k]] <- Entity.Sep
-      
+
       if (fail == 1) return(0);
-      
+
       if (criter.sep == "AIC") criter.out <- AIC(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path,df.coef=df.sep)
       if (criter.sep == "AICc") criter.out <- AICc(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path)
-      
+
       Entity.Sep.Est[[k]] <- criter.out$Est
       lambda1.picked[k]  <- criter.out$lambda1
       ind1.picked[k]  <- criter.out$ind
-      
+
       if (ConstThresh == TRUE){
         Entity.Sep.Est[[k]] <- sparsify(criter.out$Est,Thresh)
       }
-      
+
       for (r in 1:dim(Entity.Sep$Est)[2]){
         #   Est.vec <- c(Est.vec,as.numeric(Entity.Sep$Est[,r]))
         #   True.vec <- c(True.vec,A.true.vec[1:p^2 + (k-1)*p^2])
@@ -1555,10 +1555,10 @@ Simul.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
       }
     }
   }
-  
+
   AUROC.values <- NULL
   Frob.values <- NULL
-  
+
   for (k in 1:K){
     FP.vec <- NULL
     FN.vec <- NULL
@@ -1572,23 +1572,23 @@ Simul.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
     AUROC.values <- c(AUROC.values,Calc.AUC.from.FP.FN(FP.vec,FN.vec,lambda.path=Entity.list[[k]]$lambda.path,plot=T,title=paste("Separate, k=",k,sep="")))
     Frob.values <- c(Frob.values,mean(Frob.vec))
   }
-  
+
   ## Overall metrics, overall all tuning parameter values:
-  ##  Mean area under the curve 
+  ##  Mean area under the curve
   ##  (curves are dictated by the lambda1 value for each fixed lambda2 value,
   ##   then the areas are averaged over all lambda2 values)
-  
+
   AUROC.Sep.Mean <- mean(AUROC.values)
   Pred.Err.Sep.Mean <- mean(Pred.Err.vec)
   Frob.Sep.Mean <- mean(Frob.values)
-  
+
   Results.General <- c(Pred.Err.Sep.Mean,
                        AUROC.Sep.Mean,
                        Frob.Sep.Mean)
-  
-  
+
+
   ## Selected estimate metrics
-  
+
   Measures.Sep <- Measures.Vec(c(unlist(Entity.Sep.Est)),A.true.vec)
   FP.Sep  <- Measures.Sep$FP
   FN.Sep  <- Measures.Sep$FN
@@ -1599,18 +1599,18 @@ Simul.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
                                   TN.Sep,
                                   FN.Sep)
   Frob.Sep  <- Measures.Sep$Frob
-  
+
   Sep.Est  <- ConvertToMatrix.Full(c(unlist(Entity.Sep.Est)),p)
-  
+
   f.mine <- forecast.mine(as.matrix(GenData.train[,train]), Test = as.matrix(GenData.test),Est = Sep.Est, H=h,K=2)
   Pred.Err.Sep  <- f.mine$MSFE[1]
-  
+
   Results <- c(Pred.Err.Sep,
                FP.Sep,
                FN.Sep,
                Matt.Coef.Sep,
                Frob.Sep)
-  
+
   return(list(lambda1.picked=lambda1.picked,
               ind1.picked=ind1.picked,
               L1.est=L1.est,
@@ -1631,8 +1631,8 @@ Simul.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
               Sigma.Inv.est=Sigma.Inv.est,
               Results=Results,
               Results.General=Results.General))
-  
-  
+
+
 }
 
 
@@ -1651,20 +1651,20 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
   #         (FP,FN,TP,TN,Matthews,Frob diff,MSFE),
   #         error covariance and its inverse estimates,
   #         performance measures of these estimates
-  #         (Frobenius differences) 
+  #         (Frobenius differences)
 ){
-  
+
   #################################
   #### ADMM function ##############
   #################################
-  
+
   #### Running joint method
   #### as multiple runs of the seq.step function
-  
+
   Data.P <- Data.Prep.Inv(GenData.train,Sigma.Inv.est)
-  
+
   ## setting up the L matrix for the gamma - Lbeta = 0 constraint in ADMM task
-  
+
   Lm <- NULL
   for (j in 1:(K-1)){
     for (l in (j+1):K){
@@ -1676,16 +1676,16 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
       if (!is.null(Lm)) Lm <- rbind(Lm,Lsub);
       if (is.null(Lm)) Lm <- Lsub;
     }
-  }  
-  
+  }
+
   precalc <- ADMM.precalc(Data.P$Y,Data.P$X,Lm,rho=rho)
-  
+
   ########
   ## Running the grid search
   ########
-  
+
   lambda2.init <- 0
-  for (i in 1:n.iter){ 
+  for (i in 1:n.iter){
     Result <- seq.step(Y=Data.P$Y,
                        X=Data.P$X,
                        Z1=precalc$Z1,
@@ -1707,71 +1707,71 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
                        criter.joint.1=criter.joint.1,
                        criter.joint.2=criter.joint.2,
                        A.init=A.init)
-    
+
     lambda2.init <- Result$lambda2.est
     lambda1.path_est <- Result$lambda1.path
   }
-  
-  
+
+
   AUROC.Joint.values <- NULL
   Pred.Err.Joint.values <- NULL
   Frob.Joint.values <- NULL
-  
+
   for (j in 1:length(lambda2.path)){
     Forecast.err.vec <- NULL
-    
+
     if (ConstThresh == TRUE){
       Result$Joint.Result.Est[[j]] <- sparsify(Result$Joint.Result.Est[[j]],Thresh)
     }
-    
+
     FP.vec <- NULL
     FN.vec <- NULL
     Frob.vec <- NULL
     # print(dim(Result$Joint.Result.Est[[j]]))
-    
+
     for (r in 1:dim(Result$Joint.Result.Est[[j]])[2]){
       Joint.Est <- ConvertToMatrix.Full(Result$Joint.Result.Est[[j]][,r],p)
       f.mine <- forecast.mine(as.matrix(GenData.train[,train]), Test = as.matrix(GenData.test),Est = Joint.Est, H=h,K=2)
       Forecast.err.vec <- c(Forecast.err.vec,f.mine$MSFE[1])
-      
+
       Meas.vec <- Measures.Vec(t(as.matrix(Result$Joint.Result.Est[[j]][,r])),as.matrix(A.true.vec))
       FP.vec <- c(FP.vec,Meas.vec$FP)
       FN.vec <- c(FN.vec,Meas.vec$FN)
       Frob.vec <- c(Frob.vec,Meas.vec$Frob)
     }
-    
+
     AUROC.Joint.values <- c(AUROC.Joint.values,Calc.AUC.from.FP.FN(FP.vec,FN.vec,FP.vec,plot=T,title=paste("Joint, lambda2=",lambda2.path[j],sep="")))
     # AUROC.Joint <- roc(as.numeric(True.Magnit.vec!=0),as.numeric(Est.Magnit.vec!= 0))$auc
     Pred.Err.Joint.values <- c(Pred.Err.Joint.values,mean(Forecast.err.vec))
     Frob.Joint.values <- c(Frob.Joint.values,mean(Frob.vec))
   }
-  
+
   ## Overall metrics, overall all tuning parameter values:
-  ##  Mean area under the curve 
+  ##  Mean area under the curve
   ##  (curves are dictated by the lambda1 value for each fixed lambda2 value,
   ##   then the areas are averaged over all lambda2 values)
-  
+
   AUROC.Joint.Mean <- mean(AUROC.Joint.values)
   Pred.Err.Joint.Mean <- mean(Pred.Err.Joint.values)
   Frob.Joint.Mean <- mean(Frob.Joint.values)
-  
+
   Results.General <- c(Pred.Err.Joint.Mean,
                        AUROC.Joint.Mean,
                        Frob.Joint.Mean)
-  
-  
-  
+
+
+
   ## Selected estimate metrics.
-  
+
   if (ConstThresh == TRUE){
     Result$Joint.Est <- sparsify(Result$Joint.Est,Thresh)
   }
-  
+
   Joint.Est <- ConvertToMatrix.Full(Result$Joint.Est,p)
-  
+
   f.mine <- forecast.mine(as.matrix(GenData.train[,train]), Test = as.matrix(GenData.test),Est = Joint.Est, H=h,K=2)
   Pred.Err.Joint  <- f.mine$MSFE[1]
-  
+
   Measures.Joint <- Measures.Vec(Result$Joint.Est,A.true.vec)
   FP.Joint  <- Measures.Joint$FP
   FN.Joint  <- Measures.Joint$FN
@@ -1782,19 +1782,19 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
                                     TN.Joint,
                                     FN.Joint)
   Frob.Joint  <- Measures.Joint$Frob
-  
-  
+
+
   Joint.lambda1.picked  <- Result$lambda1.est
   Joint.lambda2.picked  <- Result$lambda2.est
   Joint.ind1.picked  <- Result$ind1.est
-  Joint.ind2.picked  <- Result$ind2.est 
-  
+  Joint.ind2.picked  <- Result$ind2.est
+
   Results <- c(Pred.Err.Joint,
                FP.Joint,
                FN.Joint,
                Matt.Coef.Joint,
                Frob.Joint)
-  
+
   return(list(Pred.Err.Joint=Pred.Err.Joint,
               FP.Joint=FP.Joint,
               FN.Joint=FN.Joint,
@@ -1810,7 +1810,7 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
               Joint.lambda2.picked=Joint.lambda2.picked,
               Joint.ind1.picked=Joint.ind1.picked,
               Joint.ind2.picked=Joint.ind2.picked,
-              Results=Results, 
+              Results=Results,
               Results.General=Results.General,
               lambda.path=lambda1.path_est))
 }
@@ -1829,16 +1829,16 @@ Load.Data <- function(#returns the time series matrix(K*p X T),
   sit,        # situation number(1,2,3,4)
   state,      # states under consideration
   K           # number of entities
-){ 
+){
   Data <- list()
-  
+
   for (i in 1:K){
     Data[[i]] <- read.csv(paste(state[i],".csv",sep=""),header=TRUE)
     Data[[i]] <- na.omit(Data[[i]][,-1])
   }
-  
+
   Data.final <- list()
-  
+
   if (sit==1){
     p <- 8
     start <- 35
@@ -1848,7 +1848,7 @@ Load.Data <- function(#returns the time series matrix(K*p X T),
       Data.final[[i]] <- Data[[i]][start:(start+period),good.ind]
     }
   }
-  
+
   if (sit==2){
     p <- 13
     start <- 35
@@ -1858,7 +1858,7 @@ Load.Data <- function(#returns the time series matrix(K*p X T),
       Data.final[[i]] <- Data[[i]][start:(start+period),good.ind]
     }
   }
-  
+
   if (sit==3){
     p <- 13
     start <- 35
@@ -1868,23 +1868,23 @@ Load.Data <- function(#returns the time series matrix(K*p X T),
       Data.final[[i]] <- Data[[i]][start:(start+period),good.ind]
     }
   }
-  
+
   if (sit==4){
     p <- 18
     start <- 35
     period <- 70
-    good.ind <- c(1,2,3,5,9,12,18,16,14,10,13,19,17,15,11,6,7,8) 
+    good.ind <- c(1,2,3,5,9,12,18,16,14,10,13,19,17,15,11,6,7,8)
     for(i in 1:K){
       Data.final[[i]] <- Data[[i]][start:(start+period),good.ind]
     }
   }
-  
+
   Data.final.m <- t(Data.final[[1]])
-  
+
   for(i in 2:K){
     Data.final.m <- rbind(Data.final.m,t(Data.final[[i]]))
   }
-  
+
   return(list(Data.final.m=Data.final.m,
               p=p))
 }
@@ -1895,49 +1895,49 @@ Load.Data <- function(#returns the time series matrix(K*p X T),
 Real.Data.Univariate.ARIMA <- function(
  # Calculates single univariate AR(1) model predictions
 ){
-  
+
   t0 <- start0-2
-  
+
   for (run in 1:rep){
     print(c("Run:",run))
-    
+
     t0 <- t0 + 1
-    
-    ## standardizing the whole subset of size train+1(train - size of training set, 1 - size of testing set, as we make 1-step forecasts) 
+
+    ## standardizing the whole subset of size train+1(train - size of training set, 1 - size of testing set, as we make 1-step forecasts)
     ## starting at point t0+1
-    
+
     Data.st <- t(scale(t(Data.final.m[,(t0+1):(t0+train+1)]),center=TRUE))
-    
+
     ## breaking into training & testing subsets for each entity
     Data.train <- list()
     Data.test <- list()
-    
+
     Full.data.train <- Data.st[,1:train]
     Full.data.test <- as.matrix(Data.st[,train+1:h])
     Full.data.pred <- matrix(0,dim(Full.data.test)[1],dim(Full.data.test)[2])
-    
-    ## Fitting AR(1) for each variable of each entity, 
+
+    ## Fitting AR(1) for each variable of each entity,
     ## recording the MSFE.
     for (j in 1:nrow(Full.data.train)){
       auto.ar.obj <- auto.arima(Full.data.train[j,],stationary=T)
       Full.data.pred[j,] <- forecast(auto.ar.obj)$mean[1:h]
       MSFE <- array(0,c(1,h))
-      
+
       for (j in 1:h){
         MSFE[,j] <- mean((Full.data.pred[,j] - Full.data.test[,j])^2)
       }
       Pred.Err.Univar.ARIMA[run] <- MSFE[1]
     }
-    
+
   }
   return(list(Pred.Err=Pred.Err.Univar.ARIMA))
 }
-    
-    
-    
+
+
+
 
 #########################################
-### SEPARATE ESTIMATION FOR REAL DATA         
+### SEPARATE ESTIMATION FOR REAL DATA
 #########################################
 
 ## Each replicate inside the function corresponds to a "shifting subsets procedure":
@@ -1946,7 +1946,7 @@ Real.Data.Univariate.ARIMA <- function(
 ##  second replicate corresponds to subset shifted by 1 to the right:
 ##    it goes from time point 'start+1' to 'start+train+1',
 ##    testing time point is 'start+train+2'
-##  etc 
+##  etc
 
 Real.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
   # returns separate estimates,
@@ -1956,86 +1956,86 @@ Real.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
   #         inverse of Sigma estimate for each entity,
   #         estimate of number of factors L per entity
 ){
-  
+
   t0 <- start0-2
-  
+
   for (run in 1:rep){
     print(c("Run:",run))
-    
+
     t0 <- t0 + 1
-    
-    ## standardizing the whole subset of size train+1(train - size of training set, 1 - size of testing set, as we make 1-step forecasts) 
+
+    ## standardizing the whole subset of size train+1(train - size of training set, 1 - size of testing set, as we make 1-step forecasts)
     ## starting at point t0+1
-    
+
     Data.st <- t(scale(t(Data.final.m[,(t0+1):(t0+train+1)]),center=TRUE))
-    
+
     ## breaking into training & testing subsets for each entity
     Data.train <- list()
     Data.test <- list()
-    
+
     for (k in 1:K){
       Data.train[[k]] <- Data.st[1:p + (k-1)*p,1:train]
       Data.test[[k]] <- Data.st[1:p + (k-1)*p,train+1:h]
     }
-    
+
     Full.data.train <- Data.st[,1:train]
     Full.data.test <- Data.st[,train+1:h]
-    
+
     ############
     ## Running the whole singly estimation process
     ## for each entity(US state, in our case)
     #############
-    
+
     A.Sep.Est <- list()
-    
+
     for(k in 1:K){
       Entity.Sep <- sep.lasso.Inv(Data.train[[k]],diag(1,p))
-      
+
       if (criter.sep == "AIC") AIC.out <- AIC(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path,df.coef=df.sep)
       if (criter.sep == "AICc") AIC.out <- AICc(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path)
-      
+
       A.Sep.Est[[k]] <- AIC.out$Est
-      
+
       if (ConstThresh == TRUE){
         A.Sep.Est[[k]] <- sparsify(AIC.out$Est,Thresh)
       }
-      
+
       for (j in 1:sigma.iter){
         Entity_1step <- L1.1step(Data.train[[k]],A.L1.est=A.Sep.Est[[k]])
         L1.est[k,run] <- Entity_1step$L
         TVE1.est[k,run] <- Entity_1step$TVE
         Sigma.Inv.est[[k]] <- Entity_1step$Sigma.est.Inv
         Entity.Sep <- sep.lasso.Inv(Data.train[[k]], Sigma.Inv=Sigma.Inv.est[[k]])
-        
+
         if (criter.sep == "AIC") AIC.out <- AIC(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path,df.coef=df.sep)
         if (criter.sep == "AICc") AIC.out <- AICc(Entity.Sep$Est,Entity.Sep$X,as.matrix(Entity.Sep$Y),lambda.path=Entity.Sep$lambda.path)
-        
+
         A.Sep.Est[[k]] <- AIC.out$Est
-        
+
         if (ConstThresh == TRUE){
           A.Sep.Est[[k]] <- sparsify(AIC.out$Est,Thresh)
         }
-        
+
       }
     }
-    
+
     ## calculating performance measures: MSFE and Stability of estimates
-    
+
     Sep.Est[[run]] <- ConvertToMatrix.Full(unlist(A.Sep.Est),p)
-    
-    f.mine <- forecast.mine(as.matrix(Full.data.train[,train]), 
+
+    f.mine <- forecast.mine(as.matrix(Full.data.train[,train]),
                             Test = as.matrix(Full.data.test),
                             K=K,
-                            Est = Sep.Est[[run]], 
+                            Est = Sep.Est[[run]],
                             H=h)
-    
+
     Pred.Err.Sep[run] <- f.mine$MSFE[1]
-    
+
     for (k in 1:K){
       Sep.Stability[[k]] <- Sep.Stability[[k]] + unlist(ConvertToMatrix.Full(ifelse(A.Sep.Est[[k]]==0,0,1),1))
     }
   }
-  
+
   return(list(Sep.Est = Sep.Est,
               Pred.Err.Sep = Pred.Err.Sep,
               Sep.Stability = Sep.Stability,
@@ -2052,8 +2052,8 @@ Real.Data.Separate.Main <- function(# USES A LOT OF GLOBAL VARIABLES
 
 ##############################################
 #### FOR THE CASE OF K=4:
-#### Perform pairwise joint estimation of 
-####   1st and 2nd entity(US state, in our case); 
+#### Perform pairwise joint estimation of
+####   1st and 2nd entity(US state, in our case);
 ####   1st and 3rd;
 ####   1st and 4th;
 ####   2nd and 3rd;
@@ -2068,46 +2068,46 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
   #         stability of estimates
   #         (how often particular elements are non-zero)
 ){
-  
+
   t0 <- start0-2
-  
+
   for (run in 1:rep){
     print(c("Run:",run))
     t0 <- t0 + 1
-    
+
     ### initializing all transition matrices with identities
     A.init <- list()
     for (k in 1:K){
       A.init[[k]] <- list()
     }
-    
+
     ### Making pairwise snake-like joint estimation of K states
     ### Each pairwise estimation follows the sequential approach
-    
+
     for (q in 1:(K-1)){
       for(l in (q+1):K){
         Two_Entities <- t(scale(t(Data.final.m[c((q-1)*p + 1:p, (l-1)*p + 1:p),(t0+1):(t0+train+1)]),center=TRUE))
-        
+
         Two_Entities.train <- Two_Entities[,1:train]
         Two_Entities.test <- Two_Entities[,train+1:h]
-        
+
         connList <- connListCalc(p)
         Data.P <- Data.Prep.Inv(Two_Entities.train,list(Sigma.Inv.est[[q]],Sigma.Inv.est[[l]]))
-        
+
         ## setting up the L matrix for two entities optimization criterion, s.t L*(beta1,beta) = beta1 - beta2
         Lm <- cbind(diag(1,p^2),diag(-1,p^2))
-        
+
         ## setting up the rest of the matrices for ADMM algorithm
         precalc <- ADMM.precalc(Data.P$Y,Data.P$X,Lm,rho=rho)
         lambda2.init <- 0
-        
+
         for (i in 1:n.iter){
           Result <- seq.step(Y=Data.P$Y,
                              X=Data.P$X,
-                             Z1=precalc$Z1, 
-                             Z2=precalc$Z2, 
-                             W=precalc$W, 
-                             rho=precalc$rho, 
+                             Z1=precalc$Z1,
+                             Z2=precalc$Z2,
+                             W=precalc$W,
+                             rho=precalc$rho,
                              ncol_X=precalc$ncol_X,
                              p=p,
                              Lm=Lm,
@@ -2128,12 +2128,12 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
         }
         A.init[[q]] <- c(A.init[[q]],Result$Joint.Est[1:p^2])
         A.init[[l]] <- c(A.init[[l]],Result$Joint.Est[1:p^2 + p^2])
-        
+
       }
     }
-    
+
     Joint.Est[[run]] <- list()
-    
+
     for(l in 1:(K-1)){
       A.init.med <- list()
       for(q in 1:K){
@@ -2141,26 +2141,26 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
       }
       Joint.Est[[run]][[l]] <- ConvertToMatrix.Full(sparsify(unlist(A.init.med),Thresh),p)
     }
-    
+
     ### keeping track of stability measures
     for (k in 1:K){
       for(l in 1:(K-1)){
         Joint.Stability[[k]] <- Joint.Stability[[k]] + unlist(ConvertToMatrix.Full(ifelse(sparsify(unlist(A.init[[k]])[(l-1)*p^2 + 1:p^2],Thresh)==0,0,1),1))
       }
     }
-    
+
     ## standardizing the whole subset of size "train" starting at point "t0+1"
     Data.st <- t(scale(t(Data.final.m[,(t0+1):(t0+train+1)]),center=TRUE))
     Full.data.train <- Data.st[,1:train]
     Full.data.test <- Data.st[,train+1:h]
-    
-    
+
+
     ### calculating the MSFE
     for(l in 1:(K-1)){
-      f.mine <- forecast.mine(as.matrix(Full.data.train[,train]), 
+      f.mine <- forecast.mine(as.matrix(Full.data.train[,train]),
                               Test = as.matrix(Full.data.test),
                               K=K,
-                              Est = Joint.Est[[run]][[l]], 
+                              Est = Joint.Est[[run]][[l]],
                               H=h)
       Pred.Err.Joint[run] <- Pred.Err.Joint[run] + f.mine$MSFE[1]
     }
@@ -2182,7 +2182,7 @@ situation.names <- function(sit){
     return(c("Constr Total","Edu/Health Total","Finance Total","Manuf Total","GProd Total",
              "Total Nonfarm","Lead Ind","UnempR"))
   }
-  if (sit==2){ 
+  if (sit==2){
     return(c("Constr Total","Edu/Health Total","Finance Total","Manuf Total","GProd Total",
              "Constr WeeklyH","Edu/Health WeeklyH","Finance WeeklyH","Manuf WeeklyH","GProd WeeklyH",
              "Total Nonfarm","Lead Ind","UnempR"))
@@ -2211,7 +2211,7 @@ simple.plot <- function(mat1,           # stability matrix
   par(mar=c(9,9,3,3))
   rownames(mat1) <- rown
   colnames(mat1) <- rown
-  
+
   color2D.matplot(mat1,cs1=c(0,1),cs2=c(1,0),cs3=c(1,0),
                   show.values=TRUE,
                   axes=FALSE,
@@ -2219,8 +2219,7 @@ simple.plot <- function(mat1,           # stability matrix
                   ylab="",
                   show.legend=F,
                   main=paste(state,meth,sep=","))
-  
+
   axis(1,at=0.5:(length(rown)-.5),las=2,labels=colnames(mat1))
   axis(2,at=0.5:(length(rown)-.5),las=2,labels=rev(rownames(mat1)))
 }
-
