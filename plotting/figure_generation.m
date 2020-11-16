@@ -50,4 +50,3 @@ for fig = 1:length(score_list)
         end
     end
 end
-
