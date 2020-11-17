@@ -65,7 +65,7 @@ set.seed(2)
 
 ### General parameters
 
-K <- 2                     # number of entities
+K <- 3                     # number of entities
 p <- 10                     # number of variables per entity
 train <- 30                  # number of training points per entity
 
