@@ -5,9 +5,9 @@
 D <-1
 p <- 20
 t <- 100
-K <- 5
+K <- 50
 density = c(1,5)
-realz <- 100
+realz <- 5
 for (dd in 1:2){
 for (itr in 1:realz){
 namedir <- './data_R_formulationD/'
