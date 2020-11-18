@@ -9,6 +9,7 @@ function M = formulation_D(y,P,varargin)
 % Output is
 %       M : structure containing
 %           M.x_est
+global x_cheat
 [n,T,K] = size(y);
 len_varargin = length(varargin);
 
@@ -38,6 +39,7 @@ disp('calculating Lambda max')
 Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
 Lambda = Lambda*Lmax;
 xLS = gc\yc;
+xLS = x_cheat;
 if T>n*p
   init_cvx = 0;
 else
