@@ -1,6 +1,7 @@
 clear
 clc
 inpath = './data_compare/';
+
 resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\';
 % resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
 mname = {'1','5'};
