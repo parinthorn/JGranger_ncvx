@@ -1,12 +1,13 @@
 clear
 clc
 inpath = './data_compare/';
-% resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\';
-resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
+
+resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\';
+% resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
 mname = {'1','5'};
 dd = length(mname);
-dd=1;
-realization = 1;
+% dd=2;
+realization = 5;
 load([inpath,'model_K50_p1'])
 for ii=1:dd
     for jj=1:realization
@@ -28,4 +29,4 @@ for ii=1:dd
         
     end
 end
-% save([resultpath,'formulation_D_result_','all'],'R')
+save([resultpath,'formulation_D_result_K50','all'],'R')

@@ -62,7 +62,7 @@ for ii=1:dd
     end
 end
 
-% save([outpath,'skrip_formulationD_accuracy'],'score')
+save([outpath,'skrip_formulationD_accuracy_K50'],'score')
 
 
 
