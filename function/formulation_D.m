@@ -36,8 +36,11 @@ end
 disp('vectorizing model')
 [yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
 disp('calculating Lambda max')
-Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
-Lambda = Lambda*Lmax;
+Lmax_2 = lambdamax_grouplasso_v2(gc,yc,p*K,[n ,p ,K]);
+Lmax_1 = lambdamax_grouplasso_v2(gc,yc,p,[n ,p ,K]);
+Lambda_2 = Lambda*Lmax_2;
+
+Lambda_1 = Lambda*Lmax_1;
 xLS = gc\yc;
 % xLS = x_cheat;
 if T>n*p
@@ -45,8 +48,10 @@ if T>n*p
 else
   init_cvx = 1;
 end
-M.lambda_crit = Lmax;
-M.lambda_range = [Lambda(1) Lambda(end)];
+M.lambda2_crit = Lmax_2;
+M.lambda2_range = [Lambda_2(1) Lambda_2(end)];
+M.lambda1_crit = Lmax_1;
+M.lambda1_range = [Lambda_1(1) Lambda_1(end)];
 M.GridSize = GridSize;
 M.flag = zeros(GridSize);
 ALG_PARAMETER.PRINT_RESULT=0;
@@ -62,7 +67,7 @@ ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationD';
 t1 = tic;
 for ii=1:GridSize
-    a1 = Lambda(ii);
+    a1 = Lambda_1(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
     ls_flag = zeros(1,GridSize);
@@ -75,11 +80,11 @@ for ii=1:GridSize
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,1, cvx_param);
+          [x0, ~, ~] = spectral_ADMM(gc, yc, a1, Lambda_2(jj),2,1, cvx_param);
         else
           x0 = xLS;
         end
-        [x_reg, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,0.5, ALG_PARAMETER,x0);
+        [x_reg, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda_2(jj),2,0.5, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));
