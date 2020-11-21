@@ -10,8 +10,10 @@ else
     FP=stat(3);
     FN=stat(4);
 end
-
 score.FPR = FP./(FP+TN);
+if score.FPR>1
+    error('something wrong')
+end
 score.TPR = TP./(TP+FN);
 score.ACC = (TP+TN)./(TP+FN+TN+FP);
 score.F1 = 2*TP./(2*TP+FP+FN);
