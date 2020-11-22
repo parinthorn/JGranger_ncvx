@@ -7,8 +7,8 @@ p <- 20
 t <- 100
 K <- 50
 density = c(1,5)
-realz <- 5
-for (dd in 1:2){
+realz <- 1
+for (dd in 2:2){
 for (itr in 1:realz){
 namedir <- './data_R_formulationD/'
 tmp <- read.csv(file = paste(namedir,'K',K,'_data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
