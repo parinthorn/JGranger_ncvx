@@ -48,13 +48,13 @@ for ii=1:dd
         score(ii).total.F1(jj) = total_score.F1;
         score(ii).total.MCC(jj) = total_score.MCC;
         score(ii).bias(jj) =total_score.bias;
-        
+
         score(ii).common.TPR(jj) = common_score.TPR;
         score(ii).common.FPR(jj) = common_score.FPR;
         score(ii).common.ACC(jj) = common_score.ACC;
         score(ii).common.F1(jj) = common_score.F1;
          score(ii).common.MCC(jj) = common_score.MCC;
-        
+
         score(ii).differential.TPR(jj) = differential_score.TPR;
         score(ii).differential.FPR(jj) = differential_score.FPR;
         score(ii).differential.ACC(jj) = differential_score.ACC;
@@ -63,10 +63,4 @@ for ii=1:dd
     end
 end
 
-% save([outpath,'skrip_formulationD_accuracy'],'score')
-
-
-
-
-
-
+%save([outpath,'skrip_formulationD_accuracy_K50'],'score')
