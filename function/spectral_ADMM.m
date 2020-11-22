@@ -224,11 +224,11 @@ for k=1:MAXITERS
         history.fit = 0.5*norm(G*x-b)^2;
         break;
     end
-    counting_nz_index = k:-1:max([k-10*Ts,1]);
-    if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
-        history.fit = 0.5*norm(G*x-b)^2;
-        break
-    end
+%     counting_nz_index = k:-1:max([k-10*Ts,1]);
+%     if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
+%         history.fit = 0.5*norm(G*x-b)^2;
+%         break
+%     end
     xold = x;
     z1old = z1;
     z2old = z2;
