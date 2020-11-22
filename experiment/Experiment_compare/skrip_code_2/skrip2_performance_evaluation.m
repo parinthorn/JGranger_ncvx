@@ -9,36 +9,24 @@ type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-K = 5;
+K = 50;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
+dd=1;
+realization = 4;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
 
 for ii=1:dd
-%     score(ii).total.TPR = 0;
-% score(ii).total.FPR = 0;
-% score(ii).total.ACC = 0;
-% score(ii).total.F1 = 0;
-% score(ii).bias = 0;
-% 
-%     score(ii).common.TPR = 0;
-% score(ii).common.FPR = 0;
-% score(ii).common.ACC = 0;
-% score(ii).common.F1 = 0;
-% 
-%     score(ii).differential.TPR = 0;
-% score(ii).differential.FPR = 0;
-% score(ii).differential.ACC = 0;
-% score(ii).differential.F1 = 0;
-    for jj=1:m
+
+    for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         % performance eval
         model = E{type,cd,ii,jj};
-        D = readtable([inpath,'K5_Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
+        D = readtable([inpath,'K',int2str(K),'_Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
         D = table2array(D);
         D = D(:,2:end); % D = size (n,n*K), p=1
         A = reshape(D,[n,n,K]);
@@ -75,7 +63,7 @@ for ii=1:dd
     end
 end
 
-save([outpath,'skrip_formulationD_accuracy'],'score')
+% save([outpath,'skrip_formulationD_accuracy'],'score')
 
 
 
