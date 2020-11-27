@@ -1,4 +1,4 @@
-function M = formulation_D(y,P,varargin)
+function M = test_cvxformulation_D(y,P,varargin)
 %% This program estimates Ground truth with their original model
 % Input are
 %             y : 3D array [n,Num,K] which is dimension of timeseries,
@@ -26,8 +26,7 @@ elseif len_varargin ==2
 else
   error('must be atmost 5 input')
 end
-% Lambda = logspace(-6,0,GridSize);
-Lambda = logspace(-3.5,0,GridSize);
+Lambda = logspace(-6,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
@@ -62,7 +61,7 @@ ALG_PARAMETER.L2 = P;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
-ALG_PARAMETER.Ts = 100;
+ALG_PARAMETER.Ts = 2;
 ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationD';
@@ -85,7 +84,7 @@ for ii=1:GridSize
         else
           x0 = xLS;
         end
-        [x_reg, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda_2(jj),2,0.5, ALG_PARAMETER,x0);
+        [x_reg, ~,~, history] = spectral_ADMM(gc, yc, a1, Lambda_2(jj),2,1, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));
