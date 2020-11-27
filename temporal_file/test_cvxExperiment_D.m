@@ -11,12 +11,12 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 50;
+K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
-realz = 20;
+realz = 40;
 GridSize = 30;
 mname = {'1','5'};
 for ii=1:dd
