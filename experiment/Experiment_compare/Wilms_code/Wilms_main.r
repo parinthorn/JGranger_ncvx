@@ -48,8 +48,22 @@ colnames(Data) <- NULL
 
 #### Multi-class VAR FIT ####
 tic("total fitting time")
-FIT<-MultiClass_VAR(Data=Data, P=1,lambda1_min=0.1, lambda1_max=50, lambda1_steps=5,
-                                   lambda2_min=0.1, lambda2_max=2, lambda2_steps=5)
-
+FIT<-MultiClass_VAR(Data=Data, P=1,lambda1_min=50, lambda1_max=900, lambda1_steps=20,
+                                   lambda2_min=0.01, lambda2_max=0.01, lambda2_steps=1,
+                                   gamma1_min=10, gamma1_max=10, gamma1_steps=1,
+                                   gamma2_min=0, gamma2_max=0, gamma2_steps=1,
+                                   criterion="BIC", type="AdLasso")
+# [50,0.1,0.1,0.1]
+# [100 0.01 0.01 0.01]
+# [500 0.01 0.001 0.001]
+# [800 0.02 0.001 1e-4],  [500-800,0.01-0.05,1e-4-1e-3,1e-4-1e-3]
+# [1000,0.05,0.003,1e-5], [800-1000,0.01-0.05,1e-3-5e-3,1e-5-1e-4]
 toc()
+
+FIT$lambda1_opt
+FIT$lambda2_opt
+FIT$gamma1_opt
+FIT$gamma2_opt
+
+
 write.csv(FIT$Beta_array,paste(namedir,"result_K",KKK,"_",density[dd],"percent_",itr,".csv",sep=""))
