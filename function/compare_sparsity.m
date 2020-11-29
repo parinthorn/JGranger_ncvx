@@ -57,9 +57,7 @@ switch toggle
         end
         
         TN = K*(n^2-n)-TP-FN-FP;
-        if TN<0
-            error('somethingwrong')
-        end
+
 end
 stat(:,:,1) = TP;
 stat(:,:,2) = TN;

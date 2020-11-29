@@ -4,11 +4,11 @@
 clear
 clc
 load('D:\JGranger_ncvx\data_compare\model_K50_p1.mat') % gt model
-realization=3;
-GTmodel = E{2,3,2,realization};
+realization=1;
+GTmodel = E{2,3,1,realization};
 n=20;p=1;K=50;
 T = 100;
-load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\result_formulationD_5percent_lag1_K50_',int2str(realization),'.mat'])
+load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\result_formulationD_1percent_lag1_K50_',int2str(realization),'.mat'])
 GridSize = M.GridSize;
 % y = sim_VAR(GTmodel.A,T,1,GTmodel.seed,0);
 % H = zeros(n*p,T-p,K);
