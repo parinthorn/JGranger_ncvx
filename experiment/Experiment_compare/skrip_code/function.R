@@ -533,6 +533,8 @@ softthresh <- function(a,b){
 #######################################
 
 sparsify <- function(m,a){
+  # print(length(m))
+  # print(length(a))
   m1 <- ifelse(abs(m)<a,0,m)
   return(m1)
 }
@@ -1125,7 +1127,10 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     ### (in case we had one element at 0, corresponding element at 0.001 =>
     ### instead of setting them both to (0+0.001)/2 = 0.0005, we just shrink that to 0, ENCOURAGING SPARSITY)
 
+    # ADD FOR LOOP ALL COMBINATION
     fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
+
+
     beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
 
     beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
@@ -1250,11 +1255,17 @@ seq.step <- function(# returns lambda1 and lambda2 picked by the criterion,
   df=3,               # degrees of freedom multiplier for the criterion
   criter.joint.1="AICc.dist",  # the criterion
   criter.joint.2="BIC.dist",
-  A.init=c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE)) #initializes vector beta
+  A.init=c(matrix(diag(1,p),byrow=TRUE))  #initializes vector beta
 ){
-
+  A.init=c(matrix(diag(1,p),byrow=TRUE))
+  for (iteration_k in 2:K){
+  A.init=c(A.init,matrix(diag(1,p),byrow=TRUE))
+  }
+  print(length(A.init))
+  # stop("manual stop")
   ####Initialization part
-
+  # print(Lm)
+  # print(as.matrix(A.init))
   gamma.start <- Lm %*% as.matrix(A.init)
   u.start <- rep(0,p^2)
   u.Est <- list()
@@ -1686,6 +1697,7 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
 
   lambda2.init <- 0
   for (i in 1:n.iter){
+    print("fail here fdas")
     Result <- seq.step(Y=Data.P$Y,
                        X=Data.P$X,
                        Z1=precalc$Z1,
@@ -2102,6 +2114,7 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
         lambda2.init <- 0
 
         for (i in 1:n.iter){
+          print("fail here asdf")
           Result <- seq.step(Y=Data.P$Y,
                              X=Data.P$X,
                              Z1=precalc$Z1,
@@ -2122,7 +2135,7 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
                              df=df,
                              criter.joint.1=criter.joint.1,
                              criter.joint.2=criter.joint.2,
-                             A.init=c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE))
+                             A.init
           )
           lambda2.init <- Result$lambda2.est
         }
