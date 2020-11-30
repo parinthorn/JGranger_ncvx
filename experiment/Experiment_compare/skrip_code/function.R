@@ -1053,8 +1053,8 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
   l_lambda1.path <- length(lambda1.path)
   beta.est <- matrix(0,ncol_X,l_lambda1.path)
   obj.est <- matrix(0,1,l_lambda1.path)
-  u.est <- matrix(0,ncol_X,l_lambda1.path) # PARINTHORN: I DON'T KNOW WHY SKRIPNIKOV SET DIMENSION U.EST to ncol_X/2
-  iter <- rep(0,l_lambda1.path)
+  u.est <- matrix(0,ncol_X*factorial(K)/(factorial(K-2)*factorial(2)),l_lambda1.path) # PARINTHORN: I DON'T KNOW WHY SKRIPNIKOV SET DIMENSION U.EST to ncol_X/2
+  iter <- rep(0,l_lambda1.path)                                                       # BECAUSE 2choose2 = 1/2 ????
   sum.shrunk <- rep(0,l_lambda1.path)
 
 
@@ -1130,8 +1130,16 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     # ADD FOR LOOP ALL COMBINATION
     # first_index_list = c(1,1,1,1,2,2,2,3,3,4)
     # second_index_list= c(2,3,4,5,3,4,5,4,5,5)
-    first_index_list = c(1,1,2)
-    second_index_list= c(2,3,3)
+    
+    
+    if (K==3){
+      first_index_list = c(1,1,2)
+      second_index_list= c(2,3,3)
+    }
+    if (K==5){
+      first_index_list = c(1,1,1,1,2,2,2,3,3,4)
+      second_index_list= c(2,3,4,5,3,4,5,4,5,5)
+    }
     
     # first_index_list = c(1)
     # second_index_list= c(2) 
