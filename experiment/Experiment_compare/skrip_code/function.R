@@ -1053,7 +1053,7 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
   l_lambda1.path <- length(lambda1.path)
   beta.est <- matrix(0,ncol_X,l_lambda1.path)
   obj.est <- matrix(0,1,l_lambda1.path)
-  u.est <- matrix(0,ncol_X/2,l_lambda1.path)
+  u.est <- matrix(0,ncol_X,l_lambda1.path) # PARINTHORN: I DON'T KNOW WHY SKRIPNIKOV SET DIMENSION U.EST to ncol_X/2
   iter <- rep(0,l_lambda1.path)
   sum.shrunk <- rep(0,l_lambda1.path)
 
@@ -1128,20 +1128,56 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     ### instead of setting them both to (0+0.001)/2 = 0.0005, we just shrink that to 0, ENCOURAGING SPARSITY)
 
     # ADD FOR LOOP ALL COMBINATION
-    fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
+    # first_index_list = c(1,1,1,1,2,2,2,3,3,4)
+    # second_index_list= c(2,3,4,5,3,4,5,4,5,5)
+    first_index_list = c(1,1,2)
+    second_index_list= c(2,3,3)
+    
+    # first_index_list = c(1)
+    # second_index_list= c(2) 
+    # index = (idx-1)*group_size+1:idx*group_size
+    
+    group_size = ncol_X/K
+    # print("DEBUGGING")
+    # print(group_size)
+    # print(K)
+    # print(ncol_X)
+    sum.shrunk[ind] <- 0
+    # stop("error")
+    for (iterates in 1:length(first_index_list)){
+        first_idx = first_index_list[iterates]
+        second_idx = second_index_list[iterates]
+        # print(c(first_idx,second_idx))
+        fus.shrink <- ifelse(abs(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] - beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])<fus.thresh,1,0)
+        # tmp = beta.next
+        beta.next.avg <- sparsify((beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] + beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])/2,fus.thresh) # this line computes 
+        # print(("beta.next.avg"))
+        # print(length(beta.next.avg))
+        # print(("beta.next mini chunk"))
+        # print(length(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]))
+        
+        beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]
+        
+        beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)]
+        sum.shrunk[ind] <- sum.shrunk[ind] + sum(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]  == beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])
 
-
-    beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
-
-    beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
-    beta.next[((ncol_X/2)+1):ncol_X] <- fus.shrink*beta.next.avg + (1-fus.shrink)*tail(beta.next,(ncol_X/2))
-
-    sum.shrunk[ind] <- sum(head(beta.next,(ncol_X/2)) == tail(beta.next,(ncol_X/2)))
-
+    }
+    
+    
+    # fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
+    # 
+    # 
+    # beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
+    # 
+    # beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
+    # beta.next[((ncol_X/2)+1):ncol_X] <- fus.shrink*beta.next.avg + (1-fus.shrink)*tail(beta.next,(ncol_X/2))
+    # 
+    # sum.shrunk[ind] <- sum(head(beta.next,(ncol_X/2)) == tail(beta.next,(ncol_X/2)))
+    # print(length(beta.next))
     beta.est[,ind] <- beta.next
     u.est[,ind] <- u.next
     obj.est[,ind] <- obj.next
-
+    
   }
 
   #### Here I have commented the plots of matrices for the case of a single submitted value of sparsity parameter,
