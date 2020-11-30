@@ -65,9 +65,9 @@ set.seed(2)
 
 ### General parameters
 
-K <- 3                     # number of entities
-p <- 5                     # number of variables per entity
-train <- 30                  # number of training points per entity
+K <- 5                     # number of entities
+p <- 20                     # number of variables per entity
+train <- 99                  # number of training points per entity
 
 rep <- 1                       # Number of replicates
 skip <- 0                       # For code reproducibility: in case I'd like to rerun 50 replicates for the same seed,
