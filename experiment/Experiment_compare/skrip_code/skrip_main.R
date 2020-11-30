@@ -66,7 +66,7 @@ set.seed(2)
 ### General parameters
 
 K <- 3                     # number of entities
-p <- 10                     # number of variables per entity
+p <- 5                     # number of variables per entity
 train <- 30                  # number of training points per entity
 
 rep <- 1                       # Number of replicates
@@ -269,13 +269,14 @@ for(run in 1:rep){
   repeat{
     fail <- 0
     Simul.Obj <- Gener.Simul.Data()
-    Atmp <- list()
-    Atmp_vec <- list()
-    for (iteration in 1:K){
-      Atmp <- list(Atmp,Simul.Obj$A.true[[iteration]])
-      Atmp_vec <- cbind(Atmp_vec,matrix(t(Simul.Obj$A.true[[iteration]]),1,p^2))
-      }
-stop("ERROR")
+    Atmp = list()
+    Atmp[1] = list(Simul.Obj$A.true[[1]])
+    Atmp_vec = matrix(t(Simul.Obj$A.true[[1]]),1,p^2)
+    
+    for (iteration in 2:K){
+      Atmp[iteration] <- list(Simul.Obj$A.true[[iteration]])
+      Atmp_vec = cbind(Atmp_vec,matrix(t(Simul.Obj$A.true[[iteration]]),1,p^2))
+    }
     A.true[[run]] <- Atmp
     ## vectorized versions of matrices, by row
     A.true.vec <- Atmp_vec
@@ -300,41 +301,41 @@ stop("ERROR")
     if (fail == 0) break;
   }
 
-stop("ERROR")
-  lambda1.picked.A11[run] <- Separate.Est.Obj$lambda1.picked[1]
-  ind1.picked.A11[run] <- Separate.Est.Obj$ind1.picked[1]
-  lambda1.picked.A22[run] <- Separate.Est.Obj$lambda1.picked[2]
-  ind1.picked.A22[run] <- Separate.Est.Obj$ind1.picked[2]
-  L.11.est[run] <- Separate.Est.Obj$L1.est[1]
-  L.22.est[run] <- Separate.Est.Obj$L1.est[2]
-  TVE.11.est[run] <- Separate.Est.Obj$TVE1.est[1]
-  TVE.22.est[run] <- Separate.Est.Obj$TVE1.est[2]
-  Frob.11[run] <- Separate.Est.Obj$Frob[1]
-  Frob.22[run] <- Separate.Est.Obj$Frob[2]
-  Frob.11.Inv[run] <- Separate.Est.Obj$Frob.Inv[1]
-  Frob.22.Inv[run] <- Separate.Est.Obj$Frob.Inv[2]
-  Pred.Err.Sep[run] <- Separate.Est.Obj$Pred.Err.Sep
-  FP.Sep[run] <- Separate.Est.Obj$FP.Sep
-  FN.Sep[run] <- Separate.Est.Obj$FN.Sep
-  TP.Sep[run] <- Separate.Est.Obj$TP.Sep
-  TN.Sep[run] <- Separate.Est.Obj$TN.Sep
-  Matt.Coef.Sep[run] <- Separate.Est.Obj$Matt.Coef.Sep
-  Frob.Sep[run] <- Separate.Est.Obj$Frob.Sep
+# stop("ERROR")
+#   lambda1.picked.A11[run] <- Separate.Est.Obj$lambda1.picked[1]
+#   ind1.picked.A11[run] <- Separate.Est.Obj$ind1.picked[1]
+#   lambda1.picked.A22[run] <- Separate.Est.Obj$lambda1.picked[2]
+#   ind1.picked.A22[run] <- Separate.Est.Obj$ind1.picked[2]
+#   L.11.est[run] <- Separate.Est.Obj$L1.est[1]
+#   L.22.est[run] <- Separate.Est.Obj$L1.est[2]
+#   TVE.11.est[run] <- Separate.Est.Obj$TVE1.est[1]
+#   TVE.22.est[run] <- Separate.Est.Obj$TVE1.est[2]
+#   Frob.11[run] <- Separate.Est.Obj$Frob[1]
+#   Frob.22[run] <- Separate.Est.Obj$Frob[2]
+#   Frob.11.Inv[run] <- Separate.Est.Obj$Frob.Inv[1]
+#   Frob.22.Inv[run] <- Separate.Est.Obj$Frob.Inv[2]
+#   Pred.Err.Sep[run] <- Separate.Est.Obj$Pred.Err.Sep
+#   FP.Sep[run] <- Separate.Est.Obj$FP.Sep
+#   FN.Sep[run] <- Separate.Est.Obj$FN.Sep
+#   TP.Sep[run] <- Separate.Est.Obj$TP.Sep
+#   TN.Sep[run] <- Separate.Est.Obj$TN.Sep
+#   Matt.Coef.Sep[run] <- Separate.Est.Obj$Matt.Coef.Sep
+#   Frob.Sep[run] <- Separate.Est.Obj$Frob.Sep
   Sigma.Inv.est <- Separate.Est.Obj$Sigma.Inv.est
-
-  AUROC.Sep.Mean[run] <- Separate.Est.Obj$AUROC.Sep.Mean
-  Pred.Err.Sep.Mean[run] <- Separate.Est.Obj$Pred.Err.Sep.Mean
-  Frob.Sep.Mean[run] <- Separate.Est.Obj$Frob.Sep.Mean
-
-  Results[run,6:10] <-   c(Pred.Err.Sep[run],
-                           FP.Sep[run],
-                           FN.Sep[run],
-                           Matt.Coef.Sep[run],
-                           Frob.Sep[run])
-
-  Results.General[run,4:6] <-   c(Pred.Err.Sep.Mean[run],
-                                  AUROC.Sep.Mean[run],
-                                  Frob.Sep.Mean[run])
+# 
+#   AUROC.Sep.Mean[run] <- Separate.Est.Obj$AUROC.Sep.Mean
+#   Pred.Err.Sep.Mean[run] <- Separate.Est.Obj$Pred.Err.Sep.Mean
+#   Frob.Sep.Mean[run] <- Separate.Est.Obj$Frob.Sep.Mean
+# 
+#   Results[run,6:10] <-   c(Pred.Err.Sep[run],
+#                            FP.Sep[run],
+#                            FN.Sep[run],
+#                            Matt.Coef.Sep[run],
+#                            Frob.Sep[run])
+# 
+#   Results.General[run,4:6] <-   c(Pred.Err.Sep.Mean[run],
+#                                   AUROC.Sep.Mean[run],
+#                                  Frob.Sep.Mean[run])
 
   Sep.Est[[run]] <- Separate.Est.Obj$Sep.Est
 
