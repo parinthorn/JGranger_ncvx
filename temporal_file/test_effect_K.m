@@ -18,10 +18,10 @@ n = 20; % time-series channels
 
 load([inpath,'model_K50_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
-realz = 20;
+realz = 10;
 GridSize = 30;
 mname = {'1','5'};
-for ii=1:dd
+for ii=2:dd
     for jj=1:realz
         % generate data from given seed
         for K=K_list
