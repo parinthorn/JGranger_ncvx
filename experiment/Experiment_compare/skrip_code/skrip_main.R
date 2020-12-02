@@ -120,10 +120,10 @@ n.iter <- 1            # number of sequential iterations
 ### lambda grid parameters
 knots1 <- 15                                           # controls lower bound of lambda1 path
 knots2 <- 20                                           # controls lower bound of lambda2 path
-L1 <- NULL                                              # length of lambda1 grid(NULL means we calculate lambda1 path automatically)
-L2 <- 20                                                # length of lambda2 grid
-#lambda.path <- 1*(1/2)^seq(0, knots1, length = L1)     # lambda1 grid
-#L1 <- length(lambda.path)
+L1 <- 30                                              # length of lambda1 grid(NULL means we calculate lambda1 path automatically)
+L2 <- 30                                                # length of lambda2 grid
+lambda.path <- 1*(1/2)^seq(0, knots1, length = L1)     # lambda1 grid
+L1 <- length(lambda.path)
 lambda2.path <- c((2*p)*rho*(1/2)^seq(0, knots1, length = L2),0)   # lambda2 grid, making sure we capture the whole specter of fusion:
 # from identical A11=A22(for high values of lambda2) to dissimilar A11 and A22(low values of lambda2)
 L2 <- length(lambda2.path)
