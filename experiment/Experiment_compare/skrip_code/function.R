@@ -533,6 +533,8 @@ softthresh <- function(a,b){
 #######################################
 
 sparsify <- function(m,a){
+  # print(length(m))
+  # print(length(a))
   m1 <- ifelse(abs(m)<a,0,m)
   return(m1)
 }
@@ -1051,8 +1053,8 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
   l_lambda1.path <- length(lambda1.path)
   beta.est <- matrix(0,ncol_X,l_lambda1.path)
   obj.est <- matrix(0,1,l_lambda1.path)
-  u.est <- matrix(0,ncol_X/2,l_lambda1.path)
-  iter <- rep(0,l_lambda1.path)
+  u.est <- matrix(0,ncol_X*factorial(K)/(factorial(K-2)*factorial(2)),l_lambda1.path) # PARINTHORN: I DON'T KNOW WHY SKRIPNIKOV SET DIMENSION U.EST to ncol_X/2
+  iter <- rep(0,l_lambda1.path)                                                       # BECAUSE 2choose2 = 1/2 ????
   sum.shrunk <- rep(0,l_lambda1.path)
 
 
@@ -1125,18 +1127,65 @@ fused.ADMM <- function(# returns the fused estimates for our grid,
     ### (in case we had one element at 0, corresponding element at 0.001 =>
     ### instead of setting them both to (0+0.001)/2 = 0.0005, we just shrink that to 0, ENCOURAGING SPARSITY)
 
-    fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
-    beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
+    # ADD FOR LOOP ALL COMBINATION
+    # first_index_list = c(1,1,1,1,2,2,2,3,3,4)
+    # second_index_list= c(2,3,4,5,3,4,5,4,5,5)
+    
+    
+    if (K==3){
+      first_index_list = c(1,1,2)
+      second_index_list= c(2,3,3)
+    }
+    if (K==5){
+      first_index_list = c(1,1,1,1,2,2,2,3,3,4)
+      second_index_list= c(2,3,4,5,3,4,5,4,5,5)
+    }
+    
+    # first_index_list = c(1)
+    # second_index_list= c(2) 
+    # index = (idx-1)*group_size+1:idx*group_size
+    
+    group_size = ncol_X/K
+    # print("DEBUGGING")
+    # print(group_size)
+    # print(K)
+    # print(ncol_X)
+    sum.shrunk[ind] <- 0
+    # stop("error")
+    for (iterates in 1:length(first_index_list)){
+        first_idx = first_index_list[iterates]
+        second_idx = second_index_list[iterates]
+        # print(c(first_idx,second_idx))
+        fus.shrink <- ifelse(abs(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] - beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])<fus.thresh,1,0)
+        # tmp = beta.next
+        beta.next.avg <- sparsify((beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] + beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])/2,fus.thresh) # this line computes 
+        # print(("beta.next.avg"))
+        # print(length(beta.next.avg))
+        # print(("beta.next mini chunk"))
+        # print(length(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]))
+        
+        beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]
+        
+        beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)]
+        sum.shrunk[ind] <- sum.shrunk[ind] + sum(beta.next[((first_idx-1)*group_size+1):(first_idx*group_size)]  == beta.next[((second_idx-1)*group_size+1):(second_idx*group_size)])
 
-    beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
-    beta.next[((ncol_X/2)+1):ncol_X] <- fus.shrink*beta.next.avg + (1-fus.shrink)*tail(beta.next,(ncol_X/2))
-
-    sum.shrunk[ind] <- sum(head(beta.next,(ncol_X/2)) == tail(beta.next,(ncol_X/2)))
-
+    }
+    
+    
+    # fus.shrink <- ifelse(abs(beta.next[1:(ncol_X/2)] - beta.next[((ncol_X/2)+1):ncol_X])<fus.thresh,1,0)
+    # 
+    # 
+    # beta.next.avg <- sparsify((head(beta.next,ncol_X/2) + tail(beta.next,ncol_X/2))/2,fus.thresh)
+    # 
+    # beta.next[1:(ncol_X/2)] <- fus.shrink*beta.next.avg + (1-fus.shrink)*head(beta.next,(ncol_X/2))
+    # beta.next[((ncol_X/2)+1):ncol_X] <- fus.shrink*beta.next.avg + (1-fus.shrink)*tail(beta.next,(ncol_X/2))
+    # 
+    # sum.shrunk[ind] <- sum(head(beta.next,(ncol_X/2)) == tail(beta.next,(ncol_X/2)))
+    # print(length(beta.next))
     beta.est[,ind] <- beta.next
     u.est[,ind] <- u.next
     obj.est[,ind] <- obj.next
-
+    
   }
 
   #### Here I have commented the plots of matrices for the case of a single submitted value of sparsity parameter,
@@ -1250,11 +1299,17 @@ seq.step <- function(# returns lambda1 and lambda2 picked by the criterion,
   df=3,               # degrees of freedom multiplier for the criterion
   criter.joint.1="AICc.dist",  # the criterion
   criter.joint.2="BIC.dist",
-  A.init=c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE)) #initializes vector beta
+  A.init=c(matrix(diag(1,p),byrow=TRUE))  #initializes vector beta
 ){
-
+  A.init=c(matrix(diag(1,p),byrow=TRUE))
+  for (iteration_k in 2:K){
+  A.init=c(A.init,matrix(diag(1,p),byrow=TRUE))
+  }
+  print(length(A.init))
+  # stop("manual stop")
   ####Initialization part
-
+  # print(Lm)
+  # print(as.matrix(A.init))
   gamma.start <- Lm %*% as.matrix(A.init)
   u.start <- rep(0,p^2)
   u.Est <- list()
@@ -1686,6 +1741,7 @@ Simul.Data.Joint.Main <- function( # USES A LOT OF GLOBAL VARIABLES
 
   lambda2.init <- 0
   for (i in 1:n.iter){
+    print("fail here fdas")
     Result <- seq.step(Y=Data.P$Y,
                        X=Data.P$X,
                        Z1=precalc$Z1,
@@ -2102,6 +2158,7 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
         lambda2.init <- 0
 
         for (i in 1:n.iter){
+          print("fail here asdf")
           Result <- seq.step(Y=Data.P$Y,
                              X=Data.P$X,
                              Z1=precalc$Z1,
@@ -2122,7 +2179,7 @@ Real.Data.Joint.Main <- function(# returns joint estimates,
                              df=df,
                              criter.joint.1=criter.joint.1,
                              criter.joint.2=criter.joint.2,
-                             A.init=c(matrix(diag(1,p),byrow=TRUE),matrix(diag(1,p),byrow=TRUE))
+                             A.init
           )
           lambda2.init <- Result$lambda2.est
         }

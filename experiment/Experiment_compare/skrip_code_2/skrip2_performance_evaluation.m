@@ -14,8 +14,8 @@ n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
-% dd=1;
-realization = 1;
+dd=1;
+realization = 4;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
@@ -63,4 +63,4 @@ for ii=1:dd
     end
 end
 
-%save([outpath,'skrip_formulationD_accuracy_K50'],'score')
+save([outpath,'skrip_formulationD_accuracy_K50'],'score')

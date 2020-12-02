@@ -14,7 +14,7 @@ K = 50;
 n = 20; % time-series channels
 load([inpath,'model_K',int2str(K),'_p',int2str(p)]) % struct E
 [~,~,dd,m] = size(E);
-realization = 5;
+realization = m;
 mname = {'1','5'};
 for ii=1:dd
     for jj=1:realization

@@ -65,9 +65,9 @@ set.seed(2)
 
 ### General parameters
 
-K <- 3                     # number of entities
-p <- 10                     # number of variables per entity
-train <- 30                  # number of training points per entity
+K <- 5                     # number of entities
+p <- 20                     # number of variables per entity
+train <- 99                  # number of training points per entity
 
 rep <- 1                       # Number of replicates
 skip <- 0                       # For code reproducibility: in case I'd like to rerun 50 replicates for the same seed,
@@ -120,10 +120,10 @@ n.iter <- 1            # number of sequential iterations
 ### lambda grid parameters
 knots1 <- 15                                           # controls lower bound of lambda1 path
 knots2 <- 20                                           # controls lower bound of lambda2 path
-L1 <- NULL                                              # length of lambda1 grid(NULL means we calculate lambda1 path automatically)
-L2 <- 20                                                # length of lambda2 grid
-#lambda.path <- 1*(1/2)^seq(0, knots1, length = L1)     # lambda1 grid
-#L1 <- length(lambda.path)
+L1 <- 30                                              # length of lambda1 grid(NULL means we calculate lambda1 path automatically)
+L2 <- 30                                                # length of lambda2 grid
+lambda.path <- 1*(1/2)^seq(0, knots1, length = L1)     # lambda1 grid
+L1 <- length(lambda.path)
 lambda2.path <- c((2*p)*rho*(1/2)^seq(0, knots1, length = L2),0)   # lambda2 grid, making sure we capture the whole specter of fusion:
 # from identical A11=A22(for high values of lambda2) to dissimilar A11 and A22(low values of lambda2)
 L2 <- length(lambda2.path)
@@ -269,13 +269,14 @@ for(run in 1:rep){
   repeat{
     fail <- 0
     Simul.Obj <- Gener.Simul.Data()
-    Atmp <- list()
-    Atmp_vec <- list()
-    for (iteration in 1:K){
-      Atmp <- list(Atmp,Simul.Obj$A.true[[iteration]])
-      Atmp_vec <- cbind(Atmp_vec,matrix(t(Simul.Obj$A.true[[iteration]]),1,p^2))
-      }
-stop("ERROR")
+    Atmp = list()
+    Atmp[1] = list(Simul.Obj$A.true[[1]])
+    Atmp_vec = matrix(t(Simul.Obj$A.true[[1]]),1,p^2)
+    
+    for (iteration in 2:K){
+      Atmp[iteration] <- list(Simul.Obj$A.true[[iteration]])
+      Atmp_vec = cbind(Atmp_vec,matrix(t(Simul.Obj$A.true[[iteration]]),1,p^2))
+    }
     A.true[[run]] <- Atmp
     ## vectorized versions of matrices, by row
     A.true.vec <- Atmp_vec
@@ -300,41 +301,41 @@ stop("ERROR")
     if (fail == 0) break;
   }
 
-stop("ERROR")
-  lambda1.picked.A11[run] <- Separate.Est.Obj$lambda1.picked[1]
-  ind1.picked.A11[run] <- Separate.Est.Obj$ind1.picked[1]
-  lambda1.picked.A22[run] <- Separate.Est.Obj$lambda1.picked[2]
-  ind1.picked.A22[run] <- Separate.Est.Obj$ind1.picked[2]
-  L.11.est[run] <- Separate.Est.Obj$L1.est[1]
-  L.22.est[run] <- Separate.Est.Obj$L1.est[2]
-  TVE.11.est[run] <- Separate.Est.Obj$TVE1.est[1]
-  TVE.22.est[run] <- Separate.Est.Obj$TVE1.est[2]
-  Frob.11[run] <- Separate.Est.Obj$Frob[1]
-  Frob.22[run] <- Separate.Est.Obj$Frob[2]
-  Frob.11.Inv[run] <- Separate.Est.Obj$Frob.Inv[1]
-  Frob.22.Inv[run] <- Separate.Est.Obj$Frob.Inv[2]
-  Pred.Err.Sep[run] <- Separate.Est.Obj$Pred.Err.Sep
-  FP.Sep[run] <- Separate.Est.Obj$FP.Sep
-  FN.Sep[run] <- Separate.Est.Obj$FN.Sep
-  TP.Sep[run] <- Separate.Est.Obj$TP.Sep
-  TN.Sep[run] <- Separate.Est.Obj$TN.Sep
-  Matt.Coef.Sep[run] <- Separate.Est.Obj$Matt.Coef.Sep
-  Frob.Sep[run] <- Separate.Est.Obj$Frob.Sep
+# stop("ERROR")
+#   lambda1.picked.A11[run] <- Separate.Est.Obj$lambda1.picked[1]
+#   ind1.picked.A11[run] <- Separate.Est.Obj$ind1.picked[1]
+#   lambda1.picked.A22[run] <- Separate.Est.Obj$lambda1.picked[2]
+#   ind1.picked.A22[run] <- Separate.Est.Obj$ind1.picked[2]
+#   L.11.est[run] <- Separate.Est.Obj$L1.est[1]
+#   L.22.est[run] <- Separate.Est.Obj$L1.est[2]
+#   TVE.11.est[run] <- Separate.Est.Obj$TVE1.est[1]
+#   TVE.22.est[run] <- Separate.Est.Obj$TVE1.est[2]
+#   Frob.11[run] <- Separate.Est.Obj$Frob[1]
+#   Frob.22[run] <- Separate.Est.Obj$Frob[2]
+#   Frob.11.Inv[run] <- Separate.Est.Obj$Frob.Inv[1]
+#   Frob.22.Inv[run] <- Separate.Est.Obj$Frob.Inv[2]
+#   Pred.Err.Sep[run] <- Separate.Est.Obj$Pred.Err.Sep
+#   FP.Sep[run] <- Separate.Est.Obj$FP.Sep
+#   FN.Sep[run] <- Separate.Est.Obj$FN.Sep
+#   TP.Sep[run] <- Separate.Est.Obj$TP.Sep
+#   TN.Sep[run] <- Separate.Est.Obj$TN.Sep
+#   Matt.Coef.Sep[run] <- Separate.Est.Obj$Matt.Coef.Sep
+#   Frob.Sep[run] <- Separate.Est.Obj$Frob.Sep
   Sigma.Inv.est <- Separate.Est.Obj$Sigma.Inv.est
-
-  AUROC.Sep.Mean[run] <- Separate.Est.Obj$AUROC.Sep.Mean
-  Pred.Err.Sep.Mean[run] <- Separate.Est.Obj$Pred.Err.Sep.Mean
-  Frob.Sep.Mean[run] <- Separate.Est.Obj$Frob.Sep.Mean
-
-  Results[run,6:10] <-   c(Pred.Err.Sep[run],
-                           FP.Sep[run],
-                           FN.Sep[run],
-                           Matt.Coef.Sep[run],
-                           Frob.Sep[run])
-
-  Results.General[run,4:6] <-   c(Pred.Err.Sep.Mean[run],
-                                  AUROC.Sep.Mean[run],
-                                  Frob.Sep.Mean[run])
+# 
+#   AUROC.Sep.Mean[run] <- Separate.Est.Obj$AUROC.Sep.Mean
+#   Pred.Err.Sep.Mean[run] <- Separate.Est.Obj$Pred.Err.Sep.Mean
+#   Frob.Sep.Mean[run] <- Separate.Est.Obj$Frob.Sep.Mean
+# 
+#   Results[run,6:10] <-   c(Pred.Err.Sep[run],
+#                            FP.Sep[run],
+#                            FN.Sep[run],
+#                            Matt.Coef.Sep[run],
+#                            Frob.Sep[run])
+# 
+#   Results.General[run,4:6] <-   c(Pred.Err.Sep.Mean[run],
+#                                   AUROC.Sep.Mean[run],
+#                                  Frob.Sep.Mean[run])
 
   Sep.Est[[run]] <- Separate.Est.Obj$Sep.Est
 
