@@ -21,12 +21,15 @@ for ii=1:dd
             fprintf('(%d,%d)/n',ii,jj)
             original_model = E{2,3,ii,jj};
             GTmodel = extract_group(original_model,1:K);
-            fname = [resultpath,'varyK_result_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+%             fname = [resultpath,'varyK_result_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+            fname = [resultpath,'cvx_varyK_result_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+
             load(fname)
             model_acc = performance_eval(M,GTmodel);
             toggle_list = {'total','common','differential'};
 %             M.index.bic=best_index(jj);
             ALL_RESULT(ii,k_count,jj).model_acc = model_acc;
+            ALL_RESULT(ii,k_count,jj).index = M.index;
             for tt = 1:length(toggle_list)
                 toggle = toggle_list{tt};
                 R.(toggle).F1(ii,k_count,jj) =model_acc(M.index.bic).(toggle).F1;
@@ -34,10 +37,12 @@ for ii=1:dd
                 R.(toggle).TPR(ii,k_count,jj) =model_acc(M.index.bic).(toggle).TPR;
                 R.(toggle).FPR(ii,k_count,jj) =model_acc(M.index.bic).(toggle).FPR;
                 R.(toggle).ACC(ii,k_count,jj) =model_acc(M.index.bic).(toggle).ACC;
+                
             end
         end
         
     end
 end
 
-save([resultpath,'varyK_formulation_D_result','all'],'R')
+save([resultpath,'cvx_varyK_formulation_D_result_acc'],'R')
+save([resultpath,'cvx_varyK_formulation_D_result_ALL_RESULT'],'ALL_RESULT')
