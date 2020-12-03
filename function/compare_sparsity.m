@@ -42,8 +42,8 @@ switch toggle
         ind = setdiff(ind,1:n+1:n^2);
         TP = length(intersect(ind_true,ind));
         FN = length(setdiff(ind_true,ind));
-        FP = length(setdiff(ind,ind_true));
-        TN = n^2-n-TP-FN-FP;
+        FP = length(setdiff(ind,ind_true)); %undefined
+        TN = n^2-n-TP-FN-FP;%undefined
     case 'single_differential'
         TP = 0;
         FN = 0;
@@ -56,7 +56,7 @@ switch toggle
             FP = FP+length(setdiff(ind{kk},ind_true{kk}));
         end
         
-        TN = K*(n^2-n)-TP-FN-FP;
+        TN = K*(n^2-n)-TP-FN-FP;%negative in diff
 
 end
 stat(:,:,1) = TP;

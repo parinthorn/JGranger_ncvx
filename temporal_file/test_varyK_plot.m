@@ -1,9 +1,8 @@
 clf;close all
 type_acc = {'total','common','differential'};
-load('C:/Users/CU_EE_LAB408/Desktop/tmp/varyK_formulation_D_result_ALL_RESULT.mat')
+load('C:/Users/CU_EE_LAB408/Desktop/tmp/cvx_varyK_formulation_D_result_ALL_RESULT.mat')
 
-load('C:/Users/CU_EE_LAB408/Desktop/tmp/varyK_formulation_D_resultall.mat')
-VK = ALL_RESULT(1,:,2);
+load('C:/Users/CU_EE_LAB408/Desktop/tmp/cvx_varyK_formulation_D_result_acc.mat')
 for tt=1:length(type_acc)
     figure(tt)
 K_list = [5,15,25,35,50];
@@ -16,7 +15,7 @@ for kk=1:length(K_list)
     cnt=cnt+1;
     val = zeros(30,30);
 %     list_ff = 1:size(ALL_RESULT,3);
-    list_ff=5;
+    list_ff=2:2;
     val_bic = 0;
     for ff=list_ff
     tmp = [ALL_RESULT(1,kk,ff).model_acc.(type_acc{tt})];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,30,30)/length(list_ff);
@@ -25,14 +24,30 @@ for kk=1:length(K_list)
     end
     subplot(length(acc_list),length(K_list),plot_seq(cnt))
     imagesc(val);
+    
+%     for ff=list_ff
+%         bic_index = ALL_RESULT(1,kk,ff).index.bic;
+%         [row_bic(ff),col_bic(ff)] = ind2sub([30,30],bic_index);
+%         
+%         aicc_index = ALL_RESULT(1,kk,ff).index.aicc;
+%         [row_aicc(ff),col_aicc(ff)] = ind2sub([30,30],aicc_index);
+%     end
+
+    
+    
     title(sprintf('K=%d,bestcase=%.3f,bic=%.3f',K_list(kk),max(max(val)),val_bic))
     axis('square')
     colormap((1-gray).^0.4)
     caxis([0,1])
     set(gca,'xticklabel',[],'yticklabel',[])
-
+%     hold on
+%     scatter(row_bic,col_bic,'r','filled')
+%     scatter(row_aicc,col_aicc,'b','filled')
+%     
+%     hold off
     if kk==1
         ylabel(acc_list{ss})
+%         legend('BIC','AICc')
     end
 end
 % sgtitle(acc_list{ss})
@@ -42,6 +57,7 @@ end
 %%
 clf;close all
 K_list = [5,15,25,35,50];
+figure;
 for kk=1:length(K_list)
     FPR = zeros(30,30);
     TPR = zeros(30,30);
@@ -49,10 +65,53 @@ for kk=1:length(K_list)
     tmp = [ALL_RESULT(1,kk,ff).model_acc.total];tmp = [tmp.FPR];FPR = FPR+reshape(tmp,30,30)/5;
     tmp = [ALL_RESULT(1,kk,ff).model_acc.total];tmp = [tmp.TPR];TPR = TPR+reshape(tmp,30,30)/5;
     end
-    subplot(1,length(K_list),kk)
+    subplot(3,length(K_list),kk)
     plot(FPR,TPR)
     title(sprintf('K=%d',K_list(kk)))
-    axis([0 0.2 0.9 1])
+    axis([0 1 0 1])
     axis('square')
 %     caxis([0,1])
+    if kk==1
+        ylabel('total')
+    end
+end
+
+for kk=1:length(K_list)
+    FPR = zeros(30,30);
+    TPR = zeros(30,30);
+    for ff=1:5
+    tmp = [ALL_RESULT(1,kk,ff).model_acc.common];tmp = [tmp.FPR];FPR = FPR+reshape(tmp,30,30)/5;
+    tmp = [ALL_RESULT(1,kk,ff).model_acc.common];tmp = [tmp.TPR];TPR = TPR+reshape(tmp,30,30)/5;
+    end
+    subplot(3,length(K_list),kk+5)
+    plot(FPR,TPR)
+    title(sprintf('K=%d',K_list(kk)))
+%     axis([0 0.2 0.9 1])
+axis([0 1 0 1])
+    axis('square')
+%     caxis([0,1])
+    if kk==1
+        ylabel('common')
+    end
+end
+
+for kk=1:length(K_list)
+    if kk==1
+    end
+    FPR = zeros(30,30);
+    TPR = zeros(30,30);
+    for ff=1:5
+    tmp = [ALL_RESULT(1,kk,ff).model_acc.differential];tmp = [tmp.FPR];FPR = FPR+reshape(tmp,30,30)/5;
+    tmp = [ALL_RESULT(1,kk,ff).model_acc.differential];tmp = [tmp.TPR];TPR = TPR+reshape(tmp,30,30)/5;
+    end
+    subplot(3,length(K_list),kk+10)
+    plot(FPR,TPR)
+    title(sprintf('K=%d',K_list(kk)))
+%     axis([0 0.2 0.9 1])
+axis([0 1 0 1])
+    axis('square')
+%     caxis([0,1])
+    if kk==1
+        ylabel('differential')
+    end
 end
