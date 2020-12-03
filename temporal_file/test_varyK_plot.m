@@ -1,6 +1,8 @@
 clf;close all
 type_acc = {'total','common','differential'};
+load('C:/Users/CU_EE_LAB408/Desktop/tmp/varyK_formulation_D_result_ALL_RESULT.mat')
 
+load('C:/Users/CU_EE_LAB408/Desktop/tmp/varyK_formulation_D_resultall.mat')
 VK = ALL_RESULT(1,:,2);
 for tt=1:length(type_acc)
     figure(tt)
@@ -14,23 +16,23 @@ for kk=1:length(K_list)
     cnt=cnt+1;
     val = zeros(30,30);
 %     list_ff = 1:size(ALL_RESULT,3);
-    list_ff=2;
+    list_ff=5;
+    val_bic = 0;
     for ff=list_ff
     tmp = [ALL_RESULT(1,kk,ff).model_acc.(type_acc{tt})];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,30,30)/length(list_ff);
+    tmp2 = squeeze(R.(type_acc{tt}).(acc_list{ss}));
+    val_bic = val_bic + tmp2(kk,ff)/length(list_ff);
     end
     subplot(length(acc_list),length(K_list),plot_seq(cnt))
     imagesc(val);
-    title(sprintf('K=%d,bestcase=%.3f',K_list(kk),max(max(val))))
+    title(sprintf('K=%d,bestcase=%.3f,bic=%.3f',K_list(kk),max(max(val)),val_bic))
     axis('square')
     colormap((1-gray).^0.4)
     caxis([0,1])
     set(gca,'xticklabel',[],'yticklabel',[])
-    if kk==length(K_list)
-        colorbar
-    end
+
     if kk==1
         ylabel(acc_list{ss})
-%         set(get(gca,'YLabel'),'Rotation',0,'VerticalAlignment','top')
     end
 end
 % sgtitle(acc_list{ss})
