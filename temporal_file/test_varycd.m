@@ -9,17 +9,20 @@ type = 2; %D type
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 50;
+K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
 load([inpath,'vary_CD_model',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,cc,dd,m] = size(E);
 realz = m;
 GridSize = 30;
-cname = {'2','4','5','6','8'};
-dname = {'8','6','5','4','2'};
+% cname = {'2','4','5','6','8'};
+% dname = {'8','6','5','4','2'};
+
+cname = {'5','15','25'};
+dname = {'25','15','5'};
 % for cd=1:cc
-for ii=2:dd
+for ii=1:dd
     for jj=1:realz
         % generate data from given seed
         model = E{type,ii,ii,jj};
