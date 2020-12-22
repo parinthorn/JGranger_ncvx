@@ -26,8 +26,8 @@ elseif len_varargin ==2
 else
   error('must be atmost 5 input')
 end
-% Lambda = logspace(-6,0,GridSize);
-Lambda = logspace(-3.5,0,GridSize);
+Lambda = logspace(-6,0,GridSize);
+% Lambda = logspace(-3.5,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
