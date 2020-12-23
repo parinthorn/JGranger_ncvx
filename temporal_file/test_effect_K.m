@@ -1,4 +1,3 @@
-
 %% This experiment estimate VAR with formulation D by ADMM
 clear
 clc
@@ -72,4 +71,5 @@ for ii=1:dd
         end
         %     result_formulationD_1percent_lag1_K5_12
     end
+
 end

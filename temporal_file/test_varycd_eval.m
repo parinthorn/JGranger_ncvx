@@ -1,17 +1,18 @@
 clear
 clc
-total_r = 50;
+
+total_r = 20;
 F1_avg = 0;
 n= 20;p=1;
 type = 2;
 ii=1;
-K=10;
-model_name = {'2','4','5','6','8'};
-% model_name = {'5','15','25'};
-for ii=1:5
+K=5;
+% model_name = {'2','4','5','6','8'};
+model_name = {'5','15','25'};
+for ii=1:3
 for realz = 1:total_r
     fprintf('realization:%d \n',realz)
-load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\cvx_CDvary_result_formulationD_c',model_name{ii},'d',model_name{5-ii+1},'percent_lag1_K',int2str(K),'_',int2str(realz),'.mat'])
+load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\cvx_CDvary_result_formulationD_c',model_name{ii},'d',model_name{3-ii+1},'percent_lag1_K',int2str(K),'_',int2str(realz),'.mat'])
 load(['C:\Users\CU_EE_LAB408\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx\data_compare\vary_CD_model',int2str(K),'_p1.mat'])
 
 stat = [0,0,0,0];

@@ -9,7 +9,6 @@ type = 2; %D type
 T = 100;
 p_true = 1;
 p_est = 1;
-
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
