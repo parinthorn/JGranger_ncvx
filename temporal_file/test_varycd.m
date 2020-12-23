@@ -9,7 +9,8 @@ type = 2; %D type
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 10;
+
+K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
 load([inpath,'vary_CD_model',int2str(K),'_p',int2str(p_true)]) % struct E
@@ -21,6 +22,7 @@ dname = {'8','6','5','4','2'};
 
 % cname = {'5','15','25'};
 % dname = {'25','15','5'};
+
 % for cd=1:cc
 for ii=1:dd
     for jj=1:realz

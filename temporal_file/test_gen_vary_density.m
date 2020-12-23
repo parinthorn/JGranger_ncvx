@@ -6,13 +6,14 @@ outpath = './data_compare/';
 
 n = 20;
 p = 1;
-K = 50;
-realization = 50;
+K = 5;
+realization = 20;
 % common_density = [0.02;0.04;0.05;0.06;0.08]; % for p=1
-common_density = [0.05,0.10,0.15,0.20,0.25];
+common_density = [0.05,0.15,0.25];
 % common_density = [0.01;0.05]; % for p=3
+% differential_density = 0.1-common_density;
 differential_density = 0.3-common_density;
-% differential_density = 0.3-common_density;
+
 model = {'common','differential','similar'};
 mname = {'C','D','S'};
 cnt = 0;

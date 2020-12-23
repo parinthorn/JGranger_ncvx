@@ -1,3 +1,5 @@
+
+%% This experiment estimate VAR with formulation D by ADMM
 clear
 clc
 inpath = './data_compare/';
