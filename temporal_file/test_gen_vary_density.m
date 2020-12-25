@@ -13,6 +13,7 @@ common_density = [0.05,0.15,0.25];
 % common_density = [0.01;0.05]; % for p=3
 % differential_density = 0.1-common_density;
 differential_density = 0.3-common_density;
+
 model = {'common','differential','similar'};
 mname = {'C','D','S'};
 cnt = 0;
