@@ -171,7 +171,11 @@ print(c("comm:",comm))
 print(c("max_eig:",max_eig))
 print(c("n.iter:",n.iter))
 
-
+density = c(1,5)
+realz <- 100
+namedir <- './data_R_formulationS/'
+for (dd in 1:2){
+  for (itr in 1:realz){
 
 ##############################
 ### Starting the code timer ##
@@ -270,7 +274,7 @@ for(run in 1:rep){
     fail <- 0
     Simul.Obj <- Gener.Simul.Data()
     namedir <- './data_R_formulationS/'
-    tmp <- read.csv(file = paste(namedir,'K',K,'_data_1percent_1.csv',sep=""),header=FALSE)
+    tmp <- read.csv(file = paste(namedir,'K',K,'_data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
     tmp <-as.matrix(tmp)
     colnames(tmp) <- NULL
     Simul.Obj$GenData.train <- tmp
@@ -462,3 +466,6 @@ print(sd((Frob.11+Frob.22)/2))
 print("Frobenius norm difference for Inverse Sigma estimates:")
 print(mean(Frob.11.Inv + Frob.22.Inv)/2)
 print(sd((Frob.11.Inv+Frob.22.Inv)/2))
+write.csv(Joint.Est,paste(namedir,"K",K,"_Final_Est_",density[dd],"percent_",itr,".csv",sep=""))
+  }
+}
