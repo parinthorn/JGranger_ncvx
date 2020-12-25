@@ -15,8 +15,8 @@ for ss=1:length(acc_list)
 for kk=1:length(K_list)
     cnt=cnt+1;
     val = zeros(30,30);
-    list_ff = 1:size(ALL_RESULT,3);
-%     list_ff=2:2;
+%     list_ff = 1:size(ALL_RESULT,3);
+    list_ff=2:2;
     val_bic = 0;
     for ff=list_ff
     tmp = [ALL_RESULT(1,kk,ff).model_acc.(type_acc{tt})];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,30,30)/length(list_ff);
