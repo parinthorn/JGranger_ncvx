@@ -18,7 +18,7 @@ for ii=1:dd
     for K=K_list
         k_count = k_count+1;
         for jj=1:realization
-            fprintf('(%d,%d)/n',ii,jj)
+            fprintf('(%d,%d)\n',ii,jj)
             original_model = E{2,3,ii,jj};
             GTmodel = extract_group(original_model,1:K);
 %             fname = [resultpath,'varyK_result_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
@@ -43,6 +43,6 @@ for ii=1:dd
         
     end
 end
-
-save([resultpath,'cvx_varyK_formulation_D_result_acc'],'R')
-save([resultpath,'cvx_varyK_formulation_D_result_ALL_RESULT'],'ALL_RESULT')
+% 
+% save([resultpath,'cvx_varyK_formulation_D_result_acc'],'R')
+% save([resultpath,'cvx_varyK_formulation_D_result_ALL_RESULT'],'ALL_RESULT')

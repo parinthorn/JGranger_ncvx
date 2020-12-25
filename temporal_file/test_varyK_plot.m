@@ -1,3 +1,4 @@
+clear
 clf;close all
 type_acc = {'total','common','differential'};
 load('C:/Users/CU_EE_LAB408/Desktop/tmp/cvx_varyK_formulation_D_result_ALL_RESULT.mat')
@@ -14,8 +15,8 @@ for ss=1:length(acc_list)
 for kk=1:length(K_list)
     cnt=cnt+1;
     val = zeros(30,30);
-%     list_ff = 1:size(ALL_RESULT,3);
-    list_ff=2:2;
+    list_ff = 1:size(ALL_RESULT,3);
+%     list_ff=2:2;
     val_bic = 0;
     for ff=list_ff
     tmp = [ALL_RESULT(1,kk,ff).model_acc.(type_acc{tt})];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,30,30)/length(list_ff);
@@ -25,13 +26,13 @@ for kk=1:length(K_list)
     subplot(length(acc_list),length(K_list),plot_seq(cnt))
     imagesc(val);
     
-%     for ff=list_ff
-%         bic_index = ALL_RESULT(1,kk,ff).index.bic;
-%         [row_bic(ff),col_bic(ff)] = ind2sub([30,30],bic_index);
-%         
-%         aicc_index = ALL_RESULT(1,kk,ff).index.aicc;
-%         [row_aicc(ff),col_aicc(ff)] = ind2sub([30,30],aicc_index);
-%     end
+    for ff=list_ff
+        bic_index = ALL_RESULT(1,kk,ff).index.bic;
+        [col_bic(ff),row_bic(ff)] = ind2sub([30,30],bic_index);
+        
+        aicc_index = ALL_RESULT(1,kk,ff).index.aicc;
+        [col_aicc(ff),row_aicc(ff)] = ind2sub([30,30],aicc_index);
+    end
 
     
     
@@ -40,14 +41,14 @@ for kk=1:length(K_list)
     colormap((1-gray).^0.4)
     caxis([0,1])
     set(gca,'xticklabel',[],'yticklabel',[])
-%     hold on
-%     scatter(row_bic,col_bic,'r','filled')
-%     scatter(row_aicc,col_aicc,'b','filled')
-%     
-%     hold off
+    hold on
+    scatter(row_bic,col_bic,'r','filled')
+    scatter(row_aicc,col_aicc,'b','filled')
+    
+    hold off
     if kk==1
         ylabel(acc_list{ss})
-%         legend('BIC','AICc')
+        legend('BIC','AICc')
     end
 end
 % sgtitle(acc_list{ss})
