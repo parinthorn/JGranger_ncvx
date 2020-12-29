@@ -175,7 +175,7 @@ density = c(1,5)
 realz <- 100
 namedir <- './data_R_formulationS/'
 for (dd in 1:2){
-  for (itr in 1:realz){
+  for (itr in 51:realz){
 
 ##############################
 ### Starting the code timer ##
@@ -397,13 +397,13 @@ time.taken <- proc.time() - ptm
 print(time.taken)
 
 ## Saving all the generated objects into a folder.
-name.dir <- paste("SIMUL_ESTIMATES_","p=",p,"_t=",train,"_rep=",rep,"_diff=", diff,"_ed=",ed,"_comm=",comm,"_max_eig=",max_eig,"_K=",K,sep="")
-dir.create(name.dir)
-setwd(name.dir)
-name.dir.1 <- paste("skip=",skip,sep="")
-dir.create(name.dir.1)
-setwd(name.dir.1)
-save.image(file=paste("All.Objects"))
+#name.dir <- paste("SIMUL_ESTIMATES_","p=",p,"_t=",train,"_rep=",rep,"_diff=", diff,"_ed=",ed,"_comm=",comm,"_max_eig=",max_eig,"_K=",K,sep="")
+#dir.create(name.dir)
+#setwd(name.dir)
+#name.dir.1 <- paste("skip=",skip,sep="")
+#dir.create(name.dir.1)
+#setwd(name.dir.1)
+#save.image(file=paste("All.Objects"))
 
 
 
