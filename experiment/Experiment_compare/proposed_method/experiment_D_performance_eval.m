@@ -21,7 +21,7 @@ for ii=1:dd
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         toggle_list = {'total','common','differential'};
-        M.index.bic=best_index(jj);
+%         M.index.bic=best_index(jj);
         ALL_RESULT(ii,jj).model_acc = model_acc;
         for tt = 1:length(toggle_list)
             toggle = toggle_list{tt};
