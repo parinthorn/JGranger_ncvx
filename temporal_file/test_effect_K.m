@@ -18,18 +18,21 @@ n = 20; % time-series channels
 
 load([inpath,'model_K50_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
-realz = 10;
+realz = 50;
 GridSize = 30;
 mname = {'1','5'};
 for ii=2:dd
-    for jj=1:realz
+    for jj=5:5
         % generate data from given seed
-        for K=K_list
+        for K=[50]
             [P,~] = offdiagJSS(n,p_est,K);
             model = E{type,cd,ii,jj};
             y = sim_VAR(model.A(:,:,:,1:K),T,1,model.seed,0);
-            M = formulation_D(y,P,p_est,GridSize);
-            save([outpath,'varyK_result_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%             M = formulation_D(y,P,p_est,GridSize);
+            M = test_cvxformulation_D(y,P,p_est,GridSize);
+%             save([outpath,'varyK_result_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+            save([outpath,'cvx_varyK_result_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+
         end
         %     result_formulationD_1percent_lag1_K5_12
     end

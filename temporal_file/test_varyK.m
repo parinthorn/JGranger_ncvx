@@ -3,14 +3,14 @@ clc
 inpath = './data_compare/';
 
 % resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
-% resultpath = 'D:/parinthorn_thesis/formulation_D_result/';
-resultpath = 'C:/Users/CU_EE_LAB408/Desktop/tmp/'; 
+resultpath = 'D:/parinthorn_thesis/formulation_D_result/';
+% resultpath = 'C:/Users/CU_EE_LAB408/Desktop/tmp/'; 
 % load('G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/best_index_K50.mat')
 mname = {'1','5'};
 dd = length(mname);
-dd=1;
+% dd=1;
 % dd=2;
-realization = 5;
+realization = 50;
 load([inpath,'model_K50_p1'])
 K_list = [5,15,25,35,50];
 for ii=1:dd
@@ -44,5 +44,5 @@ for ii=1:dd
     end
 end
 % 
-% save([resultpath,'cvx_varyK_formulation_D_result_acc'],'R')
-% save([resultpath,'cvx_varyK_formulation_D_result_ALL_RESULT'],'ALL_RESULT')
+save([resultpath,'cvx_varyK_formulation_D_result_acc_50'],'R')
+save([resultpath,'cvx_varyK_formulation_D_result_ALL_RESULT_50'],'ALL_RESULT')
