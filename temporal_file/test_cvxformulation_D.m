@@ -104,8 +104,8 @@ for ii=1:GridSize
         end
     end
     tmp_struct.stat.model_selection_score(ii,:) = score;
-    tmp_struct.A_reg(:,:,1:p,:,ii,:) = A_reg;
-    tmp_struct.A(:,:,1:p,:,ii,:) = A;
+    tmp_struct.A_reg(:,:,1:p,1:K,ii,:) = A_reg;
+    tmp_struct.A(:,:,1:p,1:K,ii,:) = A;
     tmp_struct.ind(ii,:) = ind;
     tmp_struct.ind_common(ii,:) = ind_common;
     tmp_struct.ind_differential(ii,:) = ind_differential;
@@ -117,8 +117,8 @@ end
 for ii=1:GridSize
   for jj=1:GridSize
     M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
-    M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,:,ii,jj);
-    M.model(ii,jj).A = tmp_struct.A(:,:,1:p,:,ii,jj);
+    M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,1:K,ii,jj);
+    M.model(ii,jj).A = tmp_struct.A(:,:,1:p,1:K,ii,jj);
     M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
     for kk=1:K
         M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk));

@@ -51,7 +51,7 @@ M.lambda_crit = Lmax;
 M.lambda_range = [Lambda(1) Lambda(end)];
 M.GridSize = GridSize;
 M.flag = zeros(GridSize);
-ALG_PARAMETER.PRINT_RESULT=0;
+ALG_PARAMETER.PRINT_RESULT=1;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.L1 = P;
 ALG_PARAMETER.L2 = P;
@@ -59,6 +59,9 @@ ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
 ALG_PARAMETER.Ts = 50;
+ALG_PARAMETER.is_chol=1;
+ALG_PARAMETER.multiplier = 2;
+ALG_PARAMETER.toggle = 'formulationD';
 t1 = tic;
 
 
@@ -69,13 +72,13 @@ t1 = tic;
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-parfor ii=1:GridSize
+for ii=1:GridSize
     a = Lambda(ii);
         fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM(gc, yc, P,P,0, a,2,1, cvx_param,xLS);
+          [x0, ~, ~] = spectral_ADMM(gc, yc,0, a,2,1, cvx_param,xLS);
         else
           x0 = xLS;
         end
