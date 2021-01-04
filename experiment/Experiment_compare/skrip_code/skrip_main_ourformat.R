@@ -175,7 +175,7 @@ density = c(1,5)
 realz <- 100
 namedir <- './data_R_formulationS/'
 for (dd in 1:2){
-  for (itr in 1:realz){
+  for (itr in 51:realz){
 
 ##############################
 ### Starting the code timer ##
