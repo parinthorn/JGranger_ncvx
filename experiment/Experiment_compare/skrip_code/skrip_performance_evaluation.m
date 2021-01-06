@@ -22,12 +22,12 @@ mname = {'1','5'};
 
 for ii=1:dd
 
-    for jj=1:12
+    for jj=1:realization
         
         fprintf('(%d,%d)\n',ii,jj)
         % performance eval
-        model = E{type,cd,ii,jj+18};
-        D = readtable([inpath,'K',int2str(K),'_Final_Est_',mname{ii},'percent_',int2str(jj+18),'.csv']);
+        model = E{type,cd,ii,jj};
+        D = readtable([inpath,'K',int2str(K),'_Final_Est_',mname{ii},'percent_',int2str(jj),'.csv']);
         D = table2array(D);
         D = D(:,2:end); % D = size (n,n*K), p=1
         A = reshape(D,[n,n,K]);

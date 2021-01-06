@@ -20,8 +20,8 @@ D = sparse(Dtmp*P);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for ii=1:dd
-    for jj=1:realz
+for ii=1:1
+    for jj=1:1
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
