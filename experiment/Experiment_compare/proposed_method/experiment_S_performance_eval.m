@@ -31,3 +31,45 @@ for ii=1:length(mname)
     end
 end
 % save([resultpath,'formulation_S_result'],'R')
+% save([resultpath,'formulation_S_ALL_RESULT'],'ALL_RESULT')
+
+%% summarize model selection score
+clear
+clc
+inpath = './data_compare/';
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
+mname = {'1','5'};
+realization = 100;
+load([inpath,'model_K5_p1'])
+for ii=1:length(mname)
+    for jj=1:realization
+        fprintf('(%d,%d)\n',ii,jj)
+        GTmodel = E{3,3,ii,jj};
+        fname = [resultpath,'result_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
+        load(fname)
+        tmp = [M.model];tmp=[tmp.stat];tmp=reshape([tmp.model_selection_score],[M.GridSize,M.GridSize]);
+        DBG(ii,jj).model_selection_score =tmp;
+    end
+end
+% save([resultpath,'formulation_S_summary_model_selection_score.mat'],'DBG')
+%% check divergence
+clear
+clc
+inpath = './data_compare/';
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
+mname = {'1','5'};
+realization = 100;
+load([inpath,'model_K5_p1'])
+for ii=1:length(mname)
+    for jj=1:realization
+        fprintf('(%d,%d)\n',ii,jj)
+        GTmodel = E{3,3,ii,jj};
+        fname = [resultpath,'result_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
+        load(fname)
+%         tmp = [M.model];tmp=[tmp.stat];tmp=reshape([tmp.model_selection_score],[M.GridSize,M.GridSize]);
+        DBG(ii,jj).err = sum(M.flag,'all');
+        if DBG(ii,jj).err>0
+            fprintf('(%d,%d):DIVERGE\n',ii,jj)
+        end
+    end
+end

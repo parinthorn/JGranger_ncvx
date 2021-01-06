@@ -51,7 +51,7 @@ ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.L1 = P;
 ALG_PARAMETER.L2 = D;
-ALG_PARAMETER.dim = [n,p,K,p,p*K];
+ALG_PARAMETER.dim = [n,p,K,p,p];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
 ALG_PARAMETER.Ts = 100;
@@ -68,7 +68,7 @@ Indplus_in = Dplus*Ind;
 Indminus_in = abs(Dminus*Ind);
 
 t1 = tic;
-for ii=1:GridSize % test 12
+for ii=1:GridSize % test 20
     a1 = Lambda(ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
@@ -77,7 +77,7 @@ for ii=1:GridSize % test 12
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor jj=1:GridSize %test 18
+    for jj=1:GridSize %test 30
         Indplus = Indplus_in;
         Indminus = Indminus_in;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
@@ -97,9 +97,10 @@ for ii=1:GridSize % test 12
             union(unique(Indplus(Dplus*x_cls~=0)), ...
                   unique(Indminus(Dminus*x_cls~=0))), ...
             union(Indplus(D*x_cls==0), ...
-                  Indminus(D*x_cls==0)));
-        tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
-        df = length(find(x_cls))-length(unique(tmp(1,:)));
+                  Indminus(D*x_cls==0))); % intuitively, this operation is to find indices of nonzero variables but with zero differences
+%         tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
+        tmp =length(find(diff(x_cls(fused_index))==0));
+        df = length(find(x_cls))-tmp;
         A(:,:,:,:,1,jj) = A_cls;
 %         error('please insert model_selection for formulationS')
         score(1,jj) = model_selection_S(Y,A_cls,df);
