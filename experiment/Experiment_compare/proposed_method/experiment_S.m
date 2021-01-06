@@ -2,7 +2,8 @@
 clear
 clc
 inpath = './data_compare/';
-outpath = '../formulation_S_result/';
+% outpath = '../formulation_S_result/';
+outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
 mkdir(outpath)
 type = 3; %S type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
@@ -20,12 +21,12 @@ D = sparse(Dtmp*P);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for ii=1:1
-    for jj=1:1
+for jj=1:realz
+    for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = formulation_S(y,P,D,p_est,GridSize);
-%        save([outpath,'result_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        save([outpath,'result_fixdf_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end
