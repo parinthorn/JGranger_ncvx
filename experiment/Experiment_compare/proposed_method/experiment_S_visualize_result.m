@@ -2,10 +2,12 @@ clear
 clf;close all
 type_acc = {'total','common','differential'};
 acc_list = {'ACC','F1','MCC'};
-name_list = {'bic','aic','aicc'};
+name_list = {'eBIC','GIC_5','GIC_6'};%{'bic','aicc'};
+% name_list = {'bic','aic','aicc'};
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
-load([resultpath,'formulation_S_ALL_RESULT'])
-load([resultpath,'formulation_S_index'])
+load([resultpath,'formulation_S_ALL_RESULT_fixdf'])
+load([resultpath,'formulation_S_result_fixdf'])
+% load([resultpath,'formulation_S_index'])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
 diff_den = {'1%','5%'};
@@ -31,7 +33,8 @@ for ii=1:dd
             for mm=1:length(name_list)
                 h = zeros(30,30);
                 for jj=1:realz
-                    h(index.(name_list{mm})(ii,jj)) = 1;
+%                     h(index.(name_list{mm})(ii,jj)) = 1;
+                    h(R.index(ii,jj).(name_list{mm})) = 1;
                 end
                 [ind_row,ind_col] = ind2sub([30,30],find(h));
                 scatter(ind_col,ind_row);

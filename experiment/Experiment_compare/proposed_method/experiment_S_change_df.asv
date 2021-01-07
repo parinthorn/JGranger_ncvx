@@ -1,0 +1,25 @@
+
+name_list = {'df','L','bic','aicc'};
+h.df = zeros(30,30);
+h.bic = zeros(30,30);
+h.aicc = zeros(30,30);
+h.L = zeros(30,30);
+for ii=1:30
+    for jj=1:30
+        for kk = 1:length(name_list)
+        h.(name_list{kk})(ii,jj) = M.model(ii,jj).stat.model_selection_score.(name_list{kk});%length(find(M.model(ii,jj).A(:)));
+        end
+        h.df_lasso(ii,jj) = length(find(M.model(ii,jj).A(:)));
+    end
+end
+%%
+summary.F1(ii,jj
+for ii=1:2
+    h = zeros(30,30);
+    figure(ii);
+    for jj=1:27
+        h(R.index(ii,jj).bic) = h(R.index(ii,jj).bic)+1;
+        ALL_RESULT(ii,jj).model_acc(R.index(ii,jj).bic).F1
+    end
+    imagesc(h)
+end

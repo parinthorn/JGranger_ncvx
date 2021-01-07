@@ -36,17 +36,12 @@ for ii=1:length(mname)
         binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
         eBIC = L+log(T-p).*df + 2*kappa.*binom_term;
         
-        GIC_2 =  L+df.*(n^2*p*K)^(1/3);
-        GIC_3 =  L+df.*(2*log(n^2*p*K));
-        GIC_4 =  L+df.*(2*(log(n^2*p*K)+log(log(n^2*p*K))));
-        GIC_5 = L+df.*log(log(T-p)).*log(n^2*p*K);
-        GIC_6 = L+df.*log(T-p).*log(n^2*p*K);
+        GIC_4 =  L+df.*(2*(log(n^2*p*K)))
+        GIC_5 = L+log(log(T-p)).*df.*log(n^2*p*K);
+        GIC_6 = L+log(T-p).*df.*log(n^2*p*K);
         % https://jmlr.org/papers/volume13/kim12a/kim12a.pdf
         
         [~,R.index(ii,jj).bic_lasso] = min(bic_lasso(:));
-        [~,R.index(ii,jj).GIC_2] = min(GIC_2(:));
-        [~,R.index(ii,jj).GIC_3] = min(GIC_3(:));
-        [~,R.index(ii,jj).GIC_4] = min(GIC_4(:));
         [~,R.index(ii,jj).GIC_5] = min(GIC_5(:));
         [~,R.index(ii,jj).GIC_6] = min(GIC_6(:));
         [~,R.index(ii,jj).eBIC] = min(eBIC(:));
