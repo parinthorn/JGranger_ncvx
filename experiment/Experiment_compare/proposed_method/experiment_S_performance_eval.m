@@ -3,7 +3,7 @@ clc
 inpath = './data_compare/';
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
 mname = {'1','5'};
-realization = 37;
+realization = 62;
 load([inpath,'model_K5_p1'])
 name_list = {'bic','aicc'};
 T=100;
@@ -65,6 +65,8 @@ for ii=1:length(mname)
             R.(toggle).FPR(ii,jj) =model_acc(index_selected).(toggle).FPR;
             R.(toggle).ACC(ii,jj) =model_acc(index_selected).(toggle).ACC;
         end
+        fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
+            mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
         
     end
 end
