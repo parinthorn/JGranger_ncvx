@@ -45,7 +45,7 @@ for ii=1:dd
 
         end
     end
-    ARR = zeros(5,length(name_list));
+    ARR = zeros(5,length(name_list)+1);
     for nn=1:length(name_list)
         
         for jj=1:realz
@@ -61,8 +61,30 @@ for ii=1:dd
 %             mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:)))
         ARR(:,nn)= [mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:))]';
     end
+    load('C:\Users\CU_EE_LAB408\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx\experiment\Experiment_compare\skrip_code\data_R_formulationS\skrip_formulationS_accuracy_K5_55realz')
+    acc_list = {'F1','MCC','ACC','FPR','TPR'};
+    for kk=1:length(acc_list)
+        %     for nn=1:length(name_list)
+        ARR(kk,length(name_list)+1) = mean(score(ii).total.(acc_list{kk}));
+    end
+    
+    
     disp(['density:',diff_den{ii}])
-    t = array2table(ARR,'VariableNames',name_list,'RowNames', {'F1', 'MCC', 'ACC', 'FPR','TPR'});
+    t = array2table(ARR,'VariableNames',[name_list 'skrip'],'RowNames', {'F1', 'MCC', 'ACC', 'FPR','TPR'});
+    t.Variables =  round(t.Variables*100,2);
+    disp(t)
+end
+
+%% skrip
+
+% name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
+
+for ii=1:2
+    ARR = zeros(length(acc_list),1);
+
+%     end
+    disp(['density:',diff_den{ii}])
+    t = array2table(ARR,'VariableNames',{'Skrip'},'RowNames', acc_list);
     t.Variables =  round(t.Variables*100,2);
     disp(t)
 end
