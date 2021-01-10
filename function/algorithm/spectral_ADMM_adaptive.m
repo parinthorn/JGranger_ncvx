@@ -286,8 +286,12 @@ if all(z1==0,'all')
 else
     history.zero_flag = 0;
 end
+
+tmp = z1;
+tmp_2 = double(L1~=0)*x;
+tmp(tmp~=0) = tmp_2(tmp~=0);
 X = reshape(x,p,K,n^2); % x1 is not sparse
-X2 = reshape(z1,p,K,n^2-n); % x2 is offdiagonal entries only and sparse
+X2 = reshape(tmp,p,K,n^2-n); % tmp is offdiagonal entries only and sparse
 IND_offdiag = setdiff((1:n^2)',(1:n+1:n^2)','rows');
 X(:,:,IND_offdiag) = X2;
 x = X(:);

@@ -125,8 +125,10 @@ for ii=1:GridSize % test 20
     tmp_struct.flag(ii,:) = flag;
     tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-[~,M.index.bic] = min([tmp_struct.stat.model_selection_score.bic]);
-[~,M.index.aicc] = min([tmp_struct.stat.model_selection_score.aicc]);
+GIC_LIST = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+for nn=1:length(GIC_LIST)
+[~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
+end
 for ii=1:GridSize
   for jj=1:GridSize
     M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);

@@ -45,6 +45,7 @@ else
     elseif (p==2 && q==1)
         nz_ind = (normz_vect)>v;
         z_ind = (normz_vect)<=v;
+        v = v(nz_ind);
         tmp_prox(nz_ind) = (1-v./(normz_vect(nz_ind)));
         tmp_prox(z_ind) = 0;
         tmp_prox = kron(tmp_prox',ones(gLen,1));

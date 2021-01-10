@@ -42,8 +42,10 @@ weight_2 = 1./(sqrt(sum(reshape(P*xLS,[p*K,n^2-n]).^2,1))');
 
 disp('calculating Lambda max')
 
-Lmax_1 = lambdamax_grouplasso_v2(gc,yc,p,[n ,p ,K])/min(weight_1);
-Lmax_2 = lambdamax_grouplasso_v2(gc,yc,p*K,[n ,p ,K])/min(weight_2);
+P_1 = diag(weight_1);
+P_2 = diag(weight_2);
+Lmax_1 = lambdamax_grouplasso_v2(gc,yc,p,[n ,p ,K],P_1);
+Lmax_2 = lambdamax_grouplasso_v2(gc,yc,p*K,[n ,p ,K],P_2);
 
 
 Lambda_1 = Lambda*Lmax_1.*weight_1;
