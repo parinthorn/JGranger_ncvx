@@ -3,7 +3,7 @@ clear
 clc
 inpath = './data_compare/';
 % outpath = '../formulation_D_result/';
-outpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result';
+outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
 mkdir(outpath)
 
 type = 2; %D type
@@ -12,10 +12,10 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 5;
+K = 50;
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
-realz = m;
+realz = 10;
 GridSize = 30;
 mname = {'1','5'};
 for jj=1:realz
