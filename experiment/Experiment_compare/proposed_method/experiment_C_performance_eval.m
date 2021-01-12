@@ -14,16 +14,21 @@ for ii=1:length(mname)
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,ii+2,2,jj};
-        fname = [resultpath,'formulationC_',mname{ii},'percent_',int2str(jj)];
+        fname = [resultpath,'result_adaptive_formulationC_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         toggle = 'common';
-        R.F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
-        R.MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
-        R.TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
-        R.FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
-        R.ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
+        R.F1(ii,jj) =model_acc(M.index.GIC_5).(toggle).F1;
+        R.MCC(ii,jj) =model_acc(M.index.GIC_5).(toggle).MCC;
+        R.TPR(ii,jj) =model_acc(M.index.GIC_5).(toggle).TPR;
+        R.FPR(ii,jj) =model_acc(M.index.GIC_5).(toggle).FPR;
+        R.ACC(ii,jj) =model_acc(M.index.GIC_5).(toggle).ACC;
         
     end
+end
+
+name_list = {'TPR','FPR','ACC','F1','MCC'};
+for nn=1:length(name_list)
+    
 end
 % save([resultpath,'formulation_C_result'],'R')
