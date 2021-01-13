@@ -82,7 +82,9 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
+    
     parfor jj=1:GridSize
+%         history.flag = 0;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
@@ -91,7 +93,11 @@ for ii=1:GridSize
         else
           x0 = xLS;
         end
+%         if ((jj>=20)&&(jj<=30))||((ii>=15)&&(ii<=25))
         [x_reg, ~,~, history] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,0.5, ALG_PARAMETER,x0);
+%         else
+%             x_reg = zeros(n^2*p*K,1);
+%         end
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));

@@ -10,7 +10,7 @@ mname = {'1','5'};
 dd = length(mname);
 % dd=1;
 % dd=2;
-realization = 6;
+realization = 22;
 load([inpath,'model_K50_p1'])
 name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 for ii=1:dd

@@ -3,8 +3,8 @@ clear
 clc
 close all
 modelpath = './data_compare/';
-inpath = './experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
-outpath = './experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
+inpath = 'C:\Users\parinthorn\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx/experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
+outpath = 'C:\Users\parinthorn\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx/experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
 type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
@@ -14,8 +14,8 @@ n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
-dd=1;
-realization = 4;
+dd=2;
+realization = 5;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
