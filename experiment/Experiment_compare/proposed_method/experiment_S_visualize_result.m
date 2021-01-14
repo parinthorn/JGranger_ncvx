@@ -3,6 +3,7 @@ clc
 clf;close all
 type_acc = {'total','common','differential'};
 acc_list = {'ACC','F1','MCC'};
+acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 % name_list = {'bic','aic','aicc'};
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
@@ -46,31 +47,26 @@ for ii=1:dd
         end
     end
     ARR = zeros(5,length(name_list)+1);
-    for nn=1:length(name_list)
-        
-        for jj=1:realz
-            index_selected = R.index(ii,jj).(name_list{nn});
-            summary.total.F1(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.F1;
-            summary.total.MCC(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.MCC;
-            summary.total.TPR(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.TPR;
-            summary.total.FPR(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.FPR;
-            summary.total.ACC(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.ACC;
+     for nn=1:length(name_list)
+        for kk=1:length(acc_list_2)
+            for jj=1:realz
+                index_selected = R.index(ii,jj).(name_list{nn});
+                summary.total.(acc_list_2{kk})(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.(acc_list_2{kk});
+            end
+            ARR(kk,nn) = mean(summary.total.(acc_list_2{kk})(ii,:));
         end
-%         disp(['Index:',name_list{nn}])
-%         fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n \n\n\n', ...
-%             mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:)))
-        ARR(:,nn)= [mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:))]';
+%         ARR(:,nn)= [mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:))]';
     end
-    load('C:\Users\CU_EE_LAB408\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx\experiment\Experiment_compare\skrip_code\data_R_formulationS\skrip_formulationS_accuracy_K5_55realz')
-    acc_list = {'F1','MCC','ACC','FPR','TPR'};
-    for kk=1:length(acc_list)
+    load('.\experiment\Experiment_compare\skrip_code\data_R_formulationS\skrip_formulationS_accuracy_K5_55realz')
+%     acc_list = {'F1','MCC','ACC','FPR','TPR'};
+    for kk=1:length(acc_list_2)
         %     for nn=1:length(name_list)
-        ARR(kk,length(name_list)+1) = mean(score(ii).total.(acc_list{kk}));
+        ARR(kk,length(name_list)+1) = mean(score(ii).total.(acc_list_2{kk}));
     end
     
     
     disp(['density:',diff_den{ii}])
-    t = array2table(ARR,'VariableNames',[name_list 'skrip'],'RowNames', {'F1', 'MCC', 'ACC', 'FPR','TPR'});
+    t = array2table(ARR,'VariableNames',[name_list 'skrip'],'RowNames', acc_list_2);
     t.Variables =  round(t.Variables*100,2);
     disp(t)
 end

@@ -77,7 +77,7 @@ end
 
 
 t1 = tic;
-for ii=1:GridSize
+for ii=19:GridSize
     a1 = Lambda_1(:,ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
@@ -86,7 +86,7 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    for jj=25:GridSize
+    for jj=12:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
