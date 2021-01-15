@@ -15,7 +15,7 @@ P1_p = sparse(kron(P1,speye(K)))*diag(w1); % project w1 to off block-diagonal si
 P_p = kron(P1_p,speye(p)); % Expand w1 to original size
 
 w2 = (1./(sqrt(sum(reshape(xLS,[p*K,n^2]).^2,1)))).^(q*gamma);
-P1_pK = P1*diag(w2); % project w1 to off diagonal
+P1_pK = P1*diag(w2); % project w2 to off diagonal block
 P_pK = kron(P1_pK,speye(p*K));
 
 % P_m1 = P*sparse(kron(P1_m1,speye(m1)));
