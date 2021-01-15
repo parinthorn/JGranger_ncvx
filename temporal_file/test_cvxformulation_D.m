@@ -13,8 +13,8 @@ function M = test_cvxformulation_D(y,varargin)
 [n,T,K] = size(y);
 len_varargin = length(varargin);
 % toggle = 'static';
-toggle = 'adaptive_P';
-% toggle = 'adaptive_L';
+% toggle = 'adaptive_P';
+toggle = 'adaptive_L';
 if isempty(varargin)
   p=1;
   GridSize = 30;
@@ -47,7 +47,7 @@ else
 end
 
 
-ALG_PARAMETER.PRINT_RESULT=1;
+ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
@@ -77,7 +77,7 @@ end
 
 
 t1 = tic;
-for ii=19:GridSize
+for ii=1:GridSize
     a1 = Lambda_1(:,ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
@@ -86,7 +86,7 @@ for ii=19:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    for jj=12:GridSize
+    parfor jj=1:GridSize
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
