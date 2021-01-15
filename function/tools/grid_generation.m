@@ -38,5 +38,23 @@ switch toggle
         
         opt.L1 = P;
         opt.L2 = P;
+    case 'adaptive_D'
+%         gamma = PARAMETER.gamma;
+        if (m1~=m2)
+            error('This formulation allows only m1=m2')
+        end
+        xLS = G\b;
+        [~,P,P1,D,weight_1,weight_2] = weighted_projection_S(xLS,q,PARAMETER);
+
+        Lambda0 = lambdamax_grouplasso_v2(G,b,m1,[n ,p ,K],P1);
+        
+
+        
+        Lambda_1 = weight_1.*Lambda.*Lambda0;
+        Lambda_2 = weight_2.*Lambda.*Lambda0;
+        
+        
+        opt.L1 = P;
+        opt.L2 = D;
 end
 end

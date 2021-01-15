@@ -21,12 +21,12 @@ D = sparse(Dtmp*P);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for jj=91:100
+for jj=1:realz
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = formulation_S(y,P,D,p_est,GridSize);
-        save([outpath,'result_fixdf_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        M = formulation_S(y,p_est,GridSize);
+        save([outpath,'result_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

@@ -1,4 +1,4 @@
-function [lambda_max,lambda_intrinsic] = lambdamax_grouplasso_v2(G,b,block_size,PARAMETER,varargin)
+function [lambda_max] = lambdamax_grouplasso_v2(G,b,block_size,PARAMETER,varargin)
 % [lambda_max] = lambdamax_grouplass(G,b,[n p K],P)
 % 
 % lambda_max calculates the maximum value of penalty parameter in the
@@ -58,5 +58,4 @@ C = reshape(c,block_size,n^2*p*K/block_size);
 else
     error("block size inconsistent")
 end
-[lambda_max,index_max] = max( abs(sqrt(sum(C.^2,1)) )./vecP);
-lambda_intrinsic = lambda_max*vecP(index_max);
+[lambda_max] = max( abs(sqrt(sum(C.^2,1)) )./vecP);
