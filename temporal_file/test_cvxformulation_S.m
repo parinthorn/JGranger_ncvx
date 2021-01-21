@@ -1,4 +1,4 @@
-function M = test_cvxformulation_S(y,P,D,varargin)
+function M = test_cvxformulation_S(y,varargin)
 %% This program estimates Ground truth with their original model
 % Input are
 %             y : 3D array [n,Num,K] which is dimension of timeseries,
@@ -11,8 +11,8 @@ function M = test_cvxformulation_S(y,P,D,varargin)
 %           M.x_est
 [n,T,K] = size(y);
 len_varargin = length(varargin);
-
-
+% toggle = 'static';
+toggle = 'adaptive_D';
 if isempty(varargin)
   p=1;
   GridSize = 30;
@@ -23,9 +23,9 @@ elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
 else
-  error('must be atmost 5 input')
+  error('must be atmost 3 input')
 end
-Lambda = logspace(-6,0,GridSize);
+% Lambda = logspace(-6,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
@@ -35,30 +35,44 @@ end
 disp('vectorizing model')
 [yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
 disp('calculating Lambda max')
-Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
-Lambda = Lambda*Lmax;
+% Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
+% Lambda = Lambda*Lmax;
 xLS = gc\yc;
 if T>n*p
   init_cvx = 0;
 else
   init_cvx = 1;
 end
-M.lambda_crit = Lmax;
-M.lambda_range = [Lambda(1) Lambda(end)];
-M.GridSize = GridSize;
-M.flag = zeros(GridSize);
 ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
-ALG_PARAMETER.L1 = P;
-ALG_PARAMETER.L2 = D;
-ALG_PARAMETER.dim = [n,p,K,p,p*K];
+ALG_PARAMETER.dim = [n,p,K,p,p];
 ALG_PARAMETER.rho_init = 1;
 ALG_PARAMETER.epscor = 0.1;
 ALG_PARAMETER.Ts = 100;
 ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
+ALG_PARAMETER.gamma = 1; % for adaptive case
 
+disp('calculating Lambda max')
+qq=1; %non-convex case
+[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
+ALG_PARAMETER.L1 = opt.L1;
+ALG_PARAMETER.L2 = opt.L2;
+M.GridSize = GridSize;
+M.flag = zeros(GridSize);
+if isvector(Lambda_1)
+    M.lambda2_crit = Lambda_2(end);
+    M.lambda2_range = [Lambda_2(1) Lambda_2(end)];
+    M.lambda1_crit = Lambda_1(end);
+    M.lambda1_range = [Lambda_1(1) Lambda_1(end)];
+else
+    M.lambda1 = Lambda_1;
+    M.lambda2 = Lambda_2;
+end
+
+P = opt.L1;
+D = opt.L2;
 Ind = (1:1:(size(D,2)))';
 Dplus=D;Dminus=D;
 Dplus(D==-1) = 0;
@@ -68,8 +82,8 @@ Indplus_in = Dplus*Ind;
 Indminus_in = abs(Dminus*Ind);
 
 t1 = tic;
-for ii=1:GridSize % test 12
-    a1 = Lambda(ii);
+for ii=1:GridSize % test 20
+    a1 = Lambda_1(:,ii);
     A_reg = zeros(n,n,p,K,1,GridSize);
     A = zeros(n,n,p,K,1,GridSize);
     ls_flag = zeros(1,GridSize);
@@ -77,18 +91,18 @@ for ii=1:GridSize % test 12
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor jj=1:GridSize %test 18
+    parfor jj=1:GridSize %test 30
         Indplus = Indplus_in;
         Indminus = Indminus_in;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~,~] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,1, cvx_param);
+          [x0, ~, ~,~] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,1, cvx_param);
         else
           x0 = xLS;
         end
-        [x_reg, Px,Dx, history] = spectral_ADMM(gc, yc, a1, Lambda(jj),2,1, ALG_PARAMETER,x0);
+        [x_reg, Px,Dx, history] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,qq, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         x_cls = constrained_LS_S(gc,yc,D,Dx,P,Px,'off');
@@ -97,9 +111,10 @@ for ii=1:GridSize % test 12
             union(unique(Indplus(Dplus*x_cls~=0)), ...
                   unique(Indminus(Dminus*x_cls~=0))), ...
             union(Indplus(D*x_cls==0), ...
-                  Indminus(D*x_cls==0)));
-        tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
-        df = length(find(x_cls))-length(unique(tmp(1,:)));
+                  Indminus(D*x_cls==0))); % intuitively, this operation is to find indices of nonzero variables but with zero differences
+%         tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
+        tmp =length(find(diff(x_cls(fused_index))==0));
+        df = length(find(x_cls))-tmp;
         A(:,:,:,:,1,jj) = A_cls;
 %         error('please insert model_selection for formulationS')
         score(1,jj) = model_selection_S(Y,A_cls,df);
@@ -124,8 +139,10 @@ for ii=1:GridSize % test 12
     tmp_struct.flag(ii,:) = flag;
     tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-[~,M.index.bic] = min([tmp_struct.stat.model_selection_score.bic]);
-[~,M.index.aicc] = min([tmp_struct.stat.model_selection_score.aicc]);
+GIC_LIST = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+for nn=1:length(GIC_LIST)
+[~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
+end
 for ii=1:GridSize
   for jj=1:GridSize
     M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
