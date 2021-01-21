@@ -16,7 +16,11 @@ switch toggle
         opt.L1 = P;
         opt.L2 = P;
     case 'adaptive_P'
-        xLS = G\b;
+        if size(G,1)>=size(G,2)
+            xLS = G\b;
+        else
+            xLS = ridge(b,G,0.01);
+        end
         [P_m1,P_m2,P1_m1,P1_m2] = weighted_projection(xLS,q,PARAMETER);
         Lmax_1 = lambdamax_grouplasso_v2(G,b,m1,[n ,p ,K],P1_m1);
         Lmax_2 = lambdamax_grouplasso_v2(G,b,m2,[n ,p ,K],P1_m2);
@@ -25,7 +29,11 @@ switch toggle
         opt.L1 = P_m1;
         opt.L2 = P_m2;
     case 'adaptive_L'
-        xLS = G\b;
+        if size(G,1)>=size(G,2)
+            xLS = G\b;
+        else
+            xLS = ridge(b,G,0.01);
+        end
         [~,~,P1_m1,P1_m2,P] = weighted_projection(xLS,q,PARAMETER);
         Lambda0_1 = lambdamax_grouplasso_v2(G,b,m1,[n ,p ,K],P1_m1);
         Lambda0_2 = lambdamax_grouplasso_v2(G,b,m2,[n ,p ,K],P1_m2);
@@ -43,7 +51,11 @@ switch toggle
         if (m1~=m2)
             error('This formulation allows only m1=m2')
         end
-        xLS = G\b;
+        if size(G,1)>=size(G,2)
+            xLS = G\b;
+        else
+            xLS = ridge(b,G,0.01);
+        end
         [~,P,P1,D,weight_1,weight_2] = weighted_projection_S(xLS,q,PARAMETER);
 
         Lambda0 = lambdamax_grouplasso_v2(G,b,m1,[n ,p ,K],P1);

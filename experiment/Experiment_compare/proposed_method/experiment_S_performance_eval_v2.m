@@ -3,21 +3,21 @@ clc
 inpath = './data_compare/';
 
 
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\';
+resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_S_result\';
 % resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
 
 mname = {'1','5'};
 dd = length(mname);
 % dd=1;
 % dd=2;
-realization = 50;
-load([inpath,'model_K50_p1'])
-name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+realization = 100;
+load([inpath,'model_K5_p1'])
+name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 for ii=1:dd
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
-        GTmodel = E{2,3,ii,jj};
-        fname = [resultpath,'result_adaptive_formulationD_',mname{ii},'percent_lag1_K50_',int2str(jj)];
+        GTmodel = E{3,3,ii,jj};
+        fname = [resultpath,'result_adaptive_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         toggle_list = {'total','common','differential'};
@@ -37,5 +37,5 @@ for ii=1:dd
         
     end
 end
-save([resultpath,'formulation_D_adaptive_result_K50'],'R')
-save([resultpath,'formulation_D_adaptive_ALL_RESULT_K50'],'ALL_RESULT')
+save([resultpath,'formulation_S_adaptive_result_K5'],'R')
+save([resultpath,'formulation_S_adaptive_ALL_RESULT_K5'],'ALL_RESULT')
