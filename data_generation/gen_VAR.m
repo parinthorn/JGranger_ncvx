@@ -36,7 +36,7 @@ while (~CONVERGE)
                 AA(1:n,k*n-(n-1):k*n) = A(:,:,k);
             end
             AA = sparse([AA ; [eye(n*(p-1)) zeros(n*(p-1),n)]]);
-            if (max(abs(eigs(AA))) < 1)
+            if (abs(eigs(AA,1)) < 1)
                 VAR_spectrum = eig(full(AA));
                 MAX_EIG = 0;
                 CONVERGE = 1;
@@ -64,7 +64,7 @@ while (~CONVERGE)
                 AA(1:n,k*n-(n-1):k*n) = A(:,:,k);
             end
             AA = sparse([AA ; [speye(n*(p-1)) zeros(n*(p-1),n)]]);
-            if max(abs(eigs(AA))) < 1
+            if (abs(eigs(AA,1))) < 1
                 VAR_spectrum = eig(full(AA));
                 MAX_EIG = 0;
                 CONVERGE = 1;
