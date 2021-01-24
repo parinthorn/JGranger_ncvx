@@ -1,13 +1,14 @@
 clear
 clc
 clf;close all
+K=5;
 type_acc = {'total','common','differential'};
 acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
-load([resultpath,'formulation_D_adaptive_ALL_RESULT_K50'])
-load([resultpath,'formulation_D_adaptive_result_K50'])
+load([resultpath,'formulation_D_adaptive_ALL_RESULT_K',int2str(K)])
+load([resultpath,'formulation_D_adaptive_result_K',int2str(K)])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
 diff_den = {'1%','5%'};
