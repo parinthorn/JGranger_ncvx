@@ -6,8 +6,8 @@ acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
-load([resultpath,'formulation_D_adaptive_ALL_RESULT_K50'])
-load([resultpath,'formulation_D_adaptive_result_K50'])
+load([resultpath,'formulation_D_adaptive_ALL_RESULT_K50_tmp'])
+load([resultpath,'formulation_D_adaptive_result_K50_tmp'])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
 diff_den = {'1%','5%'};
@@ -18,12 +18,14 @@ for ii=1:dd
         sgtitle([text_title,', diff density:',diff_den{ii}])
         for ss=1:length(acc_list)
             val = zeros(30,30);
+            max_val = 0;
             for jj=1:realz
                 tmp = [ALL_RESULT(ii,jj).model_acc.(type_acc{tt})];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,30,30)/realz;
+                max_val = max_val +max(tmp(:))/realz;
             end
             subplot(length(acc_list),1,ss)
             imagesc(val)
-            title(sprintf('bestcase=%.3f',max(max(val))))
+            title(sprintf('bestcase=%.3f',max_val))
             axis('square')
             colormap((1-gray).^0.4)
             caxis([0,1])
