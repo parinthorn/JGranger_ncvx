@@ -8,33 +8,35 @@ outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
 mkdir(outpath)
 
 type = 2; %D type
-cd = 2;
-T = 100;
-p_true = 3;
-p_est = 3;
+cd = 3;
+T = 25;
+p_true = 1;
+p_est = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
 realz = 1;
+r_list = [1];
 GridSize = 30;
 mname = {'1','5'};
 type_acc = {'total','common','differential'};
 acc_list = {'ACC','F1','MCC'};
 name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 type_name = {'cvx','ncvx'};
-for jj=1:realz
+for test_itr=1:length(r_list)
+    jj= r_list(test_itr);
     disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M_cvx = test_cvxformulation_D(y,p_est,GridSize);
-        M_ncvx = formulation_D(y,p_est,GridSize);
+%         M_ncvx = formulation_D(y,p_est,GridSize);
         clc
-        %         M_cvx=M;
-        %         M_ncvx=M;
+%         M_cvx=M_ncvx;
+        M_ncvx=M_cvx;
         ALL_RESULT.cvx(ii,jj).model_acc = performance_eval(M_cvx,model);
         ALL_RESULT.ncvx(ii,jj).model_acc = performance_eval(M_ncvx,model);
         for kk=1:length(name_list)
@@ -76,9 +78,9 @@ for jj=1:realz
                 subplot_cnt = subplot_cnt+1;
                 val = zeros(30,30);
                 max_val = 0;
-                for sample=1:jj
-                    tmp = [ALL_RESULT.(type_name{fm})(ii,sample).model_acc.total];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,GridSize,GridSize)/jj;
-                    max_val = max_val + max(tmp(:))/jj;
+                for sample=1:test_itr
+                    tmp = [ALL_RESULT.(type_name{fm})(ii,test_itr(sample)).model_acc.total];tmp = [tmp.(acc_list{ss})];val = val +reshape(tmp,GridSize,GridSize)/length(r_list);
+                    max_val = max_val + max(tmp(:))/length(r_list);
                 end
                 subplot(2,length(acc_list),subplot_cnt)
                 imagesc(val)

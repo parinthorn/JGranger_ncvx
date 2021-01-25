@@ -139,7 +139,8 @@ for ii=1:GridSize % test 20
     tmp_struct.flag(ii,:) = flag;
     tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-GIC_LIST = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+% GIC_LIST = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
 for nn=1:length(GIC_LIST)
 [~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
 end
