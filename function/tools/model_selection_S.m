@@ -1,7 +1,13 @@
 function score = model_selection_S(Y,A,df)
-
+toggle = 'sse';
 [n,~,p,K] = size(A);
-fitting = log_likelihood_var(Y,A,n,p,K);
+[LLH,SSE] = log_likelihood_var(Y,A,n,p,K); % fitting = -2*Log-Likelihood
+switch toggle
+    case 'sse'
+        fitting = SSE;
+    case 'llh'
+        fitting = LLH;
+end
 Num = size(Y,2);
 df_lasso = length(find(A));
 
@@ -22,20 +28,29 @@ score.aicc = score.aic + (2*df^2+2*df)/(Num-df-1);
 score.L = fitting;
 score.df = df;
 score.df_lasso = df_lasso;
+score.SSE = SSE;
 end
-function LLH = log_likelihood_var(data,A,n,p,K)
+function [LLH,SSE] = log_likelihood_var(data,A,n,p,K)
 Num = size(data,2);
 LLH = 0;
 tmpA = reshape(A,[n,n*p,K]);
+SSE = 0;
 for kk=1:K
     [H,Y] = H_gen(data(:,:,kk),p);
     Ek = Y - tmpA(:,:,kk)*H; % Error term
+    SSE = SSE+sum(Ek.^2,'all');
     Sigma = Ek*Ek'/(Num);
     Sigma = (Sigma+Sigma')/2;
-    L = chol(Sigma,'lower');
-    logdetSigma = 2*sum(log(diag(L)));
-%     disp(size(Sigma))
+    try 
+        L = chol(Sigma,'lower');
+        logdetSigma = 2*sum(log(diag(L)));
+    catch
+        [~,D] = ldl(Sigma);
+        logdetSigma = sum(log(diag(D)));
+    end
     LLH = LLH+(Num)*logdetSigma;%+(-1/2)*trace(Ek'*(Sigma\eye(n))*Ek);
+%     disp(size(Sigma))
+    
 end
 
 end
