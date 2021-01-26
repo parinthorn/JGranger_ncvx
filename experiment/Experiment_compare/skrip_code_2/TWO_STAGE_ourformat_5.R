@@ -1,6 +1,7 @@
 source("0_library_declare.r")
 # put data in format same as an input for mat.setup
 # variable D, p, K
+run<-1
 Thresh2 <- 0.02 
 criter <- "BIC"                                   # selection criterion for group lasso (first stage), might be "BIC", "AIC", "AICc"
 print(c("criter",criter))

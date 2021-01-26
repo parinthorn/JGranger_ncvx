@@ -8,6 +8,7 @@ outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
 mkdir(outpath)
 
 type = 2; %D type
+
 cd = 3;
 T = 25;
 p_true = 1;

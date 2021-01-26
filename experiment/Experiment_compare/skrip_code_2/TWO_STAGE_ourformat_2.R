@@ -1,6 +1,7 @@
 source("0_library_declare.r")
 # put data in format same as an input for mat.setup
 # variable D, p, K
+run<-1
 Thresh2 <- 0.02 
 criter <- "BIC"                                   # selection criterion for group lasso (first stage), might be "BIC", "AIC", "AICc"
 print(c("criter",criter))
@@ -22,7 +23,7 @@ realz <- 20
 Final.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Comm.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Ind.Est <-  make.list(make.list(matrix(0,D*p,p),K),1)
-for (itr in seq(10, 100, by=8)){
+for (itr in seq(18, 100, by=8)){
   for (dd in 1:2){
     namedir <- './data_R_formulationD/'
     tmp <- read.csv(file = paste(namedir,'K',K,'_data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
