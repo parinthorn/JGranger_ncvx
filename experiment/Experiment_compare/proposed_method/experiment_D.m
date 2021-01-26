@@ -18,12 +18,7 @@ load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for jj=98:realz
-    if jj==98
-        st =2;
-    else
-        st=1;
-    end
+for jj=1:realz
     for ii=st:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};

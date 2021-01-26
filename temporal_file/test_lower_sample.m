@@ -8,10 +8,10 @@ outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
 mkdir(outpath)
 
 type = 2; %D type
-cd = 2;
-T = 100;
-p_true = 3;
-p_est = 3;
+cd = 4;
+T = 40;
+p_true = 1;
+p_est = 1;
 K = 5;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p_est,K);
