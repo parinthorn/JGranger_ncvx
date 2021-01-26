@@ -1,5 +1,5 @@
 function score = model_selection_S(Y,A,df)
-toggle = 'sse';
+toggle = 'llh';
 [n,~,p,K] = size(A);
 [LLH,SSE] = log_likelihood_var(Y,A,n,p,K); % fitting = -2*Log-Likelihood
 switch toggle

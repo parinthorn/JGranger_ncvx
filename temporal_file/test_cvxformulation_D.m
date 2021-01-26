@@ -126,6 +126,9 @@ end
 % GIC_LIST = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
 for nn=1:length(GIC_LIST)
+    if strcmp(GIC_LIST{nn},'L')&&strcmp(GIC_LIST{nn},'df')&&strcmp(GIC_LIST{nn},'SSE')
+        continue;
+    end
 [~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
 end
 for ii=1:GridSize

@@ -28,15 +28,15 @@ type_name = {'cvx','ncvx'};
 for test_itr=1:length(r_list)
     jj= r_list(test_itr);
     disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-    for ii=1:dd
+    for ii=2:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M_cvx = test_cvxformulation_D(y,p_est,GridSize);
-%         M_ncvx = formulation_D(y,p_est,GridSize);
+%         M_cvx = test_cvxformulation_D(y,p_est,GridSize);
+        M_ncvx = formulation_D(y,p_est,GridSize);
         clc
-%         M_cvx=M_ncvx;
-        M_ncvx=M_cvx;
+        M_cvx=M_ncvx;
+%         M_ncvx=M_cvx;
         ALL_RESULT.cvx(ii,jj).model_acc = performance_eval(M_cvx,model);
         ALL_RESULT.ncvx(ii,jj).model_acc = performance_eval(M_ncvx,model);
         for kk=1:length(name_list)
