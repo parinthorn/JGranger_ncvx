@@ -23,7 +23,7 @@ realz <- 20
 Final.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Comm.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Ind.Est <-  make.list(make.list(matrix(0,D*p,p),K),1)
-for (itr in seq(18, 100, by=8)){
+for (itr in seq(34, 100, by=8)){
   for (dd in 1:2){
     namedir <- './data_R_formulationD/'
     tmp <- read.csv(file = paste(namedir,'K',K,'_data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
