@@ -27,7 +27,11 @@ FREQ_PRINT = 100;
 MAXITERS = 50000;
 ABSTOL = 1e-7; %-7
 RELTOL = 1e-5; %-5
+% ABSTOL = 1e-6; %-7
+% RELTOL = 1e-4; %-5
 eps_rate = 1e-2;
+itr_same_index = 0;
+SPARSITY_CONVERGE = 0;
 PRINT_RESULT = PARAMETER.PRINT_RESULT;
 IS_ADAPTIVE = PARAMETER.IS_ADAPTIVE;
 n = PARAMETER.dim(1);
@@ -40,15 +44,18 @@ L2 = sparse(PARAMETER.L2);
 is_chol = PARAMETER.is_chol;
 multiplier = PARAMETER.multiplier;
 toggle = PARAMETER.toggle;
+is_spectral = PARAMETER.is_spectral;
 
 rho = PARAMETER.rho_init;
 epscor = PARAMETER.epscor;
 Ts = PARAMETER.Ts;
+MAX_CHECK = max([1000,5*Ts]);
 t_start = tic;
 
 
 
 % store variables
+
 nn = size(L1,2); % dimension of primal variable x
 nd = size(L2,1); % Dimension of Px + Dimension of Dx
 np = size(L1,1);
@@ -124,7 +131,7 @@ for k=1:MAXITERS
     
     y1 = y1 + rho*(-L1x+z1);
     y2 = y2 + rho*(-L2x+z2);
-    if  (k>3) && (mod(k,Ts)==0)&& IS_ADAPTIVE %&& (history.r_norm(k-1) > history.eps_pri(k-1))
+    if  (k>3) && (mod(k,Ts)==0)&& (IS_ADAPTIVE||(history.r_norm(k-1) > history.eps_pri(k-1))) %&& (history.r_norm(k-1) > history.eps_pri(k-1))
         primal_rate = abs((history.r_norm(k-1)-history.r_norm(k0))/history.r_norm(k0));
         dual_rate = abs((history.s_norm(k-1)-history.s_norm(k0))/history.s_norm(k0));
         y1hat =  y1old + rho*(-L1x+z1old);
@@ -150,30 +157,32 @@ for k=1:MAXITERS
         end
         akcor = delta_H'*delta_yhat/(norm(delta_H,2)*norm(delta_yhat,2));
         bkcor = delta_G'*delta_y/(norm(delta_G,2)*norm(delta_y,2));
-        if (history.r_norm(k-1) < history.eps_pri(k-1))&&(qq==0.5)
+        history.rho_corr(k,:) = [akcor,bkcor];
+        if (history.r_norm(k-1) < history.eps_pri(k-1))&&((~is_spectral))
             IS_ADAPTIVE = 0;
             rho_change = 1;
             rho = rho*multiplier;
 %             disp('----------------TURN ADAPTIVE OFF----------------')
-        elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) > history.eps_dual(k-1))&&(qq==0.5)% && (abs((history.rho(k-1)-history.rho(k0-1))/history.rho(k0-1))<1e-3)
+        elseif (history.r_norm(k-1) > history.eps_pri(k-1))&& ...
+                (history.s_norm(k-1) > history.eps_dual(k-1))&&((~is_spectral))% && (abs((history.rho(k-1)-history.rho(k0-1))/history.rho(k0-1))<1e-3)
 %             disp('--------------PRIMAL DUAL MAY DIVERGE------------')
             rho = rho*multiplier;
             rho_change = 1;
-        elseif (primal_rate<=eps_rate)&&(qq==0.5)
+        elseif (primal_rate<=eps_rate)&&(~is_spectral)
 %             disp('---------------PENALTY NOT ADAPTIVE--------------')
             rho = rho*multiplier;
             rho_change = 1;
-        elseif (history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1))
+        elseif ((history.r_norm(k-1) > history.eps_pri(k-1))&&(history.s_norm(k-1) < history.eps_dual(k-1)))&&(~is_spectral||qq==1)
 %             disp('----------------PRIMAL INFEASIBLE----------------')
             rho = rho*multiplier;
             rho_change = 1;
-        elseif (akcor > epscor) &&  (bkcor>epscor)
+        elseif (akcor > epscor) &&  (bkcor>epscor)&&(is_spectral)
             rho = sqrt(ak*bk);
             rho_change = 1;
-        elseif (akcor > epscor) &&  (bkcor<=epscor)
+        elseif (akcor > epscor) &&  (bkcor<=epscor)&&(is_spectral)
             rho = ak;
             rho_change = 1;
-        elseif (akcor <= epscor) &&  (bkcor>epscor)
+        elseif (akcor <= epscor) &&  (bkcor>epscor)&&(is_spectral)
             rho = bk;
             rho_change = 1;
         else
@@ -202,9 +211,10 @@ for k=1:MAXITERS
     
     
     % stopping criterion
-    
+
     obj = 0.5*norm(G*x-b)^2 + normpq_adaptive(z1,pp,qq,m1,a1)+normpq_adaptive(z2,pp,qq,m2,a2);
     history.nz_count(k) = length(find(z1))+length(find(z2));
+    history.sp_difference(k) = length(setdiff(find(z1),find(z1old)))+length(setdiff(find(z1old),find(z1)))+length(setdiff(find(z2),find(z2old)))+length(setdiff(find(z2old),find(z2)));
     history.objval(k) = obj;
     history.r_norm(k) = norm([L1x-z1;L2x-z2]);
     history.s_norm(k)  = norm(rho*At*([z1 - z1old;z2-z2old]));
@@ -212,6 +222,7 @@ for k=1:MAXITERS
     history.eps_dual(k)= sqrt(nn)*ABSTOL + RELTOL*norm(At*[y1;y2]);
     history.Lagrange(k) = obj + rho/2*norm([L1x-z1;L2x-z2]+[y1/rho;y2/rho])^2;
     history.rho(k) = rho;
+
     if (PRINT_RESULT && mod(k,FREQ_PRINT) == 0)
         fprintf('%3d\t%10.4f\t%10.4f\t%10.4f\t%10.4f\t%10.2f\n',k, ...
             history.r_norm(k), history.eps_pri(k), ...
@@ -224,11 +235,26 @@ for k=1:MAXITERS
         history.fit = 0.5*norm(G*x-b)^2;
         break;
     end
-%     counting_nz_index = k:-1:max([k-10*Ts,1]);
-%     if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
-%         history.fit = 0.5*norm(G*x-b)^2;
-%         break
-%     end
+    
+    if (k>2)&&(history.sp_difference(k)==0)
+        itr_same_index = itr_same_index+1;
+    else
+        itr_same_index = 0;
+    end
+    if (itr_same_index>=MAX_CHECK)
+        SPARSITY_CONVERGE = 1;
+    end
+    if (SPARSITY_CONVERGE)&&(qq==0.5)
+        history.fit = 0.5*norm(G*x-b)^2;
+        break;
+    end
+    
+    
+    %     counting_nz_index = k:-1:max([k-10*Ts,1]);
+    %     if (IS_ADAPTIVE==0)&&(PARAMETER.IS_ADAPTIVE==1)&&((sum(history.nz_count(counting_nz_index))-history.nz_count(k)*length(counting_nz_index))<1e-6)
+    %         history.fit = 0.5*norm(G*x-b)^2;
+    %         break
+    %     end
     xold = x;
     z1old = z1;
     z2old = z2;
@@ -240,7 +266,7 @@ end
 if (k==MAXITERS)&&(history.r_norm(k) > history.eps_pri(k))&&(history.s_norm(k) > history.eps_dual(k))
     history.flag = -1;
 else
-    history.flag = 0;
+    history.flag = SPARSITY_CONVERGE;
 end
 
 if PRINT_RESULT
@@ -298,6 +324,5 @@ x = X(:);
 L2x = z2;
 L1x = z1;
 history.objval = [objx0 history.objval];
-
 end
 

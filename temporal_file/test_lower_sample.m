@@ -10,7 +10,7 @@ mkdir(outpath)
 type = 2; %D type
 
 cd = 3;
-T = 25;
+T = 100;
 p_true = 1;
 p_est = 1;
 K = 5;
@@ -29,14 +29,14 @@ type_name = {'cvx','ncvx'};
 for test_itr=1:length(r_list)
     jj= r_list(test_itr);
     disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-    for ii=2:dd
+    for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-%         M_cvx = test_cvxformulation_D(y,p_est,GridSize);
-        M_ncvx = formulation_D(y,p_est,GridSize);
+        M_cvx = test_cvxformulation_D(y,p_est,GridSize);
+%         M_ncvx = formulation_D(y,p_est,GridSize);
         clc
-        M_cvx=M_ncvx;
+%         M_cvx=M_ncvx;
 %         M_ncvx=M_cvx;
         ALL_RESULT.cvx(ii,jj).model_acc = performance_eval(M_cvx,model);
         ALL_RESULT.ncvx(ii,jj).model_acc = performance_eval(M_ncvx,model);

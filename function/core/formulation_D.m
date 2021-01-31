@@ -54,7 +54,7 @@ ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationD';
 ALG_PARAMETER.gamma = 1; % for adaptive case
-
+ALG_PARAMETER.is_spectral = 0;
 disp('calculating Lambda max')
 qq=0.5; %non-convex case
 [Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
@@ -102,7 +102,7 @@ for ii=1:GridSize
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));
         A_cls =devect(full(x_cls),n,p,K);
-        A(:,:,:,:,1,jj) = A_cls;
+        A(:,:,:,:,1,jj) = A_cls; 
         score(1,jj) = model_selection(Y,A_cls);
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
@@ -145,6 +145,6 @@ for ii=1:GridSize
     M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
   end
 end
-
+M.flag = reshape([M.model.flag],[GridSize,GridSize]);
 M.time = toc(t1);
 end

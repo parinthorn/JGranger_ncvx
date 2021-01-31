@@ -1,5 +1,6 @@
 function model_acc = performance_eval(M,GTmodel)
 n = GTmodel.dim(1);
+p = GTmodel.dim(2);
 K = GTmodel.dim(3);
 GridSize = M.GridSize;
 % code below are matlab tricks that extract field from multidimensional
@@ -55,16 +56,16 @@ for ii=1:GridSize
             disp('stop')
         end
         
-        [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii,jj},n,K,'single_common');
+        [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii,jj},n,p,K,'single_common');
         
-        [stat.accuracy.differential.confusion_matrix] = compare_sparsity(GTmodel.ind_differential,ind_differential{ii,jj},n,K,'single_differential');
-        
-        
+        [stat.accuracy.differential.confusion_matrix] = compare_sparsity(GTmodel.ind_differential,ind_differential{ii,jj},n,p,K,'single_differential');
         
         
-        [stat.accuracy.total.confusion_matrix] = compare_sparsity(GTmodel.ind,ind_total{ii,jj},n,K,'single_differential');
         
-        [stat.accuracy.VAR_coeff.confusion_matrix] = compare_sparsity(GTmodel.ind_VAR,ind_VAR{ii,jj},n,K,'single_differential');
+        
+        [stat.accuracy.total.confusion_matrix] = compare_sparsity(GTmodel.ind,ind_total{ii,jj},n,p,K,'single_differential');
+        
+        [stat.accuracy.VAR_coeff.confusion_matrix] = compare_sparsity(GTmodel.ind_VAR,ind_VAR{ii,jj},n,p,K,'single_VAR');
         
         
         model_acc(ii,jj).common = performance_score(squeeze(stat.accuracy.common.confusion_matrix));
