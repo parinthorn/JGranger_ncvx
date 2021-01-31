@@ -51,13 +51,13 @@ ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
-ALG_PARAMETER.epscor = 0.1;
+ALG_PARAMETER.epscor = 0.5;
 ALG_PARAMETER.Ts = 2;
 ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationD';
 ALG_PARAMETER.gamma = 1; % for adaptive case
-
+ALG_PARAMETER.is_spectral = 1;
 disp('calculating Lambda max')
 qq=1; %convex case
 [Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
@@ -147,6 +147,6 @@ for ii=1:GridSize
     M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
   end
 end
-
+M.flag = reshape([M.model.flag],[GridSize,GridSize]);
 M.time = toc(t1);
 end

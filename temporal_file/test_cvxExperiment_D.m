@@ -7,7 +7,7 @@ mkdir(outpath)
 
 type = 2; %D type
 cd = 3;
-T = 100;
+T = 30;
 p_true = 1;
 p_est = 1;
 K = 5;
@@ -18,13 +18,13 @@ load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 realz = 100;
 GridSize = 30;
 mname = {'1','5'};
-for jj=1:realz
+for jj=19:realz
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = test_cvxformulation_D(y,p_est,GridSize);
-        save([outpath,'result_adaptive_cvx_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        save([outpath,'resultT30_adaptive_cvx_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
         %     result_formulationD_1percent_lag1_K5_12
     end
 end

@@ -5,10 +5,12 @@ toggle = 'llh';
 switch toggle
     case 'sse'
         fitting = SSE;
+        Num = n*size(Y,2)*K;
     case 'llh'
         fitting = LLH;
+        Num = size(Y,2);
 end
-Num = size(Y,2);
+
 df_lasso = length(find(A));
 
 gamma = log(n^2*p*K)/log(n*(Num));
@@ -25,7 +27,7 @@ score.bic_lasso = fitting + log(Num)*df_lasso;
 score.bic = fitting + log(Num)*df;
 score.aic = fitting + 2*df;
 score.aicc = score.aic + (2*df^2+2*df)/(Num-df-1);
-score.L = fitting;
+score.L = LLH;
 score.df = df;
 score.df_lasso = df_lasso;
 score.SSE = SSE;
@@ -52,5 +54,5 @@ for kk=1:K
 %     disp(size(Sigma))
     
 end
-
+% SSE = n*Num*K*log(SSE/n/(Num)/K);
 end

@@ -9,7 +9,7 @@ switch toggle
     case 'llh'
         fitting = LLH;
 end
-Num = size(Y,2);
+Num = n*size(Y,2)*K;
 
 gamma = log(n^2*p*K)/log(n*(Num)*K);
 kappa = min([1,1.5*(1-1/(2*gamma))]);
@@ -49,5 +49,5 @@ for kk=1:K
     %     disp(size(Sigma))
     LLH = LLH+(Num)*logdetSigma;%+(-1/2)*trace(Ek'*(Sigma\eye(n))*Ek);
 end
-
+% SSE = n*Num*K*log(SSE/n/(Num)/K);
 end

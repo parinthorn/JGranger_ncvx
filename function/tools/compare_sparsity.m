@@ -1,4 +1,5 @@
-function [stat] = compare_sparsity(ind_true,ind,n,K,toggle)
+function [stat] = compare_sparsity(ind_true,ind,n,p,K,toggle,varargin)
+
 
 switch toggle
     case 'commonROC'
@@ -44,6 +45,17 @@ switch toggle
         FN = length(setdiff(ind_true,ind));
         FP = length(setdiff(ind,ind_true)); %undefined
         TN = n^2-n-TP-FN-FP;%undefined
+    case 'single_VAR'
+        TP = 0;
+        FN = 0;
+        FP = 0;
+        for kk=1:K
+            TP = TP+length(intersect(ind_true{kk},ind{kk}));
+            FN = FN+length(setdiff(ind_true{kk},ind{kk}));
+            FP = FP+length(setdiff(ind{kk},ind_true{kk}));
+        end
+        
+        TN = p*K*n^2-TP-FN-FP;%negative in diff
     case 'single_differential'
         TP = 0;
         FN = 0;

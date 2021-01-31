@@ -1,6 +1,6 @@
 function [A,ind,VAR_spectrum,ind_VAR] = gen_VAR(n,p,density,diffdensity,GENERATION_TYPE,S)
-THRESH = 0.4;
-GAIN = 0.4;
+THRESH = 0.2;
+GAIN = 0.2;
 CONVERGE = 0;
 while (~CONVERGE)
     if GENERATION_TYPE==2
