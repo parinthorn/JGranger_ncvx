@@ -13,6 +13,11 @@ Num = n*size(Y,2)*K;
 
 gamma = log(n^2*p*K)/log(n*(Num)*K);
 kappa = min([1,1.5*(1-1/(2*gamma))]);
+if df==n^2*p*K
+    binom_term = 0;
+else
+    binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
+end
 binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
 score.eBIC =   fitting+log(Num)*df + 2*kappa*binom_term;
 score.GIC_2 =  fitting+df*(n^2*p*K)^(1/3);

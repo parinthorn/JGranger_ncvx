@@ -1,4 +1,4 @@
-%% Non-CVX
+%%
 clear
 clc
 inpath = './data_compare/';
@@ -11,11 +11,11 @@ p_true = 3;
 p_est = 3;
 K = 5;
 load([inpath,'compare_convex_model_K',int2str(K),'_p',int2str(p_true)]) % struct E
-[~,~,dd,m] = size(E);
+m= size(E,2);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-%%
+%% Non-CVX
 for jj=1:realz
     % generate data from given seed
     model = E{2,jj}; % type D
@@ -25,7 +25,8 @@ for jj=1:realz
     save([outpath,'resultT150_adaptive_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end
 %% CVX
-for jj=1:realz
+ii=2;
+for jj=2:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
