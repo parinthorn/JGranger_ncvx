@@ -263,7 +263,7 @@ for k=1:MAXITERS
 %     z1hatold = y1hat;
 %     z2hatold = y2hat;
 end
-if (k==MAXITERS)&&(history.r_norm(k) > history.eps_pri(k))&&(history.s_norm(k) > history.eps_dual(k))
+if (k==MAXITERS)
     history.flag = -1;
 else
     history.flag = SPARSITY_CONVERGE;
