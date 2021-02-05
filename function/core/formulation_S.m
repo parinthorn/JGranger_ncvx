@@ -53,6 +53,7 @@ ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
 ALG_PARAMETER.gamma = 1; % for adaptive case
+ALG_PARAMETER.is_spectral = 0;
 
 disp('calculating Lambda max')
 qq=0.5; %non-convex case
