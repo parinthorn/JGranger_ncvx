@@ -107,9 +107,12 @@ for nn=3
         set(gca,'xticklabel',TYPE_NAME,'fontsize',14)
         set(findobj(gca,'type','line'),'linew',2)
         if ~strcmp('FPR',acc_list_2{kk})
-        ylim([50 100])
+        ylim([0 100])
         else
             ylim([0 10])
+        end
+        if kk==1
+            ylabel('Percent')
         end
     end
 end
