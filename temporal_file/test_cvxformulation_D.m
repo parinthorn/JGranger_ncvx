@@ -16,16 +16,16 @@ len_varargin = length(varargin);
 % toggle = 'adaptive_P';
 toggle = 'adaptive_L';
 if isempty(varargin)
-  p=1;
-  GridSize = 30;
+    p=1;
+    GridSize = 30;
 elseif len_varargin==1
-  p = varargin{1};
-  GridSize = 30;
+    p = varargin{1};
+    GridSize = 30;
 elseif len_varargin ==2
-  p = varargin{1};
-  GridSize = varargin{2};
+    p = varargin{1};
+    GridSize = varargin{2};
 else
-  error('must be atmost 3 input')
+    error('must be atmost 3 input')
 end
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
@@ -41,9 +41,9 @@ disp('vectorizing model')
 xLS = gc\yc;
 % xLS = x_cheat;
 if T>n*p
-  init_cvx = 0;
+    init_cvx = 0;
 else
-  init_cvx = 1;
+    init_cvx = 1;
 end
 
 
@@ -86,15 +86,16 @@ for ii=1:GridSize
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-
-   	for jj=1:GridSize
+    
+    parfor jj=1:GridSize
+        
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
             cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,1, cvx_param);
+            [x0, ~, ~] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,1, cvx_param);
         else
-          x0 = xLS;
+            x0 = xLS;
         end
         [x_reg, ~,~, history] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,1, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
@@ -106,7 +107,7 @@ for ii=1:GridSize
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K
-          tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
+            tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
         end
         ind(1,jj) = {tmp_ind};
         [ind_common(1,jj),ind_differential(1,jj)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
@@ -130,22 +131,22 @@ for nn=1:length(GIC_LIST)
     if strcmp(GIC_LIST{nn},'L')&&strcmp(GIC_LIST{nn},'df')&&strcmp(GIC_LIST{nn},'SSE')
         continue;
     end
-[~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
+    [~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
 end
 for ii=1:GridSize
-  for jj=1:GridSize
-    M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
-    M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,1:K,ii,jj);
-    M.model(ii,jj).A = tmp_struct.A(:,:,1:p,1:K,ii,jj);
-    M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
-    for kk=1:K
-        M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk));
+    for jj=1:GridSize
+        M.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
+        M.model(ii,jj).A_reg = tmp_struct.A_reg(:,:,1:p,1:K,ii,jj);
+        M.model(ii,jj).A = tmp_struct.A(:,:,1:p,1:K,ii,jj);
+        M.model(ii,jj).GC = squeeze(sqrt(sum(M.model(ii,jj).A.^2,3)));
+        for kk=1:K
+            M.model(ii,jj).ind_VAR{kk} = find(M.model(ii,jj).A(:,:,:,kk));
+        end
+        M.model(ii,jj).ind = tmp_struct.ind(ii,jj);
+        M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
+        M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
+        M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
     end
-    M.model(ii,jj).ind = tmp_struct.ind(ii,jj);
-    M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
-    M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
-    M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
-  end
 end
 M.flag = reshape([M.model.flag],[GridSize,GridSize]);
 M.time = toc(t1);
