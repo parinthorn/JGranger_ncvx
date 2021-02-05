@@ -17,11 +17,11 @@ GridSize = 30;
 mname = {'1','5'};
 ii=2;
 %% Non-CVX
-for jj=62:realz
+for jj=1:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = formulation_D(y,p_est,GridSize);
+    M = formulation_C(y,p_est,GridSize);
     
     save([outpath,'resultT150_adaptive_formulationC_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end

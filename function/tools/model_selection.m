@@ -1,5 +1,5 @@
 function score = model_selection(Y,A)
-toggle = 'sse';
+toggle = 'llh';
 [n,~,p,K] = size(A);
 df = length(find(A));
 [LLH,SSE] = log_likelihood_var(Y,A,n,p,K);

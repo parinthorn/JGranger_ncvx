@@ -10,6 +10,11 @@ selected_ADHD_C = {'0010013';'0010017';'0010019';'0010022';'0010025';'0010037';'
 y_TDC = concat_real_data(selected_TDC,116,'nyu');
 y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
 K = size(y_TDC,3);
+y_TDC_concat = reshape(y_TDC,[116,172*18]);
+y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
+y_total(:,:,1) = y_TDC_concat;
+y_total(:,:,2) = y_ADHD_C_concat;
+%%
 fcon_TDC = zeros(size(y_TDC,1));
 fcon_ADHD_C = zeros(size(y_ADHD_C,1));
 for kk=1:K
@@ -18,8 +23,6 @@ for kk=1:K
     fcon_ADHD_C = fcon_ADHD_C+partialcorr(y_ADHD_C(:,:,kk)')/K;
 end
 %%
-y_TDC_concat = reshape(y_TDC,[116,172*18]);
-y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
 fcon_TDC_concat = partialcorr(y_TDC_concat');
 fcon_ADHD_C_concat = partialcorr(y_ADHD_C_concat');
 
@@ -39,10 +42,7 @@ subplot(2,2,4)
 imagesc(fcon_ADHD_C_concat.*(abs(fcon_ADHD_C_concat.*(1-eye(116)))>0.4))
 axis('square')
 %%
-y_total(:,:,1) = y_TDC_concat;
-y_total(:,:,2) = y_ADHD_C_concat;
-
-M_total = test_cvxformulation_D(10*y_total,1,30);
+M_total = test_cvxformulation_D(y_total,1,10);
 %%
 
 M_TDC = test_cvxformulation_C(10*y_TDC,1,30);
