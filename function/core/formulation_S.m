@@ -43,7 +43,7 @@ if T>n*p
 else
   init_cvx = 1;
 end
-ALG_PARAMETER.PRINT_RESULT=0;
+ALG_PARAMETER.PRINT_RESULT=1;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p];
 ALG_PARAMETER.rho_init = 1;
@@ -53,6 +53,7 @@ ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
 ALG_PARAMETER.gamma = 1; % for adaptive case
+ALG_PARAMETER.is_spectral = 0;
 
 disp('calculating Lambda max')
 qq=0.5; %non-convex case
