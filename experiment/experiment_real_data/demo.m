@@ -14,8 +14,6 @@ K = size(y_TDC,3);
 %%
 y_TDC_concat = reshape(y_TDC,[116,172*18]);
 y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
-
-
 %%
 figure(1)
 subplot(2,2,1)
@@ -48,8 +46,9 @@ end
 %%
 M = test_cvxformulation_D(y_total,1,30);
 M = augment_score(M,size(y_total,2),'llh');
-save('../experiment_real_data_result/estim_2K_D','M')
+% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D','M')
 %%
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D')
 load('.\experiment\experiment_real_data\AAL_116.mat')
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 M = augment_score(M,size(y_total,2),'sse');
@@ -68,8 +67,8 @@ xtickangle(30)
 caxis([0 0.25])
 end
 %%
-% M.fcon(:,:,1) = partialcorr(y_TDC_concat');
-% M.fcon(:,:,2) = partialcorr(y_ADHD_C_concat');
+M.fcon(:,:,1) = partialcorr(y_TDC_concat');
+M.fcon(:,:,2) = partialcorr(y_ADHD_C_concat');
 figure(3)
 for kk=1:2
 subplot(1,2,kk)
@@ -105,8 +104,4 @@ colormap(1-gray)
 xtickangle(30)
 % caxis([0 0.9])
 end
-
 %%
-
-M_TDC = test_cvxformulation_C(10*y_TDC,1,30);
-M_ADHD_C = test_cvxformulation_C(10*y_ADHD_C,1,30);

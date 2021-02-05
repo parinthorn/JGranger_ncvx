@@ -43,7 +43,7 @@ if T>n*p
 else
   init_cvx = 1;
 end
-ALG_PARAMETER.PRINT_RESULT=1;
+ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
@@ -81,7 +81,7 @@ t1 = tic;
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-for ii=1:GridSize
+parfor ii=1:GridSize
     a = Lambda_2(:,ii);
         fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
         if init_cvx

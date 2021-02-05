@@ -106,10 +106,7 @@ for nn=3
         title(acc_list_2{kk})
         set(gca,'xticklabel',TYPE_NAME,'fontsize',14)
         set(findobj(gca,'type','line'),'linew',2)
-        if ~strcmp('FPR',acc_list_2{kk})
-        ylim([50 100])
-        else
-            ylim([0 10])
-        end
+        if strcmp('FPR','')
+        ylim([0 1])
     end
 end
