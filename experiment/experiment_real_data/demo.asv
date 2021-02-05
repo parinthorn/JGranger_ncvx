@@ -87,24 +87,13 @@ fcon_TDC_avg = zeros(size(y_TDC,1));
 fcon_ADHD_C_avg = zeros(size(y_ADHD_C,1));
 parfor kk=1:K
     disp(kk)
-    fcon_TDC_avg = fcon_TDC_avg+partialcorr(y_TDC(:,:,kk)')/K;
-    fcon_ADHD_C_avg = fcon_ADHD_C_avg+partialcorr(y_ADHD_C(:,:,kk)')/K;
+    fcon_TDC = fcon_TDC+partialcorr(y_TDC(:,:,kk)')/K;
+    fcon_ADHD_C = fcon_ADHD_C+partialcorr(y_ADHD_C(:,:,kk)')/K;
 end
-M.fcon_avg(:,:,1)=fcon_TDC_avg;
-M.fcon_avg(:,:,2)=fcon_ADHD_C_avg;
+M.fcon_TDC_avg=fcon_TDC_avg;
+M.fcon_ADHD_C_avg=fcon_ADHD_C_avg;
 %%
-figure(4)
-for kk=1:2
-subplot(1,2,kk)
-imagesc(abs((M.fcon_avg(AAL_116.DMN,AAL_116.DMN,kk).*(1-eye(length(AAL_116.DMN))))))
-grid on
-set(gca,'xtick',1:1:length(AAL_116.DMN),'ytick',1:1:length(AAL_116.DMN), ...
-    'xticklabel',AAL_116.name(AAL_116.DMN),'yticklabel',AAL_116.name(AAL_116.DMN))
-title(name_list{kk})
-colormap(1-gray)
-xtickangle(30)
-% caxis([0 0.9])
-end
+
 
 %%
 
