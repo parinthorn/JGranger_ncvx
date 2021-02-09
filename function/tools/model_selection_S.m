@@ -1,21 +1,15 @@
 function score = model_selection_S(Y,A,df)
-toggle = 'llh';
 [n,~,p,K] = size(A);
-[LLH,SSE] = log_likelihood_var(Y,A,n,p,K); % fitting = -2*Log-Likelihood
-switch toggle
-    case 'sse'
-        fitting = SSE;
-        Num = n*size(Y,2)*K;
-    case 'llh'
-        fitting = LLH;
-        Num = size(Y,2);
-end
-
+[score.LLH_full,score.LLH_hetero,score.LLH_homo,score.SSE] = log_likelihood_var(Y,A,n,p,K);% fitting = -2*Log-Likelihood
 df_lasso = length(find(A));
-
+Num = size(Y,2);
 gamma = log(n^2*p*K)/log(n*(Num));
 kappa = 1.5*(1-1/(2*gamma));
-binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
+if df==n^2*p*K
+    binom_term = 0;
+else
+    binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
+end
 score.eBIC = fitting+log(Num).*df + 2*kappa.*binom_term;
 score.GIC_2 =  fitting+df*(n^2*p*K)^(1/3);
 score.GIC_3 =  fitting+df*(2*log(n^2*p*K));
@@ -32,11 +26,11 @@ score.df = df;
 score.df_lasso = df_lasso;
 score.SSE = SSE;
 end
-function [LLH,SSE] = log_likelihood_var(data,A,n,p,K)
+function [LLH_full,LLH_hetero,LLH_homo,SSE] = log_likelihood_var(data,A,n,p,K)
 Num = size(data,2);
-LLH = 0;
-tmpA = reshape(A,[n,n*p,K]);
+LLH_full = 0;
 SSE = 0;
+tmpA = reshape(A,[n,n*p,K]);
 for kk=1:K
     [H,Y] = H_gen(data(:,:,kk),p);
     Ek = Y - tmpA(:,:,kk)*H; % Error term
@@ -45,14 +39,14 @@ for kk=1:K
     Sigma = (Sigma+Sigma')/2;
     try 
         L = chol(Sigma,'lower');
-        logdetSigma = 2*sum(log(diag(L)));
+        logdetSigma = 2*sum(log((diag(L))));
     catch
-        [~,D] = ldl(Sigma);
-        logdetSigma = sum(log(diag(D)));
+        LLH_full = NaN;
     end
-    LLH = LLH+(Num)*logdetSigma;%+(-1/2)*trace(Ek'*(Sigma\eye(n))*Ek);
-%     disp(size(Sigma))
     
+    %     disp(size(Sigma))
+    LLH_full = LLH_full+(Num)*logdetSigma;
+    LLH_hetero = LLH_hetero+(Num)*sum(log(abs(diag(Sigma))));
+    LLH_homo = LLH_homo + Num*sum(diag(Sigma))/n;
 end
-% SSE = n*Num*K*log(SSE/n/(Num)/K);
 end

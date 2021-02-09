@@ -12,11 +12,20 @@ acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\experiment_compare_cvx\';
+figurepath = './plotting/figures/';
+mkdir(figurepath)
 
-path_to_ALL_RESULT = {[resultpath,'formulation_DT150_cvx_adaptive_ALL_RESULT_K',int2str(K)], ...
-    [resultpath,'formulation_DT150_adaptive_ALL_RESULT_K',int2str(K)]};
-path_to_index = {[resultpath,'formulation_DT150_cvx_adaptive_result_K',int2str(K)], ...
-    [resultpath,'formulation_DT150_adaptive_result_K',int2str(K)]};
+
+path_to_ALL_RESULT = {[resultpath,'formulation_ST150_cvx_adaptive_ALL_RESULT_K',int2str(K)], ...
+    [resultpath,'formulation_ST150_adaptive_ALL_RESULT_K',int2str(K)]};
+path_to_index = {[resultpath,'formulation_ST150_cvx_adaptive_result_K',int2str(K)], ...
+    [resultpath,'formulation_ST150_adaptive_result_K',int2str(K)]};
+
+% path_to_ALL_RESULT = {[resultpath,'formulation_DT150_cvx_adaptive_ALL_RESULT_K',int2str(K)], ...
+%     [resultpath,'formulation_DT150_adaptive_ALL_RESULT_K',int2str(K)]};
+% path_to_index = {[resultpath,'formulation_DT150_cvx_adaptive_result_K',int2str(K)], ...
+%     [resultpath,'formulation_DT150_adaptive_result_K',int2str(K)]};
+
 
 
 diff_den = {'1%','5%'};
@@ -38,16 +47,21 @@ ALL_RESULT = tmp;
 clc
 clf;
 close all
-selection = 'bic';
+selection = 'eBIC';
 for type_index = 1:length(type_acc) % total common differential
-    figure(type_index)
+    figure('units','normalized','outerposition',[0 0 1 1])
+    tt= tiledlayout(3,5);
+    tt.TileSpacing = 'compact';
+    tt.Padding = 'compact';
+%     sgtitle(['formulation S'])
     cnt=0;
     for row_count=1:3
         
         for kk=1:length(acc_list_2) % TPR to MCC
             cnt=cnt+1;
-
-            subplot(3,5,cnt)
+            
+            %             subplot(3,5,cnt)
+            nexttile;
             if row_count == 1
                 for id_f = 1:length(tp_name)
                     for jj=1:realz.(tp_name{id_f})
@@ -62,10 +76,13 @@ for type_index = 1:length(type_acc) % total common differential
                 g = [zeros(sz_1,1);ones(sz_2,1)];
                 boxplot(100*tmp,g)
                 title(acc_list_2{kk})
-                set(gca,'xticklabel',TYPE_NAME,'fontsize',14)
+                set(gca,'xticklabel',TYPE_NAME,'fontsize',12)
                 set(findobj(gca,'type','line'),'linew',2)
+                if kk==1
+                    ylabel('Percent')
+                end
             else
-
+                
                 tp = row_count-1;
                 model_selection = zeros(30,30);
                 val = zeros(30,30);
@@ -78,71 +95,34 @@ for type_index = 1:length(type_acc) % total common differential
                     max_val = max_val + max(tmp(:))/realz.(tp_name{tp});
                 end
                 imagesc(val)
-                if ~((strcmp(acc_list_2{kk},'TPR')||strcmp(acc_list_2{kk},'FPR')))
-                    title(sprintf('bestcase=%.3f',max_val))
-                end
+
                 
                 axis('square')
                 colormap((1-gray).^0.4)
                 caxis([0,1])
                 set(gca,'xticklabel',[],'yticklabel',[])
-                ylabel(acc_list_2{kk})
-                hold on
-                scatter(ax,ay,'xr')
-                hold off
+                ylh=ylabel(acc_list_2{kk});
+                ylh.Position(1) = -2;
+                set(gca,'fontsize',12)
+                if ~((strcmp(acc_list_2{kk},'TPR')||strcmp(acc_list_2{kk},'FPR')))
+                    title(sprintf('bestcase=%.3f',max_val))
+                elseif (strcmp(acc_list_2{kk},'TPR'))&&(row_count==2)
+                    ylh=ylabel(sprintf(['CVX','\n',acc_list_2{kk}]));
+                    ylh.Position(1) = -2;
+                elseif (strcmp(acc_list_2{kk},'TPR'))&&(row_count==3)
+                    ylh=ylabel(sprintf(['Non-CVX','\n',acc_list_2{kk}]));
+                    ylh.Position(1) = -4;
+                end
+                %                 hold on
+                %                 scatter(ax,ay,'xr')
+                %                 hold off
+                set(ylh,'rotation',0)
             end
-            
-            
         end
-        
     end
-end
-
-
-
-
-%% Box plot
-clear ARR
-ARR.cvx = zeros(length(acc_list_2),length(name_list),100);
-ARR.ncvx = zeros(length(acc_list_2),length(name_list),44);
-
-for type=1:2
-    load(path_to_ALL_RESULT{type})
-    load(path_to_index{type})
-    realz = size(ALL_RESULT,2);
+    saveas(gcf,[figurepath,'formulationS_comparecvx_',type_acc{type_index}])
+    print([figurepath,'\formulationS_comparecvx_',type_acc{type_index}],'-depsc')
     
-    clear summary
-    for nn=1:length(name_list)
-        for kk=1:length(acc_list_2)
-            for jj=1:realz
-                index_selected = R.index(ii,jj).(name_list{nn});
-                ARR.(tp_name{type})(kk,nn,jj) = ALL_RESULT(ii,jj).model_acc(index_selected).total.(acc_list_2{kk});
-            end
-        end
-    end
-end
-%%
-
-for nn=3
-    figure(99)
-    for kk=1:length(acc_list_2)
-        subplot(1,length(acc_list_2),kk)
-        
-        tmp = [squeeze((ARR.cvx(kk,nn,:)));squeeze((ARR.ncvx(kk,nn,:)))];
-        sz_1 = length(squeeze((ARR.cvx(kk,nn,:))));
-        sz_2 = length(squeeze((ARR.ncvx(kk,nn,:))));
-        g = [zeros(sz_1,1);ones(sz_2,1)];
-        boxplot(100*tmp,g)
-        title(acc_list_2{kk})
-        set(gca,'xticklabel',TYPE_NAME,'fontsize',14)
-        set(findobj(gca,'type','line'),'linew',2)
-        if ~strcmp('FPR',acc_list_2{kk})
-            ylim([0 100])
-        else
-            ylim([0 10])
-        end
-        if kk==1
-            ylabel('Percent')
-        end
-    end
+%     saveas(gcf,[figurepath,'formulationD_comparecvx_',type_acc{type_index}])
+%     print([figurepath,'\formulationD_comparecvx_',type_acc{type_index}],'-depsc')
 end
