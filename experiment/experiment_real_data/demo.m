@@ -1,5 +1,3 @@
-%% ADHD formulation D
-
 %% LOAD DATA
 clear
 clc
@@ -17,10 +15,10 @@ y_ADHD_C_concat = detrend(y_ADHD_C_concat')';
 y_total(:,:,1) = y_TDC_concat;
 y_total(:,:,2) = y_ADHD_C_concat;
 %% ESTIMATE MODEL USING CONCATENATION K=2
-M = test_cvxformulation_D(y_total,1,30);
+% M = test_cvxformulation_D(y_total,1,30);
 % save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D','M')
 M = test_cvxformulation_S(y_total,1,30);
-% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S','M')
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S','M')
 %% ESTIMATE MODEL USING K = 18
 % FORMULATION C
 clear M
@@ -49,8 +47,8 @@ AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R',
 AAL_116.DMN = [23,24,31,32,35,36,67,68,65,66];
 AAL_116.FPN = [65,66,7,8,11,12,13,14,61,62];
 AAL_116.CC = [31,32,33,34,35,36];
-% atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
-atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
+atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
+% atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
 
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 M = augment_score(M,size(y_total,2),'llh_hetero');
@@ -73,9 +71,9 @@ title(name_list{kk})
 colormap(jet)
 xtickangle(30)
 % caxis([0 1])
-hold on
-scatter(1:1:length(atlas_index),1:1:length(atlas_index),50,'ok')
-hold off
+% hold on
+% scatter(1:1:length(atlas_index),1:1:length(atlas_index),50,'ok')
+% hold off
 end
 for kk=1:2
 % subplot(1,2,kk)
