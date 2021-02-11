@@ -116,8 +116,10 @@ hold off
 clf
 close all
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
-
+TDC_GC = (1-eye(116)).*M.model(M.index.eBIC).GC(:,:,1);
+ADHD_GC = (1-eye(116)).*M.model(M.index.eBIC).GC(:,:,2);
 % atlas_index = AAL_116.DMN;
+% atlas_index = 1:116;
 atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
 TDC_GC_print = TDC_GC(atlas_index,atlas_index);
 ADHD_GC_print = ADHD_GC(atlas_index,atlas_index);
