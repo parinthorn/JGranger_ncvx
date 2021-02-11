@@ -5,7 +5,7 @@ if prod(size(M.model))==M.GridSize^2
     n = size(M.model(1).A,1);
     p = size(M.model(1).A,3);
     K = size(M.model(1).A,4);
-    idx = efficient_vect([n,p,K]);
+%     idx = efficient_vect([n,p,K]);
     M_out = M;
     for ii=1:M.GridSize
         for jj=1:M.GridSize
@@ -92,7 +92,7 @@ else
             
             
             
-            fitting = LLH;
+        fitting = LLH;
         gamma = log(n^2*p*K)/log(n*(T-p)*K);
         kappa = min([1,1.5*(1-1/(2*gamma))]);
         binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);

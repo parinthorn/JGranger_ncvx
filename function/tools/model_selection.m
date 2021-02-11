@@ -24,7 +24,6 @@ score.aic = fitting + 2*df;
 score.aicc = score.aic + (2*df^2+2*df)/(Num-df-1);
 
 score.df = df;
-score.SSE = SSE;
 end
 function [LLH_full,LLH_hetero,LLH_homo,SSE] = log_likelihood_var(data,A,n,p,K)
 Num = size(data,2);
