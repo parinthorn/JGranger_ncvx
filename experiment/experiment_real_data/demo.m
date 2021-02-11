@@ -24,19 +24,25 @@ save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_resul
 clear M
 M.TDC = test_cvxformulation_C(y_TDC,1,30);
 M.ADHD_C = test_cvxformulation_C(y_ADHD_C,1,30);
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C','M')
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered','M')
+%%
+%%
 % FORMULATION D
 clear M
 M.TDC = test_cvxformulation_D(y_TDC,1,30);
 M.ADHD_C = test_cvxformulation_D(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_D','M')
+%%
 % FORMULATION S
 clear M
 M.TDC = test_cvxformulation_S(y_TDC,1,30);
 M.ADHD_C = test_cvxformulation_S(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_S','M')
+%%
+TDC_tmp = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
+ADHD_tmp = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
 %% LOAD SAVED MODEL
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_tmp')
 %% FIND PEARSON CORRELATION & PARTIAL CORRELATION
 for kk=1:2
 M.pearson_corr(:,:,kk) = corr(y_total(:,:,kk)');

@@ -17,7 +17,7 @@ end
 K = length(id_list);
 y_K = zeros(n,T_max,K);
 for kk=1:K
-    load([inpath,name_u,'_','sfnwmrda',id_list{kk}])
+    load([inpath,name_u,'_','snwmrda',id_list{kk}])
     y_K(:,:,kk) = y(:,1:T_max);
 end
 end
