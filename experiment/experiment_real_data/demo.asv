@@ -1,12 +1,12 @@
-%% ADHD formulation D
-
 %% LOAD DATA
 clear
 clc
 selected_TDC = {'0010023';'0010024';'0010070';'0010088';'0010092';'0010112';'0010122';'0010123';'0010128';'1000804';'1435954';'3163200';'3243657';'3845761';'4079254';'8692452';'8834383';'9750701'};
 selected_ADHD_C = {'0010013';'0010017';'0010019';'0010022';'0010025';'0010037';'0010042';'0010048';'0010050';'0010086';'0010109';'1187766';'1283494';'1918630';'1992284';'2054438';'2107638';'2497695'};
 y_TDC = concat_real_data(selected_TDC,116,'nyu');
+y_TDC = y_TDC-mean(y_TDC,2);
 y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
+y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
 K = size(y_TDC,3);
 y_TDC_concat = reshape(y_TDC,[116,172*18]);
 y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
@@ -15,18 +15,28 @@ y_ADHD_C_concat = detrend(y_ADHD_C_concat')';
 y_total(:,:,1) = y_TDC_concat;
 y_total(:,:,2) = y_ADHD_C_concat;
 %% ESTIMATE MODEL USING CONCATENATION K=2
-M = test_cvxformulation_D(y_total,1,30);
+% M = test_cvxformulation_D(y_total,1,30);
 % save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D','M')
+M = test_cvxformulation_S(y_total,1,30);
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S','M')
 %% ESTIMATE MODEL USING K = 18
 % FORMULATION C
 clear M
 M.TDC = test_cvxformulation_C(y_TDC,1,30);
-
+M.ADHD_C = test_cvxformulation_C(y_ADHD_C,1,30);
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C','M')
 % FORMULATION D
-
+clear M
+M.TDC = test_cvxformulation_D(y_TDC,1,30);
+M.ADHD_C = test_cvxformulation_D(y_ADHD_C,1,30);
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_D','M')
 % FORMULATION S
+clear M
+M.TDC = test_cvxformulation_S(y_TDC,1,30);
+M.ADHD_C = test_cvxformulation_S(y_ADHD_C,1,30);
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_S','M')
 %% LOAD SAVED MODEL
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_tmp')
 %% FIND PEARSON CORRELATION & PARTIAL CORRELATION
 for kk=1:2
 M.pearson_corr(:,:,kk) = corr(y_total(:,:,kk)');
@@ -37,8 +47,8 @@ AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R',
 AAL_116.DMN = [23,24,31,32,35,36,67,68,65,66];
 AAL_116.FPN = [65,66,7,8,11,12,13,14,61,62];
 AAL_116.CC = [31,32,33,34,35,36];
-% atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
-atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
+atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
+% atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
 
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 M = augment_score(M,size(y_total,2),'llh_hetero');
@@ -61,9 +71,9 @@ title(name_list{kk})
 colormap(jet)
 xtickangle(30)
 % caxis([0 1])
-hold on
-scatter(1:1:length(atlas_index),1:1:length(atlas_index),50,'ok')
-hold off
+% hold on
+% scatter(1:1:length(atlas_index),1:1:length(atlas_index),50,'ok')
+% hold off
 end
 for kk=1:2
 % subplot(1,2,kk)

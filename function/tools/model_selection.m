@@ -29,6 +29,8 @@ end
 function [LLH_full,LLH_hetero,LLH_homo,SSE] = log_likelihood_var(data,A,n,p,K)
 Num = size(data,2);
 LLH_full = 0;
+LLH_hetero = 0;
+LLH_homo = 0;
 SSE = 0;
 tmpA = reshape(A,[n,n*p,K]);
 for kk=1:K
