@@ -49,6 +49,6 @@ for kk=1:K
     %     disp(size(Sigma))
     LLH_full = LLH_full+(Num)*logdetSigma;
     LLH_hetero = LLH_hetero+(Num)*sum(log(abs(diag(Sigma))));
-    LLH_homo = LLH_homo + Num*sum(diag(Sigma))/n;
+    LLH_homo = LLH_homo + Num*log(sum(diag(Sigma))/n);
 end
 end

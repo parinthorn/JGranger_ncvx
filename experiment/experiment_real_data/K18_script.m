@@ -10,7 +10,7 @@ y_TDC = y_TDC-mean(y_TDC,2);
 y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
 y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
 K = size(y_TDC,3);
-% load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
 M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
 M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
 %% PLOT AVERAGE GC
@@ -20,37 +20,75 @@ AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R',
 AAL_116.DMN = [23,24,31,32,35,36,67,68,65,66];
 AAL_116.FPN = [65,66,7,8,11,12,13,14,61,62];
 AAL_116.CC = [31,32,33,34,35,36];
+AAL_116.sensorimotor_cortex = [1,2,57,58,19,20,77,78];
 % atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
 % atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
 % atlas_index = [7:10, 12,14,16]; %MFG and IFG_R extra link [NOT FOUND]
 % atlas_index = [32,35,36]; % R_dACC and PCC Decrease (32 -> 35,36) [FOUND MISSING LINK PCC -> R_dACC]
 % atlas_index = [19,20,7:10]; %SMA -> MFG Increase (19,20 -> 7:10) [found extra links from both SMA_L,R to MFG Orbital]
-atlas_index = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
+% atlas_index = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
 
-figure(1)
-tt= tiledlayout(1,2);
+index_list{1} = AAL_116.DMN;
+index_list{2} = AAL_116.FPN;
+index_list{3} = union(AAL_116.DMN,AAL_116.FPN,'stable');
+index_list{4} = AAL_116.CC;
+index_list{5} = [7:10, 11,12,13,14,15,16]; %MFG and IFG_R extra link
+index_list{6} = [32,35,36,67,68]; % R_dACC and PCC/Precuneus Decrease (32 -> 35,36)
+index_list{7} = [19,20,7:10]; %SMA -> MFG Increase (19,20 -> 7:10)
+index_list{8} = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
+index_list{9} = union(AAL_116.DMN,AAL_116.sensorimotor_cortex,'stable'); % found abnormal connectivity in ADHD type C
+index_list{10} = [60, 9];  %Extra SPG_R -> ORB_mid_L
+index_list{11} = [18, 93, 97, 49]; % Extra SOG_L -> Cerebellum 4,5_L
+index_list{12} = [30, 47];  % missing   Lingual L -> Insular R
+index_list{13} = [46, 55];% Missing FFG_L -> Cuneus R
+index_list{14} = [61, 63]; % no
+index_list{15} = [67, 89]; % no
+index_list{16} = [85, 115];% Missing MTG_L -> Vermis 9
+index_list{17} = [67, 113];% Missing Precuneus L -> Vermis 7
+network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN','Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5'};
+
+% figure(1)
+% tt= tiledlayout(1,2);
 M.TDC.GC_avg = mean(M.TDC.model(M.TDC.index.eBIC).GC,3).*(1-eye(116));  
 M.ADHD_C.GC_avg = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3).*(1-eye(116));  
 nametag = {'TDC','ADHD_C'};
+titletag = {'TDC','ADHD'};
+for id = 1:length(index_list)
+    atlas_index = index_list{id};
+    figure(id)
 for ii=1:2
-nexttile;
+% nexttile;
+
+subplot(1,2,ii)
 imagesc(M.(nametag{ii}).GC_avg(atlas_index,atlas_index))
 grid on
 set(gca,'xtick',1:1:length(atlas_index),'ytick',1:1:length(atlas_index), ...
     'xticklabel',AAL_116.name(atlas_index),'yticklabel',AAL_116.name(atlas_index))
 axis('square')
-title(nametag{ii})
+title(titletag{ii})
 colormap(jet)
-caxis([0 0.6])
+caxis([0 0.3])
 xtickangle(30)
+end
 end
 
 
+atlas_index = index_list{2};
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 TDC_GC_print = M.TDC.GC_avg(atlas_index,atlas_index);
 ADHD_GC_print = M.ADHD_C.GC_avg(atlas_index,atlas_index);
 tmp = AAL_116.name((atlas_index));
-figure(2)
-circularGraph(TDC_GC_print,'Label',tmp);
-figure(3)
-circularGraph(ADHD_GC_print,'Label',tmp);
+figure(id+1)
+subplot(1,2,1)
+tt = circularGraph(TDC_GC_print','Label',tmp);
+for ii=1:length(tt.Node)
+    tt.Node(ii).Visible = false;
+end
+title('TDC')
+% figure(id+2)
+subplot(1,2,2)
+tt= circularGraph(ADHD_GC_print','Label',tmp);
+for ii=1:length(tt.Node)
+    tt.Node(ii).Visible = false;
+end
+title('ADHD')
