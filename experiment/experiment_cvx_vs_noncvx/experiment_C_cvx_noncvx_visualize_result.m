@@ -53,7 +53,7 @@ for tt=1:length(type_acc)
             for kk=1:length(acc_list_2)
                 for jj=1:realz
                     index_selected = R.index(ii,jj).(name_list{nn});
-                    summary.total.(acc_list_2{kk})(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).total.(acc_list_2{kk});
+                    summary.total.(acc_list_2{kk})(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).(type_acc{tt}).(acc_list_2{kk});
                 end
                 ARR(kk,nn) = mean(summary.total.(acc_list_2{kk})(ii,:));
             end

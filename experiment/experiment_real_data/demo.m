@@ -38,11 +38,16 @@ clear M
 M.TDC = test_cvxformulation_S(y_TDC,1,30);
 M.ADHD_C = test_cvxformulation_S(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_S','M')
-%%
-TDC_tmp = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-ADHD_tmp = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
 %% LOAD SAVED MODEL
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_tmp')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
+M = augment_score(M,size(y_total,2),'llh_hetero');
+%% LOAD MODEL K=18
+% load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
+M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
+M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
+%%
+
+
 %% FIND PEARSON CORRELATION & PARTIAL CORRELATION
 for kk=1:2
 M.pearson_corr(:,:,kk) = corr(y_total(:,:,kk)');
@@ -53,11 +58,14 @@ AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R',
 AAL_116.DMN = [23,24,31,32,35,36,67,68,65,66];
 AAL_116.FPN = [65,66,7,8,11,12,13,14,61,62];
 AAL_116.CC = [31,32,33,34,35,36];
-atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
+% atlas_index = [7,8,11,12,13,14,15,16,31,32,35,36,67,68,19,20];
 % atlas_index = union(AAL_116.DMN,AAL_116.FPN,'stable');
+% atlas_index = [7:10, 12,14,16]; %MFG and IFG_R extra link [NOT FOUND]
+% atlas_index = [32,35,36]; % R_dACC and PCC Decrease (32 -> 35,36) [FOUND MISSING LINK PCC -> R_dACC]
+atlas_index = [19,20,7:10]; %SMA -> MFG Increase (19,20 -> 7:10) [found extra links from both SMA_L,R to MFG Orbital]
+% atlas_index = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
 
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
-M = augment_score(M,size(y_total,2),'llh_hetero');
 index = M.index.eBIC;
 clf
 close all

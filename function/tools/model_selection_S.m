@@ -11,6 +11,7 @@ else
     binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
 end
 fitting = score.LLH_full;
+score.flag = 0;
 score.eBIC = fitting+log(Num).*df + 2*kappa.*binom_term;
 score.GIC_2 =  fitting+df*(n^2*p*K)^(1/3);
 score.GIC_3 =  fitting+df*(2*log(n^2*p*K));
