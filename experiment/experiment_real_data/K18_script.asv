@@ -45,7 +45,7 @@ index_list{14} = [61, 63]; % no
 index_list{15} = [67, 89]; % no
 index_list{16} = [85, 115];% Missing MTG_L -> Vermis 9
 index_list{17} = [67, 113];% Missing Precuneus L -> Vermis 7
-% network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN','Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5'};
+network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN','Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5'};
 
 % figure(1)
 % tt= tiledlayout(1,2);
@@ -73,7 +73,7 @@ end
 end
 
 
-atlas_index = index_list{8};
+atlas_index = index_list{2};
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 TDC_GC_print = M.TDC.GC_avg(atlas_index,atlas_index);
 ADHD_GC_print = M.ADHD_C.GC_avg(atlas_index,atlas_index);

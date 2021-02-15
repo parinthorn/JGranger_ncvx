@@ -9,10 +9,13 @@ y_TDC = concat_real_data(selected_TDC,116,'nyu');
 y_TDC = y_TDC-mean(y_TDC,2);
 y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
 y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
-K = size(y_TDC,3);
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
+
+y_total(:,:,1) = reshape(y_TDC,[116,size(y_TDC,2)*size(y_TDC,3)]);
+y_total(:,:,2) = reshape(y_ADHD_C,[116,size(y_ADHD_C,2)*size(y_ADHD_C,3)]);
+K = 2;
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
+% M_out = fix_loglikelihood(M,y_total);
+M = augment_score(M,size(y_total,2),'llh_hetero');
 %% PLOT AVERAGE GC
 clf
 close all
@@ -37,20 +40,23 @@ index_list{6} = [32,35,36,67,68]; % R_dACC and PCC/Precuneus Decrease (32 -> 35,
 index_list{7} = [19,20,7:10]; %SMA -> MFG Increase (19,20 -> 7:10)
 index_list{8} = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
 index_list{9} = union(AAL_116.DMN,AAL_116.sensorimotor_cortex,'stable'); % found abnormal connectivity in ADHD type C
-index_list{10} = [60, 9];  %Extra SPG_R -> ORB_mid_L
-index_list{11} = [18, 93, 97, 49]; % Extra SOG_L -> Cerebellum 4,5_L
-index_list{12} = [30, 47];  % missing   Lingual L -> Insular R
+index_list{10} = [60, 9]; %no
+index_list{11} = [18, 93, 97, 49]; % no
+index_list{12} = [30, 47];  % extra Insular R -> Lingual L
 index_list{13} = [46, 55];% Missing FFG_L -> Cuneus R
-index_list{14} = [61, 63]; % no
+index_list{14} = [61, 63]; % extra SMG_L -> IPG_L
 index_list{15} = [67, 89]; % no
-index_list{16} = [85, 115];% Missing MTG_L -> Vermis 9
-index_list{17} = [67, 113];% Missing Precuneus L -> Vermis 7
-% network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN','Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5'};
+index_list{16} = [85, 115];% no
+index_list{17} = [67, 113];% no
 
-% figure(1)
+
+network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN', ...
+    'Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5','Lit5','Lit5','Lit5','Lit5','Lit5'};
+
+figure(1)
 % tt= tiledlayout(1,2);
-M.TDC.GC_avg = mean(M.TDC.model(M.TDC.index.eBIC).GC,3).*(1-eye(116));  
-M.ADHD_C.GC_avg = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3).*(1-eye(116));  
+M.TDC.GC = (M.model(M.index.eBIC).GC(:,:,1)).*(1-eye(116));  
+M.ADHD_C.GC = (M.model(M.index.eBIC).GC(:,:,2)).*(1-eye(116));  
 nametag = {'TDC','ADHD_C'};
 titletag = {'TDC','ADHD'};
 for id = 1:length(index_list)
@@ -60,7 +66,7 @@ for ii=1:2
 % nexttile;
 
 subplot(1,2,ii)
-imagesc(M.(nametag{ii}).GC_avg(atlas_index,atlas_index))
+imagesc(M.(nametag{ii}).GC(atlas_index,atlas_index))
 grid on
 set(gca,'xtick',1:1:length(atlas_index),'ytick',1:1:length(atlas_index), ...
     'xticklabel',AAL_116.name(atlas_index),'yticklabel',AAL_116.name(atlas_index))
@@ -72,11 +78,10 @@ xtickangle(30)
 end
 end
 
-
-atlas_index = index_list{8};
+atlas_index = index_list{9};
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
-TDC_GC_print = M.TDC.GC_avg(atlas_index,atlas_index);
-ADHD_GC_print = M.ADHD_C.GC_avg(atlas_index,atlas_index);
+TDC_GC_print = M.TDC.GC(atlas_index,atlas_index);
+ADHD_GC_print = M.ADHD_C.GC(atlas_index,atlas_index);
 tmp = AAL_116.name((atlas_index));
 figure(id+1)
 subplot(1,2,1)
