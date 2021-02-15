@@ -5,7 +5,7 @@ if prod(size(M.model))==M.GridSize^2
     n = size(M.model(1).A,1);
     p = size(M.model(1).A,3);
     K = size(M.model(1).A,4);
-%     idx = efficient_vect([n,p,K]);
+    idx = efficient_vect([n,p,K]);
     M_out = M;
     for ii=1:M.GridSize
         for jj=1:M.GridSize
