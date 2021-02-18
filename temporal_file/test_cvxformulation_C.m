@@ -13,16 +13,23 @@ function M = test_cvxformulation_C(y,varargin)
 len_varargin = length(varargin);
 % toggle = 'static';
 % toggle = 'adaptive_P';
-toggle = 'adaptive_L';
+% toggle = 'adaptive_L';
 if isempty(varargin)
   p=1;
   GridSize = 30;
+  toggle = 'adaptive_L';
 elseif len_varargin==1
   p = varargin{1};
   GridSize = 30;
+  toggle = 'adaptive_L';
 elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
+  toggle = 'adaptive_L';
+elseif len_varargin ==3
+  p = varargin{1};
+  GridSize = varargin{2};
+  toggle = varargin{3};
 else
   error('must be atmost 3 input')
 end

@@ -43,7 +43,8 @@ for kk=1:K
         L = chol(Sigma,'lower');
         logdetSigma = 2*sum(log((diag(L))));
     catch
-        LLH_full = NaN;
+%         LLH_full = NaN;
+        logdetSigma = NaN;
     end
     
     %     disp(size(Sigma))
