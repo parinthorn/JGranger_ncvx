@@ -31,7 +31,7 @@ elseif len_varargin ==3
   GridSize = varargin{2};
   toggle = varargin{3};
 else
-  error('must be atmost 3 input')
+  error('must be atmost 4 input')
 end
 % Lambda = logspace(-6,0,GridSize);
 % Lambda = logspace(-3.5,0,GridSize);

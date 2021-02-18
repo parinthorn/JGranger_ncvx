@@ -36,11 +36,11 @@ for ii=1:dd
             ind_nz{kk} = setdiff(find(A(:,:,kk)),1:n+1:n^2);
         end
         [ind_common,ind_differential] = split_common_diff(ind_nz,[n,p,K]); % find common and differential off-diagonal nonzero index
-        common_confusion = compare_sparsity(model.ind_common,ind_common{1},n,K,'single_common');
+        common_confusion = compare_sparsity(model.ind_common,ind_common{1},n,p,K,'single_common');
         common_score = performance_score(common_confusion);
-        differential_confusion = compare_sparsity(model.ind_differential,ind_differential{1},n,K,'single_differential');
+        differential_confusion = compare_sparsity(model.ind_differential,ind_differential{1},n,p,K,'single_differential');
         differential_score = performance_score(differential_confusion);
-        total_confusion = compare_sparsity(model.ind,ind_nz,n,K,'single_differential');
+        total_confusion = compare_sparsity(model.ind,ind_nz,n,p,K,'single_VAR');
         total_score = performance_score(total_confusion);
         total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
         score(ii).total.TPR(jj) = total_score.TPR;
@@ -65,3 +65,15 @@ for ii=1:dd
 end
 
 % save([outpath,'skrip_formulationS_accuracy_K5'],'score')
+%%
+ARR = zeros(5,2);
+acc_name = {'TPR','FPR','ACC','F1','MCC'};
+
+for ii=1:2
+    for jj=1:5
+        ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
+    end
+end
+
+t = array2table(ARR,'VariableNames',{'5%','10%'},'RowNames', acc_name);
+t.Variables =  round(t.Variables*100,2);
