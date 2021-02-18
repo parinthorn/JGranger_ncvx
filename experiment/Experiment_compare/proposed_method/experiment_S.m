@@ -21,7 +21,7 @@ D = sparse(Dtmp*P);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for jj=86:90
+for jj=1:m
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};

@@ -1,7 +1,8 @@
 clear
 clc
 inpath = './data_compare/';
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\';
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_C_magda/';
+performance_path = './experiment/result_to_plot/';
 mname = {'10','20'};
 name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 realization = 100;
@@ -34,15 +35,17 @@ for ii=1:length(mname)
         
     end
 end
+save([performance_path,'adaptive_formulation_C_result'],'R')
+save([performance_path,'adaptive_formulation_C_ALL_RESULT'],'ALL_RESULT')
 %%
 clear
 clc
 inpath = './data_compare/';
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\';
+performance_path = './experiment/result_to_plot/';
 mname = {'10','20'};
 name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
-load([resultpath,'adaptive_formulation_C_result'])
-load([resultpath,'adaptive_formulation_C_ALL_RESULT'])
+load([performance_path,'adaptive_formulation_C_result'])
+load([performance_path,'adaptive_formulation_C_ALL_RESULT'])
 acc_list = {'TPR','FPR','ACC','F1','MCC'};
 realization = 100;
 ARR = zeros(5,length(name_list));
@@ -63,6 +66,3 @@ for ii=1:length(mname)
     t.Variables =  round(t.Variables*100,2);
     disp(t)
 end
-%%
-save([resultpath,'adaptive_formulation_C_result'],'R')
-save([resultpath,'adaptive_formulation_C_ALL_RESULT'],'ALL_RESULT')

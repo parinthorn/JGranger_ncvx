@@ -4,7 +4,7 @@ clc
 close all
 modelpath = './data_compare/';
 inpath = './experiment/Experiment_compare/skrip_code/data_R_formulationS/';
-outpath = './experiment/Experiment_compare/skrip_code/data_R_formulationS/';
+outpath = './experiment/result_to_plot/';
 type = 3; %S type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;

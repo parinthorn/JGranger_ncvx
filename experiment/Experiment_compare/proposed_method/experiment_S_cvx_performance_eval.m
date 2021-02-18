@@ -4,8 +4,7 @@ inpath = './data_compare/';
 
 
 resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_S_result\';
-% resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
-
+performance_path = './experiment/result_to_plot/';
 mname = {'1','5'};
 dd = length(mname);
 % dd=1;
@@ -39,5 +38,5 @@ for ii=1:dd
          
     end
 end
-save([resultpath,'formulation_S_adaptive_cvx_result_K5'],'R')
-save([resultpath,'formulation_S_adaptive_cvx_ALL_RESULT_K5'],'ALL_RESULT')
+save([performance_path,'adaptive_formulation_S_cvx_result_K5'],'R')
+save([performance_path,'adaptive_formulation_S_cvx_ALL_RESULT_K5'],'ALL_RESULT')

@@ -12,18 +12,25 @@ function M = formulation_S(y,varargin)
 [n,T,K] = size(y);
 len_varargin = length(varargin);
 % toggle = 'static';
-toggle = 'adaptive_D';
+% toggle = 'adaptive_D';
 if isempty(varargin)
   p=1;
   GridSize = 30;
+  toggle = 'adaptive_D';
 elseif len_varargin==1
   p = varargin{1};
   GridSize = 30;
+  toggle = 'adaptive_D';
 elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
+  toggle = 'adaptive_D';
+elseif len_varargin ==3
+  p = varargin{1};
+  GridSize = varargin{2};
+  toggle = varargin{3};
 else
-  error('must be atmost 3 input')
+  error('must be atmost 4 input')
 end
 % Lambda = logspace(-6,0,GridSize);
 H = zeros(n*p,T-p,K);
