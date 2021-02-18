@@ -16,6 +16,7 @@ switch toggle
 end
 K = length(id_list);
 y_K = zeros(n,T_max,K);
+<<<<<<< HEAD
 if is_filter
     for kk=1:K
         load([inpath,name_u,'_','sfnwmrda',id_list{kk}])
@@ -26,5 +27,10 @@ else
         load([inpath,name_u,'_','snwmrda',id_list{kk}])
         y_K(:,:,kk) = y(:,1:T_max);
     end
+=======
+for kk=1:K
+    load([inpath,name_u,'_','snwmrda',id_list{kk}])
+    y_K(:,:,kk) = y(:,1:T_max);
+>>>>>>> ca504cf053124889a8cbabc1e20efd61b16da0e4
 end
 end

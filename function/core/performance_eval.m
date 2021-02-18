@@ -14,29 +14,29 @@ if numel((M.model))==GridSize
     ind_VAR = reshape({M.model.ind_VAR},[GridSize 1]);
     
     for ii=1:GridSize
-            
-            
-            [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii},n,K,'single_common');
-            
-            [stat.accuracy.differential.confusion_matrix] = compare_sparsity(GTmodel.ind_differential,ind_differential{ii},n,K,'single_differential');
-            
-            
-            
-            
-            [stat.accuracy.total.confusion_matrix] = compare_sparsity(GTmodel.ind,ind_total{ii},n,K,'single_differential');
-            
-            [stat.accuracy.VAR_coeff.confusion_matrix] = compare_sparsity(GTmodel.ind_VAR,ind_VAR{ii},n,K,'single_differential');
-            
-            
-            model_acc(ii).common = performance_score(squeeze(stat.accuracy.common.confusion_matrix));
-            
-            model_acc(ii).differential = performance_score(squeeze(stat.accuracy.differential.confusion_matrix));
-            
-            model_acc(ii).total = performance_score(squeeze(stat.accuracy.total.confusion_matrix));
-            
-            model_acc(ii).VAR_coeff = performance_score(squeeze(stat.accuracy.VAR_coeff.confusion_matrix));
-            
-            model_acc(ii).bias = sqrt(sum((GTmodel.A-M.model(ii).A).^2,'all')/sum(M.model(ii).A.^2,'all'));
+        
+        
+        [stat.accuracy.common.confusion_matrix] = compare_sparsity(GTmodel.ind_common,ind_common{ii},n,p,K,'single_common');
+        
+        [stat.accuracy.differential.confusion_matrix] = compare_sparsity(GTmodel.ind_differential,ind_differential{ii},n,p,K,'single_differential');
+        
+        
+        
+        
+        [stat.accuracy.total.confusion_matrix] = compare_sparsity(GTmodel.ind,ind_total{ii},n,p,K,'single_differential');
+        
+        [stat.accuracy.VAR_coeff.confusion_matrix] = compare_sparsity(GTmodel.ind_VAR,ind_VAR{ii},n,p,K,'single_VAR');
+        
+        
+        model_acc(ii).common = performance_score(squeeze(stat.accuracy.common.confusion_matrix));
+        
+        model_acc(ii).differential = performance_score(squeeze(stat.accuracy.differential.confusion_matrix));
+        
+        model_acc(ii).total = performance_score(squeeze(stat.accuracy.total.confusion_matrix));
+        
+        model_acc(ii).VAR_coeff = performance_score(squeeze(stat.accuracy.VAR_coeff.confusion_matrix));
+        
+        model_acc(ii).bias = sqrt(sum((GTmodel.A-M.model(ii).A).^2,'all')/sum(M.model(ii).A.^2,'all'));
     end
     return
 end

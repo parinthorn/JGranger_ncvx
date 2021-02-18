@@ -22,12 +22,7 @@ mname = {'10','20'};
 cnt = 0;
 for ii=3:4
     cnt = cnt+1;
-    if ii==3
-        st = 22;
-    else
-        st=1;
-    end
-    for jj=st:m
+    for jj=1:m
         % generate data from given seedW
         model = E{type,ii,dd,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);

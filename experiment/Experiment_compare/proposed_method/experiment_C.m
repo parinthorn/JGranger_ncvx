@@ -23,9 +23,10 @@ for ii=3:4
         % generate data from given seed
         model = E{type,ii,dd,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = formulation_C(y,p,GridSize);
-%         A_select = M.A(:,:,:,:,M.index.bic);
-                
-        save([outpath,'result_adaptive_formulationC_',mname{cnt},'percent','_',int2str(jj)],'M')
+        % M = formulation_C(y,p,GridSize);
+        M = test_cvxformulation_C(y,p,GridSize);
+        save([outpath,'result_adaptive_cvx_formulationC_',mname{cnt},'percent','_',int2str(jj)],'M')
+        
+%         save([outpath,'result_adaptive_formulationC_',mname{cnt},'percent','_',int2str(jj)],'M')
     end
 end
