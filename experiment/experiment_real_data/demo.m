@@ -7,28 +7,28 @@ clear
 clc
 selected_TDC = {'0010023';'0010024';'0010070';'0010088';'0010092';'0010112';'0010122';'0010123';'0010128';'1000804';'1435954';'3163200';'3243657';'3845761';'4079254';'8692452';'8834383';'9750701'};
 selected_ADHD_C = {'0010013';'0010017';'0010019';'0010022';'0010025';'0010037';'0010042';'0010048';'0010050';'0010086';'0010109';'1187766';'1283494';'1918630';'1992284';'2054438';'2107638';'2497695'};
-y_TDC = concat_real_data(selected_TDC,116,'nyu');
-y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
+y_TDC = concat_real_data(selected_TDC,116,'nyu',0); %unfilter=0
+y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu',0);
 K = size(y_TDC,3);
 
 %%
 y_TDC_concat = reshape(y_TDC,[116,172*18]);
 y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
-%%
-figure(1)
-subplot(2,2,1)
-imagesc(fcon_TDC.*(abs(fcon_TDC.*(1-eye(116)))>0.2))
-axis('square')
-subplot(2,2,2)
-imagesc(fcon_ADHD_C.*(abs(fcon_ADHD_C.*(1-eye(116)))>0.2))
-axis('square')
-
-subplot(2,2,3)
-imagesc(fcon_TDC_concat.*(abs(fcon_TDC_concat.*(1-eye(116)))>0.4))
-axis('square')
-subplot(2,2,4)
-imagesc(fcon_ADHD_C_concat.*(abs(fcon_ADHD_C_concat.*(1-eye(116)))>0.4))
-axis('square')
+% %%
+% figure(1)
+% subplot(2,2,1)
+% imagesc(fcon_TDC.*(abs(fcon_TDC.*(1-eye(116)))>0.2))
+% axis('square')
+% subplot(2,2,2)
+% imagesc(fcon_ADHD_C.*(abs(fcon_ADHD_C.*(1-eye(116)))>0.2))
+% axis('square')
+% 
+% subplot(2,2,3)
+% imagesc(fcon_TDC_concat.*(abs(fcon_TDC_concat.*(1-eye(116)))>0.4))
+% axis('square')
+% subplot(2,2,4)
+% imagesc(fcon_ADHD_C_concat.*(abs(fcon_ADHD_C_concat.*(1-eye(116)))>0.4))
+% axis('square')
 %%
 y_TDC_concat = detrend(y_TDC_concat')';
 y_ADHD_C_concat = detrend(y_ADHD_C_concat')';
@@ -46,7 +46,7 @@ end
 %%
 M = test_cvxformulation_D(y_total,1,30);
 M = augment_score(M,size(y_total,2),'llh');
-% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D','M')
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered','M')
 %%
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D')
 load('.\experiment\experiment_real_data\AAL_116.mat')
