@@ -5,9 +5,9 @@ clear
 clc
 selected_TDC = {'0010023';'0010024';'0010070';'0010088';'0010092';'0010112';'0010122';'0010123';'0010128';'1000804';'1435954';'3163200';'3243657';'3845761';'4079254';'8692452';'8834383';'9750701'};
 selected_ADHD_C = {'0010013';'0010017';'0010019';'0010022';'0010025';'0010037';'0010042';'0010048';'0010050';'0010086';'0010109';'1187766';'1283494';'1918630';'1992284';'2054438';'2107638';'2497695'};
-y_TDC = concat_real_data(selected_TDC,116,'nyu');
+y_TDC = concat_real_data(selected_TDC,116,'nyu',0);
 y_TDC = y_TDC-mean(y_TDC,2);
-y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu');
+y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu',0);
 y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
 K = size(y_TDC,3);
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
@@ -45,12 +45,31 @@ index_list{14} = [61, 63]; % no
 index_list{15} = [67, 89]; % no
 index_list{16} = [85, 115];% Missing MTG_L -> Vermis 9
 index_list{17} = [67, 113];% Missing Precuneus L -> Vermis 7
+index_list{18} = [1:116];
 % network_name = {'Default Mode Network','Fronto-Parietal Network','DMN&FPN','Cingulate Cortex','Lit1','Lit2','Lit3','Lit4','Lit5'};
 
 % figure(1)
 % tt= tiledlayout(1,2);
-M.TDC.GC_avg = mean(M.TDC.model(M.TDC.index.eBIC).GC,3).*(1-eye(116));  
-M.ADHD_C.GC_avg = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3).*(1-eye(116));  
+M.TDC.GC_avg = zeros(116);
+M.ADHD_C.GC_avg = zeros(116);
+
+for kk=1:K
+    index_eBIC = M.TDC.index.eBIC;
+    common_index = M.TDC.model(index_eBIC).ind_common{1};
+    GC_tmp = M.TDC.model(index_eBIC).GC(:,:,kk);
+    M.TDC.GC_avg(common_index) = M.TDC.GC_avg(common_index)+GC_tmp(common_index)/K;
+    
+    index_eBIC = M.ADHD_C.index.eBIC;
+    common_index = M.ADHD_C.model(index_eBIC).ind_common{1};
+    GC_tmp = M.ADHD_C.model(index_eBIC).GC(:,:,kk);
+    M.ADHD_C.GC_avg(common_index) = M.ADHD_C.GC_avg(common_index)+GC_tmp(common_index)/K;
+end
+
+% M.TDC.GC_avg = mean(M.TDC.model(M.TDC.index.eBIC).GC,3).*(1-eye(116));  
+% M.ADHD_C.GC_avg = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3).*(1-eye(116));
+
+
+
 nametag = {'TDC','ADHD_C'};
 titletag = {'TDC','ADHD'};
 for id = 1:length(index_list)
@@ -73,7 +92,7 @@ end
 end
 
 
-atlas_index = index_list{8};
+atlas_index = index_list{5};
 set(groot, 'DefaultAxesTickLabelInterpreter', 'none')
 TDC_GC_print = M.TDC.GC_avg(atlas_index,atlas_index);
 ADHD_GC_print = M.ADHD_C.GC_avg(atlas_index,atlas_index);
