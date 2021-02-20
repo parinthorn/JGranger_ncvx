@@ -40,6 +40,7 @@ index_list{6} = [32,35,36,67,68]; % R_dACC and PCC/Precuneus Decrease (32 -> 35,
 index_list{7} = [19,20,7:10]; %SMA -> MFG Increase (19,20 -> 7:10)
 index_list{8} = [11:16,19,20]; %IFG -> SMA Increase (11:16 -> 19,20)
 index_list{9} = union(AAL_116.DMN,AAL_116.sensorimotor_cortex,'stable'); % found abnormal connectivity in ADHD type C
+
 index_list{10} = [60, 9]; %no
 index_list{11} = [18, 93, 97, 49]; % no
 index_list{12} = [30, 47];  % extra Insular R -> Lingual L
