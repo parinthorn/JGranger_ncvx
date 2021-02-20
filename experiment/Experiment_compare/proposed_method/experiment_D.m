@@ -9,7 +9,7 @@ mkdir(outpath)
 type = 2; %D type
 % cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 cd = 3;
-T = 30;
+T = 100;
 p_true = 1;
 p_est = 1;
 K = 5;
@@ -24,6 +24,6 @@ for jj=1:realz
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = formulation_D(y,p_est,GridSize);
-        save([outpath,'resultT30_adaptive_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        save([outpath,'result_adaptive_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

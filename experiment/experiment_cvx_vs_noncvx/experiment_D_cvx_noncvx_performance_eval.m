@@ -24,7 +24,7 @@ for jj=1:realization
     GTmodel = E{2,jj};
     fname = [resultpath,'resultT150_adaptive_formulationD_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score(M,T,'llh');
+    M = augment_score(M,T,'llh_full');
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);

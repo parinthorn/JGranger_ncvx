@@ -3,18 +3,19 @@ clear
 clc
 close all
 modelpath = './data_compare/';
-inpath = 'C:\Users\parinthorn\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx/experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
-outpath = 'C:\Users\parinthorn\Dropbox\0MASTER\MATLAB_MASTER\JGranger_ncvx/experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
+inpath = './experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
+outpath = './experiment/result_to_plot/';
 type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-K = 50;
+K = 5;
+% K = 50;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
-dd=2;
+% dd=1;
 realization = 5;
 % m=20;
 GridSize = 30;
@@ -35,11 +36,11 @@ for ii=1:dd
             ind_nz{kk} = setdiff(find(A(:,:,kk)),1:n+1:n^2);
         end
         [ind_common,ind_differential] = split_common_diff(ind_nz,[n,p,K]); % find common and differential off-diagonal nonzero index
-        common_confusion = compare_sparsity(model.ind_common,ind_common{1},n,K,'single_common');
+        common_confusion = compare_sparsity(model.ind_common,ind_common{1},n,p,K,'single_common');
         common_score = performance_score(common_confusion);
-        differential_confusion = compare_sparsity(model.ind_differential,ind_differential{1},n,K,'single_differential');
+        differential_confusion = compare_sparsity(model.ind_differential,ind_differential{1},n,p,K,'single_differential');
         differential_score = performance_score(differential_confusion);
-        total_confusion = compare_sparsity(model.ind,ind_nz,n,K,'single_differential');
+        total_confusion = compare_sparsity(model.ind,ind_nz,n,p,K,'single_differential');
         total_score = performance_score(total_confusion);
         total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
         score(ii).total.TPR(jj) = total_score.TPR;
@@ -63,4 +64,16 @@ for ii=1:dd
     end
 end
 
-save([outpath,'skrip_formulationD_accuracy_K50'],'score')
+% save([outpath,'skrip_formulationD_accuracy_K50'],'score')
+%%
+ARR = zeros(5,1);
+acc_name = {'TPR','FPR','ACC','F1','MCC'};
+
+for ii=1:2
+    for jj=1:5
+        ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
+    end
+end
+
+t = array2table(ARR,'VariableNames',{'1%','5%'},'RowNames', acc_name);
+t.Variables =  round(t.Variables*100,2);

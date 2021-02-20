@@ -3,24 +3,21 @@ clc
 inpath = './data_compare/';
 
 
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_D_result\';
-% resultpath = 'D:\parinthorn_thesis\formulation_D_result\';
-
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
+performance_path = './experiment/result_to_plot/';
 mname = {'1','5'};
 dd = length(mname);
-% dd=1;
-% dd=2;
 K=5;
+% K = 50;
 realization = 100;
 load([inpath,'model_K',int2str(K),'_p1'])
 name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
-for ii=1:dd
-    for jj=1:realization
+for jj=1:realization
+    for ii=1:dd
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,3,ii,jj};
-        fname = [resultpath,'resultT30_adaptive_cvx_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+        fname = [resultpath,'result_adaptive_cvx_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
         load(fname)
-        M = augment_score(M,30,'sse');
         model_acc = performance_eval(M,GTmodel);
         toggle_list = {'total','common','differential'};
         %         M.index.bic=best_index(jj);
@@ -30,16 +27,62 @@ for ii=1:dd
         end
         for tt = 1:length(toggle_list)
             toggle = toggle_list{tt};
-            R.(toggle).F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
-            R.(toggle).MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
-            R.(toggle).TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
-            R.(toggle).FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
-            R.(toggle).ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
         fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
             mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
         
     end
 end
-save([resultpath,'formulation_DT30_adaptive_cvx_result_K',int2str(K)],'R')
-save([resultpath,'formulation_DT30_adaptive_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'adaptive_formulation_D_cvx_result_K',int2str(K)],'R')
+save([performance_path,'adaptive_formulation_D_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+
+%% Fix degrees of freedom
+
+clear
+clc
+inpath = './data_compare/';
+
+
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
+performance_path = './experiment/result_to_plot/';
+mname = {'1','5'};
+dd = length(mname);
+K=5;
+% K = 50;
+realization = 100;
+load([inpath,'model_K',int2str(K),'_p1'])
+name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+for jj=1:realization
+    for ii=1:dd
+        fprintf('(%d,%d)\n',ii,jj)
+        GTmodel = E{2,3,ii,jj};
+        fname = [resultpath,'result_adaptive_cvx_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+        load(fname)
+        M = augment_score_old(M,100);
+        model_acc = performance_eval(M,GTmodel);
+        toggle_list = {'total','common','differential'};
+        %         M.index.bic=best_index(jj);
+        ALL_RESULT(ii,jj).model_acc = model_acc;
+        for kk=1:length(name_list)
+            R.index(ii,jj).(name_list{kk}) = M.index.(name_list{kk});
+        end
+        for tt = 1:length(toggle_list)
+            toggle = toggle_list{tt};
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
+        end
+        fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
+            mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
+        
+    end
+end
+save([performance_path,'fixdf_adaptive_formulation_D_cvx_result_K',int2str(K)],'R')
+save([performance_path,'fixdf_dfadaptive_formulation_D_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
