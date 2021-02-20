@@ -1,7 +1,8 @@
 clear
 clc
 inpath = './data_compare/';
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\';
+resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_C_magda/';
+outpath = './experiment/result_to_plot/';
 mname = {'10','20'};
 realization = 100;
 load([inpath,'model_K5_p1'])
@@ -26,4 +27,5 @@ for ii=1:length(mname)
     end
 end
 
-save([resultpath,'magda_result'],'R')
+% save([resultpath,'magda_result'],'R')
+save([outpath,'magda_result'],'R')

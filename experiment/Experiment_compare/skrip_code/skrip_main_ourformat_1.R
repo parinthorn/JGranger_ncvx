@@ -174,8 +174,8 @@ print(c("n.iter:",n.iter))
 density = c(1,5)
 realz <- 100
 namedir <- './data_R_formulationS/'
-arrlist = c(1,9,17,77,87,97)
-for (dd in 1:2){
+arrlist = c(54,85,87,89,93,95,97,99)
+for (dd in 2:2){
   for (itr in arrlist){
     
     ##############################

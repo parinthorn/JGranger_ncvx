@@ -19,13 +19,12 @@ t <- 100
 K <- 50
 density = c(1,5)
 realz <- 20
-
 Final.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Comm.Est <- make.list(make.list(matrix(0,D*p,p),K),1)
 Final.Ind.Est <-  make.list(make.list(matrix(0,D*p,p),K),1)
-
-for (itr in seq(41, 100, by=8)){
-  for (dd in 1:2){
+for (itr in c(6,24,32,37,41,45,49,53,57,61,65,69,73,77,81,85,89,93,97)){
+  for (dd in 2:2){
+    start_time <- Sys.time()
     namedir <- './data_R_formulationD/'
     tmp <- read.csv(file = paste(namedir,'K',K,'_data_',density[dd],'percent_',itr,'.csv',sep=""),header=FALSE)
     DATA <-as.matrix(tmp)
@@ -316,11 +315,15 @@ for (itr in seq(41, 100, by=8)){
       Group.Final[[k]] <- sparsify(Group.Final[[k]],Thresh2)
       Final.Est[[run]][[k]] <- Group.Final[[k]]
     }
+    end_time <- Sys.time()
+    total_time = end_time - start_time
     #saveRDS(Final.Est,paste(namedir,"/",itr,"_","Final_Est.rds",sep=""))
     #saveRDS(Final.Comm.Est,paste(namedir,"/",itr,"_","Common_Est.rds",sep=""))
     #saveRDS(Final.Ind.Est,paste(namedir,"/",itr,"_","Ind_Est.rds",sep=""))
     write.csv(Final.Est,paste(namedir,"K",K,"_Final_Est_",density[dd],"percent_",itr,".csv",sep=""))
     write.csv(Final.Comm.Est,paste(namedir,"K",K,"Common_Est_",density[dd],"percent_",itr,".csv",sep=""))
     write.csv(Final.Ind.Est,paste(namedir,"K",K,"Ind_Est_",density[dd],"percent_",itr,".csv",sep=""))
+    write.csv(total_time,paste(namedir,"K",K,"total_time_",density[dd],"percent_",itr,".csv",sep=""))
+    
   }
 }

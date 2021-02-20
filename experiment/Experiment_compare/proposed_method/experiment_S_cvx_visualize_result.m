@@ -6,9 +6,9 @@ acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 % name_list = {'bic','aic','aicc'};
-resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_S_result/';
-load([resultpath,'formulation_S_adaptive_cvx_ALL_RESULT_K5'])
-load([resultpath,'formulation_S_adaptive_cvx_result_K5'])
+performance_path = './experiment/result_to_plot/';
+load([performance_path,'adaptive_formulation_S_cvx_ALL_RESULT_K5'])
+load([performance_path,'adaptive_formulation_S_cvx_result_K5'])
 % load([resultpath,'formulation_S_index'])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
@@ -48,7 +48,7 @@ for ii=1:dd
 
         end
     end
-    ARR = zeros(5,length(name_list)+1);
+    ARR = zeros(5,length(name_list));
      for nn=1:length(name_list)
         for kk=1:length(acc_list_2)
             for jj=1:realz
@@ -57,18 +57,10 @@ for ii=1:dd
             end
             ARR(kk,nn) = mean(summary.total.(acc_list_2{kk})(ii,:));
         end
-%         ARR(:,nn)= [mean(summary.total.F1(ii,:)),mean(summary.total.MCC(ii,:)),mean(summary.total.ACC(ii,:)),mean(summary.total.FPR(ii,:)),mean(summary.total.TPR(ii,:))]';
-    end
-    load('.\experiment\Experiment_compare\skrip_code\data_R_formulationS\skrip_formulationS_accuracy_K5_55realz')
-%     acc_list = {'F1','MCC','ACC','FPR','TPR'};
-    for kk=1:length(acc_list_2)
-        %     for nn=1:length(name_list)
-        ARR(kk,length(name_list)+1) = mean(score(ii).total.(acc_list_2{kk}));
-    end
-    
+     end
     
     disp(['density:',diff_den{ii}])
-    t = array2table(ARR,'VariableNames',[name_list 'skrip'],'RowNames', acc_list_2);
+    t = array2table(ARR,'VariableNames',name_list,'RowNames', acc_list_2);
     t.Variables =  round(t.Variables*100,2);
     disp(t)
 end

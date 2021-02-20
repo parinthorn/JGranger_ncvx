@@ -17,7 +17,7 @@ GridSize = 30;
 mname = {'1','5'};
 %% Non-CVX
 ii=2;
-for jj=1:realz
+for jj=76:80
     % generate data from given seed
     model = E{3,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);

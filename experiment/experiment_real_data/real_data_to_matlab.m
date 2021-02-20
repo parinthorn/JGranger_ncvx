@@ -36,3 +36,24 @@ for ii=2:length(folder_name)
     
     end
 end
+%% unfilter
+folder_name = {'NYU'};
+outpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\ADHD200_AAL_TCs_filtfix\matlab_format\';
+for ii=1:length(folder_name)
+    for jj=1:length(subject_list.(list_u{ii}))
+    a = dir(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\ADHD200_AAL_TCs_filtfix\',folder_name{ii},'\',subject_list.(list_u{ii}){jj},'\snwmrda', ...
+        subject_list.(list_u{ii}){jj},'_session_*']);
+    file_name = {a.name};
+    folder_name_full = {a.folder};
+    y = [];
+    for nn=1:length(file_name)
+       [data,header,raw] = tsvread([folder_name_full{nn},'\',file_name{nn}]);
+       y = [y data(2:end,3:end)'];
+       
+    end
+    fprintf([folder_name{ii},'_snwmrda',subject_list.(list_u{ii}){jj},' length:\t %d \n'],size(y,2))
+    save([outpath,folder_name{ii},'_snwmrda',subject_list.(list_u{ii}){jj}],'y')
+%     disp({a.name})
+    
+    end
+end
