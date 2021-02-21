@@ -12,6 +12,7 @@ y_total(:,:,1) = reshape(y_TDC,[116,size(y_TDC,2)*size(y_TDC,3)]);
 y_total(:,:,2) = reshape(y_ADHD_C,[116,size(y_ADHD_C,2)*size(y_ADHD_C,3)]);
 % map
 AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R','MFG_L','MFG_R','ORBmid_L','ORBmid_R','IFGoperc_L','IFGoperc_R','IFGtriang_L','IFGtriang_R','ORBinf_L','ORBinf_R','ROL_L','ROL_R','SMA_L','SMA_R','OLF_L','OLF_R','SFGmed_L','SFGmed_R','ORBsupmed_L','ORBsupmed_R','REC_L','REC_R','INS_L','INS_R','ACG_L','ACG_R','MCG_L','MCG_R','PCG_L','PCG_R','HIP_L','HIP_R','PHG_L','PHG_R','AMYG_L','AMYG_R','CAL_L','CAL_R','CUN_L','CUN_R','LING_L','LING_R','SOG_L','SOG_R','MOG_L','MOG_R','IOG_L','IOG_R','FFG_L','FFG_R','PoCG_L','PoCG_R','SPG_L','SPG_R','IPG_L','IPG_R','SMG_L','SMG_R','ANG_L','ANG_R','PCUN_L','PCUN_R','PCL_L','PCL_R','CAU_L','CAU_R','PUT_L','PUT_R','PAL_L','PAL_R','THA_L','THA_R','HES_L','HES_R','STG_L','STG_R','TPOsup_L','TPOsup_R','MTG_L','MTG_R','TPOmid_L','TPOmid_R','ITG_L','ITG_R','Cerebelum_Crus1_L','Cerebelum_Crus1_R','Cerebelum_Crus2_L','Cerebelum_Crus2_R','Cerebelum_3_L','Cerebelum_3_R','Cerebelum_4_5_L','Cerebelum_4_5_R','Cerebelum_6_L','Cerebelum_6_R','Cerebelum_7b_L','Cerebelum_7b_R','Cerebelum_8_L','Cerebelum_8_R','Cerebelum_9_L','Cerebelum_9_R','Cerebelum_10_L','Cerebelum_10_R','Vermis_1_2','Vermis_3','Vermis_4_5','Vermis_6','Vermis_7','Vermis_8','Vermis_9','Vermis_10'};
+AAL_116.name_full = {'Precentral gyrus_L','Precentral gyrus_R','Superior frontal gyrus (dorsolateral)_L','Superior frontal gyrus (dorsolateral)_R','Superior frontal gyrus (orbital)_L','Superior frontal gyrus (orbital)_R','Middle frontal gyrus_L','Middle frontal gyrus_R','Middle frontal gyrus (orbital)_L','Middle frontal gyrus (orbital)_R','Inferior frontal gyrus (opercular)_L','Inferior frontal gyrus (opercular)_R','Inferior frontal gyrus (triangular)_L','Inferior frontal gyrus (triangular)_R','Inferior frontal gyrus (orbital)_L','Inferior frontal gyrus (orbital)_R','Rolandic operculum_L','Rolandic operculum_R','Supplementary motor area_L','Supplementary motor area_R','Olfactroy cortex_L','Olfactroy cortex_R','Superior frontal gyrus (medial)_L','Superior frontal gyrus (medial)_R','Superior frontal gyrus (medial orbital)_L','Superior frontal gyrus (medial orbital)_R','Rectus gyrus_L','Rectus gyrus_R','Insula_L','Insula_R','Anterior cingulate gyrus_L','Anterior cingulate gyrus_R','Median cingulate gyrus_L','Median cingulate gyrus_R','Posterior cingulate gyrus_L','Posterior cingulate gyrus_R','Hippocampus_L','Hippocampus_R','Parahippocampal gyrus_L','Parahippocampal gyrus_R','Amygdala_L','Amygdala_R','Calcarine cortex_L','Calcarine cortex_R','Cuneus_L','Cuneus_R','Lingual gyrus_L','Lingual gyrus_R','Superior occipital gyrus_L','Superior occipital gyrus_R','Middle occipital gyrus_L','Middle occipital gyrus_R','Inferior occipital gyrus_L','Inferior occipital gyrus_R','Fusiform gyrus_L','Fusiform gyrus_R','Postcentral gyrus_L','Postcentral gyrus_R','Superior parietal gyrus_L','Superior parietal gyrus_R','Inferior parietal gyrus_L','Inferior parietal gyrus_R','Supramarginal gyrus_L','Supramarginal gyrus_R','Angular gyrus_L','Angular gyrus_R','Precuneus_L','Precuneus_R','Paracentral lobule_L','Paracentral lobule_R','Caudate_L','Caudate_R','Putamen_L','Putamen_R','Pallidum_L','Pallidum_R','Thalamus_L','Thalamus_R','Heschl gyrus_L','Heschl gyrus_R','Superior temporal gyrus_L','Superior temporal gyrus_R','Temporal pole (superior)_L','Temporal pole (superior)_R','Middle temporal gyrus_L','Middle temporal gyrus_R','Temporal pole (middle)_L','Temporal pole (middle)_R','Inferior temporal gyrus_L','Inferior temporal gyrus_R','Cerebelum_Crus1_L','Cerebelum_Crus1_R','Cerebelum_Crus2_L','Cerebelum_Crus2_R','Cerebelum_3_L','Cerebelum_3_R','Cerebelum_4_5_L','Cerebelum_4_5_R','Cerebelum_6_L','Cerebelum_6_R','Cerebelum_7b_L','Cerebelum_7b_R','Cerebelum_8_L','Cerebelum_8_R','Cerebelum_9_L','Cerebelum_9_R','Cerebelum_10_L','Cerebelum_10_R','Vermis_1_2','Vermis_3','Vermis_4_5','Vermis_6','Vermis_7','Vermis_8','Vermis_9','Vermis_10'};
 %% K=2
 % formulation D
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
@@ -63,34 +64,104 @@ extra_grid(extra_link)=1;
 AAL_grid = zeros(116);
 AAL_grid(missing_link) = -1;
 AAL_grid(extra_link) = 1;
-%%
+%% for {'D2K','C18K'}
 clf
 close all
-figure(99)
-subplot(1,4,1)
-stem(sum(extra_grid,1))
-subplot(1,4,2)
-stem(sum(missing_grid,1))
+% figure(99)
+% subplot(1,4,1)
+% stem(sum(extra_grid,1))
+% subplot(1,4,2)
+% stem(sum(missing_grid,1))
+% 
+% subplot(1,4,3)
+% stem(sum(extra_grid,2))
+% subplot(1,4,4)
+% stem(sum(missing_grid,2))
+% 
+% cause_extra = [74,[13,29,30],48,87,[20,23,85]];
+% cause_missing = [86,33,55,[11 19 81 85 94],7];
+% 
+% effect_extra = [25,116,109,10,[9,95,96]];
+% effect_missing = [116,109,25,[110,35],96];
 
-subplot(1,4,3)
-stem(sum(extra_grid,2))
-subplot(1,4,4)
-stem(sum(missing_grid,2))
 
-cause_extra = [74,[13,29,30],48,87,[20,23,85]];
-cause_missing = [86,33,55,[11 19 81 85 94],7];
+[cause.extra.links,cause.extra.ind] = sort(sum(extra_grid,1),'descend');
+[effect.extra.links,effect.extra.ind] = sort(sum(extra_grid,2),'descend');
 
-effect_extra = [25,116,109,10,[9,95,96]];
-effect_missing = [116,109,25,[110,35],96];
+[cause.missing.links,cause.missing.ind] = sort(sum(missing_grid,1),'descend');
+[effect.missing.links,effect.missing.ind] = sort(sum(missing_grid,2),'descend');
 
-%% temporal K=2
-ii=26;
-jj=27;
-% found common Cerebellum_9_L -> Vermis_1_2 in both ADHD and TDC
+subtype_name = {'extra','missing'};
+clc
+RANK_NUMBER = 6;
+for subtype=1:2
+    AAL_index = cause.(subtype_name{subtype}).ind(1:RANK_NUMBER)';
+    roi_list = {AAL_116.name_full{AAL_index}}';
+    edge_list = cause.extra.links(1:RANK_NUMBER)';
+    
+    cause_table = table(AAL_index,roi_list,edge_list);
+    fprintf(['Cause table:',subtype_name{subtype},'\n'])
+    disp(cause_table)
+    
+    AAL_index = effect.(subtype_name{subtype}).ind(1:RANK_NUMBER);
+    roi_list = {AAL_116.name_full{AAL_index}}';
+    edge_list = effect.extra.links(1:RANK_NUMBER);
+    effect_table = table(AAL_index,roi_list,edge_list);
+    fprintf(['Effect table:',subtype_name{subtype},'\n'])
+    disp(effect_table)
+end
+
+
+%% Check outward connectivity
+clc
+tmp = zeros(116);
+tmp(TDC_common_index) = 1;
+selected_index = 74;
+fprintf(['(TDC) Starting node: ',AAL_116.name_full{selected_index},' \n'])
+AAL_index = find(tmp(:,selected_index));
+ending_node = {AAL_116.name_full{AAL_index}}';
+pt = table(AAL_index,ending_node);
+disp(pt)
+
+tmp = zeros(116);
+tmp(ADHD_common_index) = 1;
+fprintf(['(ADHD) Starting node: ',AAL_116.name_full{selected_index},' \n'])
+AAL_index = find(tmp(:,selected_index));
+ending_node = {AAL_116.name_full{AAL_index}}';
+pt = table(AAL_index,ending_node);
+disp(pt)
+%% Check inward connectivity
+clc
+tmp = zeros(116);
+tmp(TDC_common_index) = 1;
+G.TDC = digraph(tmp');
+selected_index = 47; % 68<-50<-47
+fprintf(['(TDC) Ending node: ',AAL_116.name_full{selected_index},' \n'])
+AAL_index = find(tmp(selected_index,:))';
+ending_node = {AAL_116.name_full{AAL_index}}';
+pt = table(AAL_index,ending_node);
+disp(pt)
+
+tmp = zeros(116);
+tmp(ADHD_common_index) = 1;
+G.ADHD = digraph(tmp');
+fprintf(['(ADHD) Ending node: ',AAL_116.name_full{selected_index},' \n'])
+AAL_index = find(tmp(selected_index,:))';
+ending_node = {AAL_116.name_full{AAL_index}}';
+pt = table(AAL_index,ending_node);
+disp(pt)
+%%
+
 figure(1);
-atlas_index = 1:116;
-M.TDC.GC = (M.model(ii,jj).GC(:,:,1)).*(1-eye(116));  
-M.ADHD_C.GC = (M.model(ii,jj).GC(:,:,2)).*(1-eye(116));  
+% atlas_index = [74,84,61,68]; % shortest path from putamen_R -> Precuneus_R
+% atlas_index = [68,12,77,47,71,74];
+
+% atlas_index = [60,27,9]; % ADHD
+% atlas_index = [9,87,60];
+
+atlas_index = [60,35,21,16,9]; % TDC
+M.TDC.GC = (M.model(M.index.eBIC).GC(:,:,1)).*(1-eye(116));  
+M.ADHD_C.GC = (M.model(M.index.eBIC).GC(:,:,2)).*(1-eye(116));  
 nametag = {'TDC','ADHD_C'};
 titletag = {'TDC','ADHD'};
 
@@ -104,7 +175,7 @@ set(gca,'xtick',1:1:length(atlas_index),'ytick',1:1:length(atlas_index), ...
 axis('square')
 title(titletag{ii})
 colormap(jet)
-caxis([0 1])
+% caxis([0 1])
 xtickangle(30)
 end
 
