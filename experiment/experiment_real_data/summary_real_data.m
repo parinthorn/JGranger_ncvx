@@ -39,12 +39,15 @@ M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'llh_full');
 result.TDC_index.D18K = M.TDC.model(M.TDC.index.eBIC).ind_common{1};
 result.ADHD_index.D18K = M.ADHD_C.model(M.ADHD_C.index.eBIC).ind_common{1};
 
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_fixdf','result')
+% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_fixdf','result')
 %%
+clc
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_fixdf')
 TDC_common_index = setdiff(1:1:116^2,1:116+1:116^2);
 ADHD_common_index = setdiff(1:1:116^2,1:116+1:116^2);
-namelist = {'D2K','C18K','D18K'};
-for ii=1:3
+% namelist = {'D2K','C18K','D18K'};
+namelist = {'D2K','C18K'};
+for ii=1:length(namelist)
     TDC_common_index = intersect(TDC_common_index,result.TDC_index.(namelist{ii}));
     ADHD_common_index = intersect(ADHD_common_index,result.ADHD_index.(namelist{ii}));
 end
@@ -60,7 +63,25 @@ extra_grid(extra_link)=1;
 AAL_grid = zeros(116);
 AAL_grid(missing_link) = -1;
 AAL_grid(extra_link) = 1;
+%%
+clf
+close all
+figure(99)
+subplot(1,4,1)
+stem(sum(extra_grid,1))
+subplot(1,4,2)
+stem(sum(missing_grid,1))
 
+subplot(1,4,3)
+stem(sum(extra_grid,2))
+subplot(1,4,4)
+stem(sum(missing_grid,2))
+
+cause_extra = [74,[13,29,30],48,87,[20,23,85]];
+cause_missing = [86,33,55,[11 19 81 85 94],7];
+
+effect_extra = [25,116,109,10,[9,95,96]];
+effect_missing = [116,109,25,[110,35],96];
 
 %% temporal K=2
 ii=26;
