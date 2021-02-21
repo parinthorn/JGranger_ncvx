@@ -9,14 +9,14 @@ type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-K = 5;
-% K = 50;
+% K = 5;
+K = 50;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
 % dd=1;
-realization = 5;
+realization = 50;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
@@ -66,7 +66,7 @@ end
 
 % save([outpath,'skrip_formulationD_accuracy_K50'],'score')
 %%
-ARR = zeros(5,1);
+ARR = zeros(5,2);
 acc_name = {'TPR','FPR','ACC','F1','MCC'};
 
 for ii=1:2
@@ -76,4 +76,4 @@ for ii=1:2
 end
 
 t = array2table(ARR,'VariableNames',{'1%','5%'},'RowNames', acc_name);
-t.Variables =  round(t.Variables*100,2);
+t.Variables =  round(t.Variables,2);
