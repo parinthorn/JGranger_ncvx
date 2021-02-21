@@ -50,8 +50,8 @@ resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
 performance_path = './experiment/result_to_plot/';
 mname = {'1','5'};
 dd = length(mname);
-K=5;
-% K = 50;
+% K=5;
+K = 50;
 realization = 100;
 load([inpath,'model_K',int2str(K),'_p1'])
 name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};

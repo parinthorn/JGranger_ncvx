@@ -12,11 +12,12 @@ Dtmp = diffmat(n,p,K);
 D = sparse(Dtmp*P);
 
 w1 = (1./(sqrt(sum(reshape(xLS,[p,n^2*K]).^2,1)))).^(q*gamma);
-P1_p = sparse(kron(P1,speye(K)))*diag(w1); % project w1 to off block-diagonal size K
-
-w1 = sparse(kron(P1,speye(K)))*w1(:);
-
+tmp_matrix = sparse((length(w1)),(length(w1)));
+tmp_matrix(1:length(w1)+1:length(w1)^2)=w1;
+P1_p = sparse(kron(P1,speye(K)))*tmp_matrix; % project w1 to off block-diagonal size K
 P_p = kron(P1_p,speye(p)); % Expand w1 to original size
+w1 =  max(P1_p,[],2);
+
 
 w2 = (1./(sqrt(sum(reshape(D*xLS,[p,(n^2-n)*nchoosek(K,2)]).^2,1)))).^(q*gamma);
 w2 = w2(:);
