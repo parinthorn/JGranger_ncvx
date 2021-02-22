@@ -14,43 +14,56 @@ load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_resul
 
 M_in =M;
 clear M
-%%
+%% change LLH definition
 clf
 close all
-M.TDC = fix_loglikelihood(M_in.TDC,y_TDC);
-M.ADHD_C = fix_loglikelihood(M_in.ADHD_C,y_ADHD_C);
+% M.TDC = fix_loglikelihood(M_in.TDC,y_TDC);
+% M.ADHD_C = fix_loglikelihood(M_in.ADHD_C,y_ADHD_C);
+M.TDC = augment_score(M_in.TDC,size(y_TDC,2),'LLH_hetero');
+M.ADHD_C = augment_score(M_in.ADHD_C,size(y_TDC,2),'LLH_hetero');
+%% check TDC model
 
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
-%%
-M_df.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-M_df.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
-%%
-figure(99)
-
-tmp = [M_df.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score]; 
-df_new = reshape([tmp.df],[30,30]);
-
-tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score]; 
+tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 
 eBIC = reshape([tmp.eBIC],[30,30]);
 df = reshape([tmp.df],[30,30]);
+n=116;p=1;K=18;T=172;
+gamma = log(n^2*p*K)/log(n*(T-p)*K);
+kappa = min([1,1.5*(1-1/(2*gamma))]);
+binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
+eBIC_complexity =log(T-p)*df + 2*kappa*binom_term;
 LLH_full = reshape([tmp.LLH_full],[30,30]);
 LLH_hetero = reshape([tmp.LLH_hetero],[30,30]);
 LLH_homo = reshape([tmp.LLH_homo],[30,30]);
 
+figure(99)
 subplot(2,2,1)
-imagesc(df_new)
-title('dfnew')
+imagesc(eBIC_complexity)
+title('eBIC complexity')
 subplot(2,2,2)
-imagesc(df)
-title('dfold')
+imagesc(LLH_full)
+title('LLH full')
 subplot(2,2,3)
 imagesc(LLH_hetero)
-title('LLH_hetero')
+title('LLH hetero')
 subplot(2,2,4)
 imagesc(LLH_homo)
-title('LLH_homo')
+title('LLH homo')
+figure(98)
+subplot(2,2,1)
+imagesc(eBIC_complexity)
+title('eBIC complexity')
+subplot(2,2,2)
+imagesc(LLH_full+eBIC_complexity)
+title('eBIC full')
+subplot(2,2,3)
+imagesc(LLH_hetero+eBIC_complexity)
+title('eBIC hetero')
+subplot(2,2,4)
+imagesc(LLH_homo+eBIC_complexity)
+title('eBIC homo')
+
+
 %%
 M_tmp = M;
 clear M
@@ -60,6 +73,8 @@ M = M_df;
 clf
 close all
 AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R','MFG_L','MFG_R','ORBmid_L','ORBmid_R','IFGoperc_L','IFGoperc_R','IFGtriang_L','IFGtriang_R','ORBinf_L','ORBinf_R','ROL_L','ROL_R','SMA_L','SMA_R','OLF_L','OLF_R','SFGmed_L','SFGmed_R','ORBsupmed_L','ORBsupmed_R','REC_L','REC_R','INS_L','INS_R','ACG_L','ACG_R','MCG_L','MCG_R','PCG_L','PCG_R','HIP_L','HIP_R','PHG_L','PHG_R','AMYG_L','AMYG_R','CAL_L','CAL_R','CUN_L','CUN_R','LING_L','LING_R','SOG_L','SOG_R','MOG_L','MOG_R','IOG_L','IOG_R','FFG_L','FFG_R','PoCG_L','PoCG_R','SPG_L','SPG_R','IPG_L','IPG_R','SMG_L','SMG_R','ANG_L','ANG_R','PCUN_L','PCUN_R','PCL_L','PCL_R','CAU_L','CAU_R','PUT_L','PUT_R','PAL_L','PAL_R','THA_L','THA_R','HES_L','HES_R','STG_L','STG_R','TPOsup_L','TPOsup_R','MTG_L','MTG_R','TPOmid_L','TPOmid_R','ITG_L','ITG_R','Cerebelum_Crus1_L','Cerebelum_Crus1_R','Cerebelum_Crus2_L','Cerebelum_Crus2_R','Cerebelum_3_L','Cerebelum_3_R','Cerebelum_4_5_L','Cerebelum_4_5_R','Cerebelum_6_L','Cerebelum_6_R','Cerebelum_7b_L','Cerebelum_7b_R','Cerebelum_8_L','Cerebelum_8_R','Cerebelum_9_L','Cerebelum_9_R','Cerebelum_10_L','Cerebelum_10_R','Vermis_1_2','Vermis_3','Vermis_4_5','Vermis_6','Vermis_7','Vermis_8','Vermis_9','Vermis_10'};
+AAL_116.name_full = {'Precentral gyrus_L','Precentral gyrus_R','Superior frontal gyrus (dorsolateral)_L','Superior frontal gyrus (dorsolateral)_R','Superior frontal gyrus (orbital)_L','Superior frontal gyrus (orbital)_R','Middle frontal gyrus_L','Middle frontal gyrus_R','Middle frontal gyrus (orbital)_L','Middle frontal gyrus (orbital)_R','Inferior frontal gyrus (opercular)_L','Inferior frontal gyrus (opercular)_R','Inferior frontal gyrus (triangular)_L','Inferior frontal gyrus (triangular)_R','Inferior frontal gyrus (orbital)_L','Inferior frontal gyrus (orbital)_R','Rolandic operculum_L','Rolandic operculum_R','Supplementary motor area_L','Supplementary motor area_R','Olfactroy cortex_L','Olfactroy cortex_R','Superior frontal gyrus (medial)_L','Superior frontal gyrus (medial)_R','Superior frontal gyrus (medial orbital)_L','Superior frontal gyrus (medial orbital)_R','Rectus gyrus_L','Rectus gyrus_R','Insula_L','Insula_R','Anterior cingulate gyrus_L','Anterior cingulate gyrus_R','Median cingulate gyrus_L','Median cingulate gyrus_R','Posterior cingulate gyrus_L','Posterior cingulate gyrus_R','Hippocampus_L','Hippocampus_R','Parahippocampal gyrus_L','Parahippocampal gyrus_R','Amygdala_L','Amygdala_R','Calcarine cortex_L','Calcarine cortex_R','Cuneus_L','Cuneus_R','Lingual gyrus_L','Lingual gyrus_R','Superior occipital gyrus_L','Superior occipital gyrus_R','Middle occipital gyrus_L','Middle occipital gyrus_R','Inferior occipital gyrus_L','Inferior occipital gyrus_R','Fusiform gyrus_L','Fusiform gyrus_R','Postcentral gyrus_L','Postcentral gyrus_R','Superior parietal gyrus_L','Superior parietal gyrus_R','Inferior parietal gyrus_L','Inferior parietal gyrus_R','Supramarginal gyrus_L','Supramarginal gyrus_R','Angular gyrus_L','Angular gyrus_R','Precuneus_L','Precuneus_R','Paracentral lobule_L','Paracentral lobule_R','Caudate_L','Caudate_R','Putamen_L','Putamen_R','Pallidum_L','Pallidum_R','Thalamus_L','Thalamus_R','Heschl gyrus_L','Heschl gyrus_R','Superior temporal gyrus_L','Superior temporal gyrus_R','Temporal pole (superior)_L','Temporal pole (superior)_R','Middle temporal gyrus_L','Middle temporal gyrus_R','Temporal pole (middle)_L','Temporal pole (middle)_R','Inferior temporal gyrus_L','Inferior temporal gyrus_R','Cerebelum_Crus1_L','Cerebelum_Crus1_R','Cerebelum_Crus2_L','Cerebelum_Crus2_R','Cerebelum_3_L','Cerebelum_3_R','Cerebelum_4_5_L','Cerebelum_4_5_R','Cerebelum_6_L','Cerebelum_6_R','Cerebelum_7b_L','Cerebelum_7b_R','Cerebelum_8_L','Cerebelum_8_R','Cerebelum_9_L','Cerebelum_9_R','Cerebelum_10_L','Cerebelum_10_R','Vermis_1_2','Vermis_3','Vermis_4_5','Vermis_6','Vermis_7','Vermis_8','Vermis_9','Vermis_10'};
+
 AAL_116.DMN = [23,24,31,32,35,36,67,68,65,66];
 AAL_116.FPN = [65,66,7,8,11,12,13,14,61,62];
 AAL_116.CC = [31,32,33,34,35,36];

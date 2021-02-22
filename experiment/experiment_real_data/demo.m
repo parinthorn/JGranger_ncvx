@@ -39,11 +39,11 @@ M.ADHD_C = test_cvxformulation_S(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_S','M')
 %% LOAD SAVED MODEL
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
-M = augment_score(M,size(y_total,2),'llh_hetero');
+M = augment_score(M,size(y_total,2),'LLH_hetero');
 %% LOAD MODEL K=18
 % load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
+M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
+M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'LLH_hetero');
 %%
 
 

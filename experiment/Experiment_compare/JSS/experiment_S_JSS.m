@@ -28,6 +28,6 @@ for jj=1:m
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = test_cvxformulation_S(y,p_est,GridSize,'static');
-        save([outpath,'result_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        save([outpath,'result_JSS_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end
