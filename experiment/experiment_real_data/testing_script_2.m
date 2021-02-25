@@ -7,7 +7,7 @@ y_TDC = y_TDC-mean(y_TDC,2);
 y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu',0);
 y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
 K = size(y_TDC,3);
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_D_unfiltered')
 
 M_in =M;
 clear M
@@ -21,9 +21,9 @@ M.ADHD_C = augment_score(M_in.ADHD_C,size(y_TDC,2),'LLH_hetero');
 % M = fix_loglikelihood(M,y_total);
 
 
-M = augment_score(M,size(y_total,2),'LLH_hetero','similar');
+% M = augment_score(M,size(y_total,2),'LLH_hetero','similar');
 
-tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
+tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 
 eBIC = reshape([tmp.eBIC],[30,30]);
 df = reshape([tmp.df],[30,30]);

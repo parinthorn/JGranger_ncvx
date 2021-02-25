@@ -15,54 +15,81 @@ AAL_116.name = {'PreCG_L','PreCG_R','SFGdor_L','SFGdor_R','ORBsup_L','ORBsup_R',
 AAL_116.name_full = {'Precentral gyrus_L','Precentral gyrus_R','Superior frontal gyrus (dorsolateral)_L','Superior frontal gyrus (dorsolateral)_R','Superior frontal gyrus (orbital)_L','Superior frontal gyrus (orbital)_R','Middle frontal gyrus_L','Middle frontal gyrus_R','Middle frontal gyrus (orbital)_L','Middle frontal gyrus (orbital)_R','Inferior frontal gyrus (opercular)_L','Inferior frontal gyrus (opercular)_R','Inferior frontal gyrus (triangular)_L','Inferior frontal gyrus (triangular)_R','Inferior frontal gyrus (orbital)_L','Inferior frontal gyrus (orbital)_R','Rolandic operculum_L','Rolandic operculum_R','Supplementary motor area_L','Supplementary motor area_R','Olfactroy cortex_L','Olfactroy cortex_R','Superior frontal gyrus (medial)_L','Superior frontal gyrus (medial)_R','Superior frontal gyrus (medial orbital)_L','Superior frontal gyrus (medial orbital)_R','Rectus gyrus_L','Rectus gyrus_R','Insula_L','Insula_R','Anterior cingulate gyrus_L','Anterior cingulate gyrus_R','Median cingulate gyrus_L','Median cingulate gyrus_R','Posterior cingulate gyrus_L','Posterior cingulate gyrus_R','Hippocampus_L','Hippocampus_R','Parahippocampal gyrus_L','Parahippocampal gyrus_R','Amygdala_L','Amygdala_R','Calcarine cortex_L','Calcarine cortex_R','Cuneus_L','Cuneus_R','Lingual gyrus_L','Lingual gyrus_R','Superior occipital gyrus_L','Superior occipital gyrus_R','Middle occipital gyrus_L','Middle occipital gyrus_R','Inferior occipital gyrus_L','Inferior occipital gyrus_R','Fusiform gyrus_L','Fusiform gyrus_R','Postcentral gyrus_L','Postcentral gyrus_R','Superior parietal gyrus_L','Superior parietal gyrus_R','Inferior parietal gyrus_L','Inferior parietal gyrus_R','Supramarginal gyrus_L','Supramarginal gyrus_R','Angular gyrus_L','Angular gyrus_R','Precuneus_L','Precuneus_R','Paracentral lobule_L','Paracentral lobule_R','Caudate_L','Caudate_R','Putamen_L','Putamen_R','Pallidum_L','Pallidum_R','Thalamus_L','Thalamus_R','Heschl gyrus_L','Heschl gyrus_R','Superior temporal gyrus_L','Superior temporal gyrus_R','Temporal pole (superior)_L','Temporal pole (superior)_R','Middle temporal gyrus_L','Middle temporal gyrus_R','Temporal pole (middle)_L','Temporal pole (middle)_R','Inferior temporal gyrus_L','Inferior temporal gyrus_R','Cerebelum_Crus1_L','Cerebelum_Crus1_R','Cerebelum_Crus2_L','Cerebelum_Crus2_R','Cerebelum_3_L','Cerebelum_3_R','Cerebelum_4_5_L','Cerebelum_4_5_R','Cerebelum_6_L','Cerebelum_6_R','Cerebelum_7b_L','Cerebelum_7b_R','Cerebelum_8_L','Cerebelum_8_R','Cerebelum_9_L','Cerebelum_9_R','Cerebelum_10_L','Cerebelum_10_R','Vermis_1_2','Vermis_3','Vermis_4_5','Vermis_6','Vermis_7','Vermis_8','Vermis_9','Vermis_10'};
 %% K=2
 % formulation D
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected')
 M = fix_loglikelihood(M,y_total);
 M = augment_score(M,size(y_total,2),'LLH_hetero');
-result.TDC_index.D2K = M.model(M.index.eBIC).ind{1}{1};
-result.ADHD_index.D2K = M.model(M.index.eBIC).ind{1}{2};
+tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
+eBIC = [tmp.eBIC];
+[~,I] = sort(eBIC);
+
+for ii=1:3
+result.TDC_index.D2K{ii} = M.model(I(ii)).ind{1}{1};
+result.ADHD_index.D2K{ii} = M.model(I(ii)).ind{1}{2};
+end
 clear M
 
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered')
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected')
 M = fix_loglikelihood(M,y_total);
 M = augment_score(M,size(y_total,2),'LLH_hetero');
-result.TDC_index.S2K = M.model(M.index.eBIC).ind{1}{1};
-result.ADHD_index.S2K = M.model(M.index.eBIC).ind{1}{2};
+tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
+eBIC = [tmp.eBIC];
+[~,I] = sort(eBIC);
+
+for ii=1:3
+result.TDC_index.S2K{ii} = M.model(I(ii)).ind{1}{1};
+result.ADHD_index.S2K{ii} = M.model(I(ii)).ind{1}{2};
+end
 clear M
 %% K=18
+clear I
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
 M.TDC = fix_loglikelihood(M.TDC,y_TDC);
 M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
+tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
+eBIC = [tmp.eBIC];
+[~,I.TDC] = sort(eBIC);
+
 M.ADHD_C = fix_loglikelihood(M.ADHD_C,y_ADHD_C);
 M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'LLH_hetero');
+tmp = [M.ADHD_C.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
+eBIC = [tmp.eBIC];
+[~,I.ADHD_C] = sort(eBIC);
 
-result.TDC_index.C18K = M.TDC.model(M.TDC.index.eBIC).ind_common{1};
-result.ADHD_index.C18K = M.ADHD_C.model(M.ADHD_C.index.eBIC).ind_common{1};
+for ii=1:3
+result.TDC_index.C18K{ii} = M.TDC.model(I.TDC(ii)).ind_common{1};
+result.ADHD_index.C18K{ii} = M.ADHD_C.model(I.ADHD_C(ii)).ind_common{1};
+end
 clear M
 
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K','result')
-%%
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected','result')
+%% Extract common along setting axis
+clear
 clc
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K')
-TDC_common_index = setdiff(1:1:116^2,1:116+1:116^2);
-ADHD_common_index = setdiff(1:1:116^2,1:116+1:116^2);
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected')
+
+for jj=1:3
+    TDC_common_index{jj} = setdiff(1:1:116^2,1:116+1:116^2);
+    ADHD_common_index{jj} = setdiff(1:1:116^2,1:116+1:116^2);
 % namelist = {'D2K','C18K','D18K'};
 namelist = {'D2K','S2K','C18K'};
-for ii=1:length(namelist)
-    TDC_common_index = intersect(TDC_common_index,result.TDC_index.(namelist{ii}));
-    ADHD_common_index = intersect(ADHD_common_index,result.ADHD_index.(namelist{ii}));
+for ii=1:3
+    TDC_common_index{jj} = intersect(TDC_common_index{jj},result.TDC_index.(namelist{ii}){jj});
+    ADHD_common_index{jj} = intersect(ADHD_common_index{jj},result.ADHD_index.(namelist{ii}){jj});
 end
 
-extra_link = setdiff(ADHD_common_index,TDC_common_index);
-missing_link = setdiff(TDC_common_index,ADHD_common_index);
+extra_link{jj} = setdiff(ADHD_common_index{jj},TDC_common_index{jj});
+missing_link{jj} = setdiff(TDC_common_index{jj},ADHD_common_index{jj});
 
-missing_grid = zeros(116);
-extra_grid = zeros(116);
-missing_grid(missing_link)=1;
-extra_grid(extra_link)=1;
+missing_grid{jj} = zeros(116);
+extra_grid{jj} = zeros(116);
+missing_grid{jj}(missing_link{jj})=1;
+extra_grid{jj}(extra_link{jj})=1;
 
-AAL_grid = zeros(116);
-AAL_grid(missing_link) = -1;
-AAL_grid(extra_link) = 1;
+AAL_grid{jj} = zeros(116);
+AAL_grid{jj}(missing_link{jj}) = -1;
+AAL_grid{jj}(extra_link{jj}) = 1;
+end
+
 %% for {'D2K','S2K','C18K'}
 clf
 close all
@@ -167,48 +194,48 @@ path_list = [74 68; ... %       Putamen_R to Precuneus_R: missing
              115 85; ... % Vermis_9 to Middle temporal gyrus_L : no path
              67 113; ... % Precuneus_L to Vermis_7: path change
              113 67];    % Vermis_7 to Precuneus_L: path change
-path_list = [25,11; ...
-             25,12; ...
-             25,13; ...
-             25,14; ...
-             25,15; ...
-             25,16; ...
-             25,19; ...
-             25,20];
+% path_list = [25,11; ...
+%              25,12; ...
+%              25,13; ...
+%              25,14; ...
+%              25,15; ...
+%              25,16; ...
+%              25,19; ...
+%              25,20];
+%          
+% path_list = [109,86; ...
+%              110,86; ...
+%              111,86; ...
+%              112,86; ...
+%              113,86; ...
+%              114,86; ...
+%              115,86; ...
+%              116,86];
+%          
+%  path_list = [86,63];
+%  
+%  
+%  path_list = [109,10; ...
+%              110,10; ...
+%              111,10; ...
+%              112,10; ...
+%              113,10; ...
+%              114,10; ...
+%              115,10; ...
+%              116,10];
+%          
+%   path_list = [109,24; ...
+%              110,24; ...
+%              111,24; ...
+%              112,24; ...
+%              113,24; ...
+%              114,24; ...
+%              115,24; ...
+%              116,24];
+%   path_list = [31,30;32,30];
+%   path_list = [55,7;55,8];
          
-path_list = [109,86; ...
-             110,86; ...
-             111,86; ...
-             112,86; ...
-             113,86; ...
-             114,86; ...
-             115,86; ...
-             116,86];
-         
- path_list = [86,63];
- 
- 
- path_list = [109,10; ...
-             110,10; ...
-             111,10; ...
-             112,10; ...
-             113,10; ...
-             114,10; ...
-             115,10; ...
-             116,10];
-         
-  path_list = [109,24; ...
-             110,24; ...
-             111,24; ...
-             112,24; ...
-             113,24; ...
-             114,24; ...
-             115,24; ...
-             116,24];
-  path_list = [31,30;32,30];
-  path_list = [55,7;55,8];
-         
- path_list = [path_list;path_list(:,2) path_list(:,1)];
+%  path_list = [path_list;path_list(:,2) path_list(:,1)];
 for ii=1:size(path_list,1)
     fprintf('row number: %d\n',ii)
     P = shortestpath(G.TDC,path_list(ii,1),path_list(ii,2));

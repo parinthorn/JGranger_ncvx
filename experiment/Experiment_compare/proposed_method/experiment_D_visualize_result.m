@@ -8,8 +8,8 @@ acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 performance_path = './experiment/result_to_plot/';
-load([performance_path,'formulation_D_adaptive_cvx_ALL_RESULT_K',int2str(K)])
-load([performance_path,'formulation_D_adaptive_cvx_result_K',int2str(K)])
+load([performance_path,'adaptive_formulation_D_ALL_RESULT_K',int2str(K)])
+load([performance_path,'adaptive_formulation_D_result_K',int2str(K)])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
 diff_den = {'1%','5%'};
