@@ -19,29 +19,55 @@ if isempty(varargin)
   p=1;
   GridSize = 30;
   toggle = 'adaptive_L';
+  data_concat=0;
 elseif len_varargin==1
   p = varargin{1};
   GridSize = 30;
   toggle = 'adaptive_L';
+  data_concat = 0;
 elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
   toggle = 'adaptive_L';
+  data_concat = 0;
 elseif len_varargin ==3
   p = varargin{1};
   GridSize = varargin{2};
   toggle = varargin{3};
+  data_concat=0;
+elseif len_varargin ==4
+  p = varargin{1};
+  GridSize = varargin{2};
+  toggle = varargin{3};
+  data_concat = varargin{4};
 else
-  error('must be atmost 4 input')
+    error('must be atmost 5 input')
 end
-H = zeros(n*p,T-p,K);
-Y = zeros(n,T-p,K);
-disp('Generating H matrix')
-for kk=1:K
-    [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
+if (data_concat)
+    Ktmp = K/2;K=2; % divides to 2 groups and set K=2
+    y1 = y(:,:,1:Ktmp);
+    y2 = y(:,:,(Ktmp+1):end);
+    H = zeros(n*p,Ktmp*(T-p),2);
+    Y = zeros(n,Ktmp*(T-p),2);
+    disp('Concatenating H, Y matrix')
+    for kk=1:Ktmp
+        [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),1),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),1)] = H_gen(y1(:,:,kk),p);
+        [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),2),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),2)] = H_gen(y2(:,:,kk),p);
+    end
+    disp('vectorizing model')
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,2,T*Ktmp+p-Ktmp*p]);
+else
+    H = zeros(n*p,T-p,K);
+    Y = zeros(n,T-p,K);
+    disp('Generating H, Y matrix')
+    for kk=1:K
+        [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
+    end
+    disp('vectorizing model')
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
 end
-disp('vectorizing model')
-[yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
+
+
 
 
 
@@ -54,7 +80,7 @@ else
 end
 
 
-ALG_PARAMETER.PRINT_RESULT=1;
+ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p*K];
 ALG_PARAMETER.rho_init = 1;
@@ -65,7 +91,7 @@ ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationD';
 ALG_PARAMETER.gamma = 1; % for adaptive case
 ALG_PARAMETER.is_spectral = 1;
-disp('calculating Lambda max')
+disp('setting up solution path')
 qq=1; %convex case
 [Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
 ALG_PARAMETER.L1 = opt.L1;
@@ -94,7 +120,7 @@ for ii=1:GridSize
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
     
-    for jj=1:GridSize
+    parfor (jj=1:GridSize,2)
         
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
