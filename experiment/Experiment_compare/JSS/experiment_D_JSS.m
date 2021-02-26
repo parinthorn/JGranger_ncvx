@@ -12,7 +12,8 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 5;
+% K = 5;
+K = 50;
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
 realz = m;
