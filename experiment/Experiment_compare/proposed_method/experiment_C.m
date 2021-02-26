@@ -1,11 +1,10 @@
-%% This experiment estimate VAR with formulation D by ADMM
+%% Experiment: Common GC estimation, estimating VAR coefficients using CGN, convex CGN.
 clear
 clc
 inpath = './data_compare/';
 outpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\';
 
 type = 2; %D type
-% cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
 K = 5;

@@ -4,22 +4,24 @@ clc
 close all
 modelpath = './data_compare/';
 inpath = './experiment/Experiment_compare/skrip_code_2/data_R_formulationD/';
-outpath = './experiment/result_to_plot/';
+performance_path = './experiment/result_to_plot/';
 type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-% K = 5;
-K = 50;
+K = 5;
+% K = 50;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
 [~,~,dd,m] = size(E);
 % dd=1;
-realization = 50;
+realization = 100;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
+acc_type = {'total','common','differential'};
+acc_list = {'F1','FPR','ACC','TPR','MCC'};
 
 for ii=1:dd
 
@@ -61,17 +63,28 @@ for ii=1:dd
         score(ii).differential.ACC(jj) = differential_score.ACC;
         score(ii).differential.F1(jj) = differential_score.F1;
         score(ii).differential.MCC(jj) = differential_score.MCC;
+        
+%         acc_type = {'total','common','differential'};
+% acc_list = {'F1','FPR','ACC','TPR','MCC'};
+        
+        for n1=1:length(acc_type)
+            for n2=1:length(acc_list)
+                R.(acc_type{n1}).(acc_list{n2})(ii,jj) =  score(ii).(acc_type{n1}).(acc_list{n2})(jj);
+            end
+        end
+
     end
 end
 
-% save([outpath,'skrip_formulationD_accuracy_K50'],'score')
+save([performance_path,'ResultSkripD_K',int2str(K)])
+
 %%
 ARR = zeros(5,2);
 acc_name = {'TPR','FPR','ACC','F1','MCC'};
 
 for ii=1:2
     for jj=1:5
-        ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
+        ARR(jj,ii) = 100*mean(score(ii).total.(acc_name{jj}));
     end
 end
 

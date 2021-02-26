@@ -1,20 +1,18 @@
 function M = formulation_D(y,varargin)
-%% This program estimates Ground truth with their original model
-% Input are
-%             y : 3D array [n,Num,K] which is dimension of timeseries,
-%       timepoints, # models respectively
-%             P : Off-diagonal projection matrix
-% (optional)  p : lag-order
-%      GridSize : dimension of a regularization grid
-% Output is
-%       M : structure containing
-%           M.x_est
-% global x_cheat
+%% This core function estimates both common part and differential parts of 
+%  Granger network from multiple multivariate time-series y using
+%  formulation DGN
+% input: y, multiple multivariate time-series with dimension (n,T,K), n is
+% #channels, T is time-points, K is # of models to be estimated.
+%      : p, VAR order (default, p=1)
+%      : GridSize, the resolution of solution grid(GridSize x GridSize) (default, GridSize=30)
+%      : toggle, choice of weighting, toggle = 'static': no weight
+%                                            = 'adaptive_L' (default) : included weight, available when T>=np
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
+%%
 [n,T,K] = size(y);
 len_varargin = length(varargin);
-% toggle = 'static';
-% toggle = 'adaptive_P';
-% toggle = 'adaptive_L';
 if isempty(varargin)
   p=1;
   GridSize = 30;
@@ -34,8 +32,6 @@ elseif len_varargin ==3
 else
   error('must be atmost 4 input')
 end
-% Lambda = logspace(-6,0,GridSize);
-% Lambda = logspace(-3.5,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
@@ -91,7 +87,6 @@ for ii=1:GridSize
     ind = cell(1,GridSize);
     
     parfor jj=1:GridSize
-%         history.flag = 0;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
         if init_cvx
             cvx_param = ALG_PARAMETER;
@@ -100,11 +95,7 @@ for ii=1:GridSize
         else
           x0 = xLS;
         end
-%         if ((jj>=20)&&(jj<=30))||((ii>=15)&&(ii<=25))
         [x_reg, ~,~, history] = spectral_ADMM_adaptive(gc, yc, a1, Lambda_2(:,jj),2,0.5, ALG_PARAMETER,x0);
-%         else
-%             x_reg = zeros(n^2*p*K,1);
-%         end
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
         [x_cls,ls_flag(1,jj)] = constrained_LS_D(gc,yc,find(x_reg));
@@ -132,7 +123,6 @@ for ii=1:GridSize
     tmp_struct.flag(ii,:) = flag;
     tmp_struct.ls_flag(ii,:) = ls_flag;
 end
-% GIC_LIST = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
 for nn=1:length(GIC_LIST)
 [~,M.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
