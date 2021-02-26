@@ -68,8 +68,8 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'3_2'])
-    print([figurepath,'3_2'],'-depsc')
+%     saveas(gcf,[figurepath,'3_2'])
+%     print([figurepath,'3_2'],'-depsc')
 %% 3.3 A
 
 clear
@@ -87,7 +87,7 @@ load([resource_path,'adaptive_formulation_D_cvx_result_K5'])
 result.cvxCGN = R;
 load([resource_path,'adaptive_formulation_D_JSS_result_K5'])
 result.Song = R;
-load([resource_path,'skripD_result'])
+load([resource_path,'ResultSkripD_K5'])
 result.Skrip = R;
 M = zeros(5,4,2);
 STD = zeros(5,4,2);
@@ -133,8 +133,8 @@ set(gcf, 'Position', get(0, 'Screensize'));
 
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 
-    saveas(gcf,[figurepath,'3_3_A'])
-    print([figurepath,'3_3_A'],'-depsc')
+%     saveas(gcf,[figurepath,'3_3_A'])
+%     print([figurepath,'3_3_A'],'-depsc')
 %% 3.3 B
 clear
 clc
@@ -152,7 +152,7 @@ load([resource_path,'adaptive_formulation_D_cvx_result_K5'])
 result.cvxCGN = R;
 load([resource_path,'adaptive_formulation_D_JSS_result_K5'])
 result.Song = R;
-load([resource_path,'skripD_result'])
+load([resource_path,'ResultSkripD_K5'])
 result.Skrip = R;
 
 
@@ -162,7 +162,7 @@ load([resource_path,'adaptive_formulation_D_cvx_result_K50'])
 result.cvxCGN = R;
 load([resource_path,'adaptive_formulation_D_JSS_result_K50'])
 result.Song = R;
-load([resource_path,'skripD_result'])
+load([resource_path,'ResultSkripD_K50'])
 result.Skrip = R;
 M = zeros(5,4);
 STD = zeros(5,4);
@@ -206,12 +206,8 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-
-
-    saveas(gcf,[figurepath,'3_3_B'])
-    print([figurepath,'3_3_B'],'-depsc')
-
-
+%     saveas(gcf,[figurepath,'3_3_B'])
+%     print([figurepath,'3_3_B'],'-depsc')
 %% 3.4
 
 clear
@@ -273,8 +269,8 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'3_4'])
-    print([figurepath,'3_4'],'-depsc')
+%     saveas(gcf,[figurepath,'3_4'])
+%     print([figurepath,'3_4'],'-depsc')
 %% 3.5 CGN
 
 clear
@@ -330,8 +326,8 @@ ylabel([row_name{ii},'(%)'])
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'3_5_CGN'])
-    print([figurepath,'3_5_CGN'],'-depsc')
+%     saveas(gcf,[figurepath,'3_5_CGN'])
+%     print([figurepath,'3_5_CGN'],'-depsc')
 %% 3.5 DGN
 
 clear
@@ -392,8 +388,8 @@ end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 
 set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'3_5_DGN'])
-    print([figurepath,'3_5_DGN'],'-depsc')
+%     saveas(gcf,[figurepath,'3_5_DGN'])
+%     print([figurepath,'3_5_DGN'],'-depsc')
 %% 3.5 FGN
 
 clear
@@ -450,5 +446,5 @@ ylabel([row_name{ii},'(%)'])
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'3_5_FGN'])
-    print([figurepath,'3_5_FGN'],'-depsc')
+%     saveas(gcf,[figurepath,'3_5_FGN'])
+%     print([figurepath,'3_5_FGN'],'-depsc')
