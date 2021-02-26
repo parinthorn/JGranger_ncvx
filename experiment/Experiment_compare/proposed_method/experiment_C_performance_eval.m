@@ -1,3 +1,4 @@
+%% Experiment: Common GC estimation, performance evaluation for CGN
 clear
 clc
 inpath = './data_compare/';
