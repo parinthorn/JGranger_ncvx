@@ -77,7 +77,7 @@ else
     for ii=1:M.GridSize
         df=tmp(ii);
             Num = T-p;
-            LLH = M.model(ii).L;
+            LLH = M.model(ii).stat.model_selection_score.L;
 %             switch toggle
 %                 case 'llh_full'
 %                     LLH = M.model(ii).stat.model_selection_score.LLH_full;
