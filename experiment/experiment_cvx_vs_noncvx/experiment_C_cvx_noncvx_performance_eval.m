@@ -4,6 +4,7 @@ inpath = './data_compare/';
 
 
 resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\experiment_compare_cvx\';
+performance_path = './experiment/result_to_plot/';
 mname = {'1','5'};
 dd = length(mname);
 % dd=1;
@@ -22,7 +23,7 @@ for jj=1:realization
     GTmodel = E{2,jj};
     fname = [resultpath,'resultT150_adaptive_formulationC_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score(M,T,'llh');
+    M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -42,16 +43,18 @@ for jj=1:realization
         mean(R.common.F1(ii,1:jj)),mean(R.common.MCC(ii,1:jj)),mean(R.common.ACC(ii,1:jj)),mean(R.common.FPR(ii,1:jj)),mean(R.common.TPR(ii,1:jj)))
     
 end
-save([resultpath,'formulation_CT150_adaptive_result_K',int2str(K)],'R')
-save([resultpath,'formulation_CT150_adaptive_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'adaptive_formulation_CT150_result_K',int2str(K)],'R')
+% save([performance_path,'formulation_CT150_adaptive_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
 %%
+clear R
+clear ALL_RESULT
 realization = 100;
 for jj=1:realization
     fprintf('(%d,%d)\n',ii,jj)
     GTmodel = E{2,jj};
     fname = [resultpath,'resultT150_cvx_adaptive_formulationC_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score(M,T,'llh');
+    M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -71,5 +74,5 @@ for jj=1:realization
         mean(R.common.F1(ii,1:jj)),mean(R.common.MCC(ii,1:jj)),mean(R.common.ACC(ii,1:jj)),mean(R.common.FPR(ii,1:jj)),mean(R.common.TPR(ii,1:jj)))
     
 end
-save([resultpath,'formulation_CT150_cvx_adaptive_result_K',int2str(K)],'R')
-save([resultpath,'formulation_CT150_cvx_adaptive_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'adaptive_formulation_CT150_cvx_result_K',int2str(K)],'R')
+% save([performance_path,'formulation_CT150_cvx_adaptive_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
