@@ -11,13 +11,16 @@ y_TDC_concat = reshape(y_TDC,[116,172*18]);
 y_ADHD_C_concat = reshape(y_ADHD_C,[116,172*18]);
 y_TDC_concat = detrend(y_TDC_concat')';
 y_ADHD_C_concat = detrend(y_ADHD_C_concat')';
-y_total(:,:,1) = y_TDC_concat;
-y_total(:,:,2) = y_ADHD_C_concat;
+% y_total(:,:,1) = y_TDC_concat;
+% y_total(:,:,2) = y_ADHD_C_concat;
+y_total = cat(3,y_TDC,y_ADHD_C);
+y_total = y_total-mean(y_total,2);
 %% ESTIMATE MODEL USING CONCATENATION K=2
-% M = test_cvxformulation_D(y_total,1,30);
-% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D','M')
-M = test_cvxformulation_S(y_total,1,30);
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S','M')
+% M = test_cvxformulation_D(y_total,1,30,'adaptive_L',1);
+% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected','M')
+clear M
+M = test_cvxformulation_S(y_total,1,30,'adaptive_D',1);
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected','M')
 %% ESTIMATE MODEL USING K = 18
 % FORMULATION C
 clear M
@@ -39,11 +42,11 @@ M.ADHD_C = test_cvxformulation_S(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_S','M')
 %% LOAD SAVED MODEL
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered')
-M = augment_score(M,size(y_total,2),'llh_hetero');
+M = augment_score(M,size(y_total,2),'LLH_hetero');
 %% LOAD MODEL K=18
 % load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'llh_hetero');
-M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'llh_hetero');
+M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
+M.ADHD_C = augment_score(M.ADHD_C,size(y_TDC,2),'LLH_hetero');
 %%
 
 

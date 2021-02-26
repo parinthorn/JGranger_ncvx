@@ -1,8 +1,8 @@
 clear
 clc
 clf;close all
-K=5;
-% K=50;
+% K=5;
+K=50;
 type_acc = {'total','common','differential'};
 acc_list = {'ACC','F1','MCC'};
 acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
