@@ -1,4 +1,4 @@
-clear
+% clear
 clc
 inpath = './data_compare/';
 
@@ -12,7 +12,7 @@ K = 50;
 realization = 100;
 load([inpath,'model_K',int2str(K),'_p1'])
 name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
-for jj=1:realization
+for jj=96:realization
     for ii=1:dd
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,3,ii,jj};
