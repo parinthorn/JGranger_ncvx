@@ -7,11 +7,11 @@ mname = {'10','20'};
 name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 realization = 100;
 load([inpath,'model_K5_p1'])
-R.F1 = zeros(length(mname),realization);
-R.MCC = zeros(length(mname),realization);
-R.TPR = zeros(length(mname),realization);
-R.FPR = zeros(length(mname),realization);
-R.ACC = zeros(length(mname),realization);
+% R.F1 = zeros(length(mname),realization);
+% R.MCC = zeros(length(mname),realization);
+% R.TPR = zeros(length(mname),realization);
+% R.FPR = zeros(length(mname),realization);
+% R.ACC = zeros(length(mname),realization);
 toggle_list = {'common'};
 for ii=1:length(mname)
     for jj=1:realization
@@ -26,11 +26,11 @@ for ii=1:length(mname)
         end
         for tt = 1:length(toggle_list)
             toggle = toggle_list{tt};
-            R.(toggle).F1(ii,jj) =model_acc(M.index.GIC_5).(toggle).F1;
-            R.(toggle).MCC(ii,jj) =model_acc(M.index.GIC_5).(toggle).MCC;
-            R.(toggle).TPR(ii,jj) =model_acc(M.index.GIC_5).(toggle).TPR;
-            R.(toggle).FPR(ii,jj) =model_acc(M.index.GIC_5).(toggle).FPR;
-            R.(toggle).ACC(ii,jj) =model_acc(M.index.GIC_5).(toggle).ACC;
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
         
     end
