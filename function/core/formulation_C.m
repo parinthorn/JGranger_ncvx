@@ -1,40 +1,36 @@
 function M = formulation_C(y,varargin)
-%% This program estimates Ground truth with their original model
-% Input are
-%             y : 3D array [n,Num,K] which is dimension of timeseries,
-%       timepoints, # models respectively
-%             P : Off-diagonal projection matrix
-% (optional)  p : lag-order
-%      GridSize : dimension of a regularization grid
-% Output is
-%       M : structure containing
-%           M.x_est
+%% This core function estimate the common part of Granger network 
+%  using formulation CGN
+% input: y, multiple multivariate time-series with dimension (n,T,K), n is
+% #channels, T is time-points, K is # of models to be estimated.
+%      : p, VAR order (default, p=1)
+%      : GridSize, the resolution of solution path (default, GridSize=30)
+%      : toggle, choice of weighting, toggle = 'static': no weight
+%                                            = 'adaptive_L' (default) : included weight, available when T>=np
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
+%%
 [n,T,K] = size(y);
 len_varargin = length(varargin);
-% toggle = 'static';
-% toggle = 'adaptive_P';
-% toggle = 'adaptive_L';
 if isempty(varargin)
-  p=1;
-  GridSize = 30;
-  toggle = 'adaptive_L';
+    p=1;
+    GridSize = 30;
+    toggle = 'adaptive_L';
 elseif len_varargin==1
-  p = varargin{1};
-  GridSize = 30;
-  toggle = 'adaptive_L';
+    p = varargin{1};
+    GridSize = 30;
+    toggle = 'adaptive_L';
 elseif len_varargin ==2
-  p = varargin{1};
-  GridSize = varargin{2};
-  toggle = 'adaptive_L';
+    p = varargin{1};
+    GridSize = varargin{2};
+    toggle = 'adaptive_L';
 elseif len_varargin ==3
-  p = varargin{1};
-  GridSize = varargin{2};
-  toggle = varargin{3};
+    p = varargin{1};
+    GridSize = varargin{2};
+    toggle = varargin{3};
 else
-  error('must be atmost 4 input')
+    error('must be atmost 4 input')
 end
-% Lambda = logspace(-6,0,GridSize);
-% Lambda = logspace(-3.5,0,GridSize);
 H = zeros(n*p,T-p,K);
 Y = zeros(n,T-p,K);
 disp('Generating H matrix')
@@ -46,9 +42,9 @@ disp('vectorizing model')
 xLS = gc\yc;
 % xLS = x_cheat;
 if T>n*p
-  init_cvx = 0;
+    init_cvx = 0;
 else
-  init_cvx = 1;
+    init_cvx = 1;
 end
 ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
@@ -80,56 +76,52 @@ else
 end
 
 t1 = tic;
-
-
-    A_reg = zeros(n,n,p,K,GridSize);
-    A = zeros(n,n,p,K,GridSize);
-    ls_flag = zeros(1,GridSize);
-    ind_common = cell(1,GridSize);
-    ind_differential = cell(1,GridSize);
-    flag = zeros(1,GridSize);
-    ind = cell(1,GridSize);
+A_reg = zeros(n,n,p,K,GridSize);
+A = zeros(n,n,p,K,GridSize);
+ls_flag = zeros(1,GridSize);
+ind_common = cell(1,GridSize);
+ind_differential = cell(1,GridSize);
+flag = zeros(1,GridSize);
+ind = cell(1,GridSize);
 parfor ii=1:GridSize
     a = Lambda_2(:,ii);
-        fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
-        if init_cvx
-            cvx_param = ALG_PARAMETER;
-            cvx_param.Ts = 2;
-          [x0, ~, ~] = spectral_ADMM_adaptive(gc, yc,0, a,2,1, cvx_param,xLS);
-        else
-          x0 = xLS;
-        end
-        [x_reg,~, ~, history] = spectral_ADMM_adaptive(gc, yc,0, a,2,0.5, ALG_PARAMETER,x0);
-%         [x_reg, ~,~, history] = spectral_ADMM_C(gc, yc, a, ALG_PARAMETER,x0);
-        A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
-        A_reg(:,:,:,:,ii) = A_reg_tmp; % this is for arranging result into parfor format
-        [x_cls,ls_flag(1,ii)] = constrained_LS_D(gc,yc,find(x_reg));
-        A_cls =devect(full(x_cls),n,p,K);
-        A(:,:,:,:,ii) = A_cls;
-        
-        tmp_reg = reshape(x_reg,[p*K,n^2]);
-        tmp_ls = reshape(x_cls,[p*K,n^2]);
-        tmp_ls =sqrt(sum(tmp_ls.^2,1));
-        tmp_reg = sqrt(sum(tmp_reg.^2,1));
-        df = length(find(tmp_reg))+(p*K-1)*sum(tmp_reg./tmp_ls,'omitnan');
-        score(1,ii) = model_selection_S(Y,A_cls,df);
-        tmp_ind = cell(1,K);
-        diag_ind=1:n+1:n^2;
-        for kk=1:K
-          tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
-%           ind_VAR{kk} = find(A);
-        end
-        ind(1,ii) = {tmp_ind};
-        [ind_common(1,ii),ind_differential(1,ii)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
-        flag(1,ii) = history.flag;
-        if flag(1,ii) ==-1
-            fprintf('max iteration exceed at grid (%d)\n',ii)
-        end
+    fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
+    if init_cvx
+        cvx_param = ALG_PARAMETER;
+        cvx_param.Ts = 2;
+        [x0, ~, ~] = spectral_ADMM_adaptive(gc, yc,0, a,2,1, cvx_param,xLS);
+    else
+        x0 = xLS;
+    end
+    [x_reg,~, ~, history] = spectral_ADMM_adaptive(gc, yc,0, a,2,0.5, ALG_PARAMETER,x0);
+    A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
+    A_reg(:,:,:,:,ii) = A_reg_tmp; % this is for arranging result into parfor format
+    [x_cls,ls_flag(1,ii)] = constrained_LS_D(gc,yc,find(x_reg));
+    A_cls =devect(full(x_cls),n,p,K);
+    A(:,:,:,:,ii) = A_cls;
+    
+    tmp_reg = reshape(x_reg,[p*K,n^2]);
+    tmp_ls = reshape(x_cls,[p*K,n^2]);
+    tmp_ls =sqrt(sum(tmp_ls.^2,1));
+    tmp_reg = sqrt(sum(tmp_reg.^2,1));
+    df = length(find(tmp_reg))+(p*K-1)*sum(tmp_reg./tmp_ls,'omitnan');
+    score(1,ii) = model_selection_S(Y,A_cls,df);
+    tmp_ind = cell(1,K);
+    diag_ind=1:n+1:n^2;
+    for kk=1:K
+        tmp_ind{kk} = setdiff(find(squeeze(A_reg_tmp(:,:,1,kk))),diag_ind);
+        %           ind_VAR{kk} = find(A);
+    end
+    ind(1,ii) = {tmp_ind};
+    [ind_common(1,ii),ind_differential(1,ii)] = split_common_diff(tmp_ind,[n,p,K]); % find common and differential off-diagonal nonzero index
+    flag(1,ii) = history.flag;
+    if flag(1,ii) ==-1
+        fprintf('max iteration exceed at grid (%d)\n',ii)
+    end
 end
-% GIC_LIST = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 GIC_LIST = fieldnames(score);
 for nn=1:length(GIC_LIST)
-[~,M.index.(GIC_LIST{nn})] = min([score.(GIC_LIST{nn})]);
+    [~,M.index.(GIC_LIST{nn})] = min([score.(GIC_LIST{nn})]);
 end
 
 for ii=1:GridSize
@@ -145,7 +137,7 @@ for ii=1:GridSize
     M.model(ii).ind_differential = ind_differential(ii);
     M.model(ii).flag = flag(ii);
     M.model(ii).ls_flag = ls_flag(ii);
-  
+    
 end
 
 M.time = toc(t1);

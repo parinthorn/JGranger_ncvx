@@ -1,18 +1,18 @@
 function M = formulation_S(y,varargin)
-%% This program estimates Ground truth with their original model
-% Input are
-%             y : 3D array [n,Num,K] which is dimension of timeseries,
-%       timepoints, # models respectively
-%             P : Off-diagonal projection matrix
-% (optional)  p : lag-order
-%      GridSize : dimension of a regularization grid
-% Output is
-%       M : structure containing
-%           M.x_est
+%% This core function estimates differential parts of Granger network 
+% with fused lasso-like non-convex penalty from multiple multivariate
+% time-series y using formulation FGN
+% input: y, multiple multivariate time-series with dimension (n,T,K), n is
+% #channels, T is time-points, K is # of models to be estimated.
+%      : p, VAR order (default, p=1)
+%      : GridSize, the resolution of solution grid(GridSize x GridSize) (default, GridSize=30)
+%      : toggle, choice of weighting, toggle = 'static': no weight
+%                                            = 'adaptive_D' (default) : included weight, available when T>=np
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce.
+%%
 [n,T,K] = size(y);
 len_varargin = length(varargin);
-% toggle = 'static';
-% toggle = 'adaptive_D';
 if isempty(varargin)
   p=1;
   GridSize = 30;

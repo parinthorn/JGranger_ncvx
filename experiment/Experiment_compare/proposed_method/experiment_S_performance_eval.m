@@ -27,13 +27,14 @@ for ii=1:dd
         end
         for tt = 1:length(toggle_list)
             toggle = toggle_list{tt};
-            R.(toggle).F1(ii,jj) =model_acc(M.index.bic).(toggle).F1;
-            R.(toggle).MCC(ii,jj) =model_acc(M.index.bic).(toggle).MCC;
-            R.(toggle).TPR(ii,jj) =model_acc(M.index.bic).(toggle).TPR;
-            R.(toggle).FPR(ii,jj) =model_acc(M.index.bic).(toggle).FPR;
-            R.(toggle).ACC(ii,jj) =model_acc(M.index.bic).(toggle).ACC;
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
-        
+                       fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
+            mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     end
 end
 save([performance_path,'adaptive_formulation_S_result_K5'],'R')
