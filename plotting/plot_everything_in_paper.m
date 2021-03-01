@@ -140,74 +140,91 @@ clear
 clc
 clf
 close all
+toggle = 'differential';
+dd=2;
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
-table_head = {'CGN','cvxCGN','Song','Skrip'};
-table_head_show = {'CGN','cvx-CGN','Songsiri, 17','Skripikov, 19b'};
+table_head = {'DGN','cvxDGN','Song','Skrip'};
+table_head_show = {'DGN','cvx-DGN','Songsiri, 17','Skripikov, 19b'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
+K_list = {'K5','K50'};
 
 load([resource_path,'adaptive_formulation_D_result_K5'])
-result.CGN = R;
+result.DGN.K5 = R;
 load([resource_path,'adaptive_formulation_D_cvx_result_K5'])
-result.cvxCGN = R;
+result.cvxDGN.K5 = R;
 load([resource_path,'adaptive_formulation_D_JSS_result_K5'])
-result.Song = R;
+result.Song.K5 = R;
 load([resource_path,'ResultSkripD_K5'])
-result.Skrip = R;
+result.Skrip.K5 = R;
 
 
 load([resource_path,'adaptive_formulation_D_result_K50'])
-result.CGN = R;
+result.DGN.K50 = R;
 load([resource_path,'adaptive_formulation_D_cvx_result_K50'])
-result.cvxCGN = R;
+result.cvxDGN.K50 = R;
 load([resource_path,'adaptive_formulation_D_JSS_result_K50'])
-result.Song = R;
+result.Song.K50 = R;
 load([resource_path,'ResultSkripD_K50'])
-result.Skrip = R;
-M = zeros(5,4);
-STD = zeros(5,4);
-summary = zeros(5,4,100);
+result.Skrip.K50 = R;
+M = zeros(5,4,2);
+STD = zeros(5,4,2);
+summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
+    
     for ii=1:length(row_name)
-        dd=2;
-            M(ii,jj) = mean(result.(table_head{jj}).total.(row_name{ii})(dd,:));
-            STD(ii,jj) = std(result.(table_head{jj}).total.(row_name{ii})(dd,:));
-            summary(ii,jj,:) = result.(table_head{jj}).total.(row_name{ii})(dd,:);
+        for kk=1:length(K_list)
+            dd=2;
+            M(ii,jj,kk) = mean(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
+            STD(ii,jj,kk) = std(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
+            summary(ii,jj,kk,:) = result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:);
             
-        
+        end
     end
 end
+M = permute(M,[1,3,2]);
+STD = permute(STD,[1,3,2]);
+
+Mt = reshape(M,[5,8]);
+STDt = reshape(STD,[5,8]);
 
 % table
-printtable([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name)
+printtable(Mt*100,STDt*100,{table_head_show{:},table_head_show{:}},row_name)
 
-tt = tiledlayout(2,2);
+tt = tiledlayout(2,1);
 tt.TileSpacing = 'compact';
 tt.Padding = 'compact';
 density = {'1%','5%'};
 for ii=1:2
-    for dd=1:2
-        ARR = zeros(100,4);
+    
+    ARR = zeros(100,2,4);
+    for kk=1:length(K_list)
         for jj=1:length(table_head_show)
-            ARR(:,jj) = summary(ii,jj,dd,:);
+            
+            ARR(:,kk,jj) = summary(ii,jj,kk,:);
         end
-        nexttile;
-        boxplot(100*ARR);
-        set(findobj(gca,'type','line'),'linew',3)
-        set(gca,'xticklabel',table_head_show)
-        grid on
-        if ii==1
-            title(['differential density: ', density{dd}])
-        end
-        if dd==1
-            ylabel([row_name{ii},'(%)'])
-        end
+        data_to_plot{1,kk} = 100*squeeze(ARR(:,kk,:));
     end
+    ARR = reshape(ARR,[100,8]);
+    nexttile;
+    %         boxplot(100*ARR);
+    a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'K=5', 'K=50'}, ...
+        'SecondaryLabels',table_head_show, 'GroupLabelType', 'Vertical');
+    set(findobj(gca,'type','line'),'linew',3)
+    %         set(gca,'xticklabel',table_head_show)
+    grid on
+    if ii==1
+        title(toggle)
+    end
+    %         if dd==1
+    ylabel([row_name{ii},'(%)'])
+    %         end
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_3_B'])
-%     print([figurepath,'3_3_B'],'-depsc')
+    saveas(gcf,[figurepath,'3_3_B',toggle])
+    print([figurepath,'3_3_B_',toggle],'-depsc')
+    print([figurepath,'3_3_B_',toggle],'-dpng')
 %% 3.4
 
 clear
@@ -308,7 +325,7 @@ tt = tiledlayout(2,1);
 tt.TileSpacing = 'compact';
 tt.Padding = 'compact';
 density = {'1%','5%'};
-    dd=2;
+dd=2;
 for ii=1:2
     nexttile;
     for jj=1:length(table_head)
@@ -319,10 +336,10 @@ for ii=1:2
     end
     
     a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-    'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
-grid on
-ylabel([row_name{ii},'(%)'])
-        set(findobj(gca,'type','line'),'linew',3)
+        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
+    grid on
+    ylabel([row_name{ii},'(%)'])
+    set(findobj(gca,'type','line'),'linew',3)
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
@@ -365,7 +382,7 @@ hh = tiledlayout(2,1);
 hh.TileSpacing = 'compact';
 hh.Padding = 'compact';
 density = {'1%','5%'};
-    dd=2;
+dd=2;
 for ii=1:2
     nexttile;
     
@@ -377,13 +394,13 @@ for ii=1:2
     end
     
     a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-    'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
-grid on
-ylabel([row_name{ii},'(%)'])
-
-        set(findobj(gca,'type','line'),'linew',3)
-
-%         set(gca,'xticklabel',table_head,'fontsize',20)
+        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
+    grid on
+    ylabel([row_name{ii},'(%)'])
+    
+    set(findobj(gca,'type','line'),'linew',3)
+    
+    %         set(gca,'xticklabel',table_head,'fontsize',20)
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 
@@ -427,7 +444,7 @@ tt = tiledlayout(2,1);
 tt.TileSpacing = 'compact';
 tt.Padding = 'compact';
 density = {'1%','5%'};
-    dd=2;
+dd=2;
 for ii=1:2
     nexttile;
     
@@ -439,10 +456,10 @@ for ii=1:2
     end
     
     a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-    'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
-grid on
-ylabel([row_name{ii},'(%)'])
-        set(findobj(gca,'type','line'),'linew',3)
+        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
+    grid on
+    ylabel([row_name{ii},'(%)'])
+    set(findobj(gca,'type','line'),'linew',3)
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',24)
 set(gcf, 'Position', get(0, 'Screensize'));
