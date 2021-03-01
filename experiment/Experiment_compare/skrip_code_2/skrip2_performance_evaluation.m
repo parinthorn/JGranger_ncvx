@@ -9,8 +9,8 @@ type = 2; %D type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;
 p = 1;
-K = 5;
-% K = 50;
+% K = 5;
+K = 50;
 n = 20; % time-series channels
 [P,~] = offdiagJSS(n,p,K);
 load([modelpath,'model_K',int2str(K),'_p1']) % struct E
@@ -76,7 +76,7 @@ for ii=1:dd
     end
 end
 
-save([performance_path,'ResultSkripD_K',int2str(K)])
+save([performance_path,'ResultSkripD_K',int2str(K)],'R')
 
 %%
 ARR = zeros(5,2);
