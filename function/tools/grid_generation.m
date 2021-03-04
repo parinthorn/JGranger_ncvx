@@ -1,12 +1,12 @@
-function [Lambda_1,Lambda_2,opt] = grid_generation(G,b,GridSize,PARAMETER,q,toggle)
+function [Lambda_1,Lambda_2,opt] = grid_generation(G,b,GridSize,PARAMETER,q,weight_def)
 Lambda = logspace(-6,0,GridSize);
 n = PARAMETER.dim(1);
 p = PARAMETER.dim(2);
 K = PARAMETER.dim(3);
 m1 = PARAMETER.dim(4);
 m2 = PARAMETER.dim(5);
-opt.detail = toggle;
-switch toggle
+opt.detail = weight_def;
+switch weight_def
     case 'static'
         [P,~] = offdiagJSS(n,p,K);
         Lmax_1 = lambdamax_grouplasso_v2(G,b,m1,[n ,p ,K]);

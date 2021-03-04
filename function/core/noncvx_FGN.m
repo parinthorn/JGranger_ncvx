@@ -1,4 +1,4 @@
-function M = formulation_S(y,varargin)
+function M = noncvx_FGN(y,varargin)
 %% This core function estimates differential parts of Granger network 
 % with fused lasso-like non-convex penalty from multiple multivariate
 % time-series y using formulation FGN
@@ -6,7 +6,7 @@ function M = formulation_S(y,varargin)
 % #channels, T is time-points, K is # of models to be estimated.
 %      : p, VAR order (default, p=1)
 %      : GridSize, the resolution of solution grid(GridSize x GridSize) (default, GridSize=30)
-%      : toggle, choice of weighting, toggle = 'static': no weight
+%      : weight_def, choice of weighting, weight_def = 'static': no weight
 %                                            = 'adaptive_D' (default) : included weight, available when T>=np
 % Originally written by Parinthorn Manomaisaowapak
 % Please email to parinthorn@gmail.com before reuse, reproduce.
@@ -16,36 +16,69 @@ len_varargin = length(varargin);
 if isempty(varargin)
   p=1;
   GridSize = 30;
-  toggle = 'adaptive_D';
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
+  data_concat=0;
 elseif len_varargin==1
   p = varargin{1};
   GridSize = 30;
-  toggle = 'adaptive_D';
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
+  data_concat = 0;
 elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
-  toggle = 'adaptive_D';
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
+  data_concat = 0;
 elseif len_varargin ==3
   p = varargin{1};
   GridSize = varargin{2};
-  toggle = varargin{3};
+  weight_def = varargin{3};
+  toggle = 'LLH_full';
+  data_concat=0;
+elseif len_varargin ==4
+  p = varargin{1};
+  GridSize = varargin{2};
+  weight_def = varargin{3};
+  toggle = varargin{4};
+  data_concat = 0;
+elseif len_varargin ==5
+    p = varargin{1};
+  GridSize = varargin{2};
+  weight_def = varargin{3};
+  toggle = varargin{4};
+  data_concat = varargin{5};  
 else
-  error('must be atmost 4 input')
+    error('must be atmost 6 input')
 end
-% Lambda = logspace(-6,0,GridSize);
-H = zeros(n*p,T-p,K);
-Y = zeros(n,T-p,K);
-disp('Generating H matrix')
-for kk=1:K
-    [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
+if (data_concat)
+    Ktmp = K/2;K=2; % divides to 2 groups and set K=2
+    eff_T = Ktmp*(T-p);
+    y1 = y(:,:,1:Ktmp);
+    y2 = y(:,:,(Ktmp+1):end);
+    H = zeros(n*p,eff_T,2);
+    Y = zeros(n,eff_T,2);
+    disp('Concatenating H, Y matrix')
+    for kk=1:Ktmp
+        [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),1),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),1)] = H_gen(y1(:,:,kk),p);
+        [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),2),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),2)] = H_gen(y2(:,:,kk),p);
+    end
+    disp('vectorizing model')
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,2,eff_T]);
+else
+    eff_T = T-p;
+    H = zeros(n*p,eff_T,K);
+    Y = zeros(n,eff_T,K);
+    disp('Generating H, Y matrix')
+    for kk=1:K
+        [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
+    end
+    disp('vectorizing model')
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,K,eff_T]);
 end
-disp('vectorizing model')
-[yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
-disp('calculating Lambda max')
-% Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
-% Lambda = Lambda*Lmax;
 xLS = gc\yc;
-if T>n*p
+if eff_T>n*p
   init_cvx = 0;
 else
   init_cvx = 1;
@@ -64,7 +97,7 @@ ALG_PARAMETER.is_spectral = 0;
 
 disp('calculating Lambda max')
 qq=0.5; %non-convex case
-[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
+[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,weight_def);
 ALG_PARAMETER.L1 = opt.L1;
 ALG_PARAMETER.L2 = opt.L2;
 M.GridSize = GridSize;
@@ -99,7 +132,7 @@ for ii=1:GridSize % test 20
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor jj=1:GridSize %test 30
+    for jj=1:GridSize %test 30
         Indplus = Indplus_in;
         Indminus = Indminus_in;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
@@ -120,12 +153,10 @@ for ii=1:GridSize % test 20
                   unique(Indminus(Dminus*x_cls~=0))), ...
             union(Indplus(D*x_cls==0), ...
                   Indminus(D*x_cls==0))); % intuitively, this operation is to find indices of nonzero variables but with zero differences
-%         tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
         tmp =length(find(diff(x_cls(fused_index))==0));
         df = length(find(x_cls))-tmp;
         A(:,:,:,:,1,jj) = A_cls;
-%         error('please insert model_selection for formulationS')
-        score(1,jj) = model_selection_S(Y,H,A_cls,df,'LLH_full');
+        score(1,jj) = model_selection_S(Y,H,A_cls,df,toggle);
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K
@@ -167,6 +198,7 @@ for ii=1:GridSize
     M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
   end
 end
-
+M.flag = reshape([M.model.flag],[GridSize,GridSize]);
+M.LLH_type = toggle;
 M.time = toc(t1);
 end

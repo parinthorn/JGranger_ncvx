@@ -24,7 +24,7 @@ for jj=1:realz
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = test_cvxformulation_D(y,p_est,GridSize,'static');
+        M = cvx_DGN(y,p_est,GridSize,'static');
         save([outpath,'result_JSS_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

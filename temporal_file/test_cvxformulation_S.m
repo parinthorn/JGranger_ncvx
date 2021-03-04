@@ -1,71 +1,83 @@
 function M = test_cvxformulation_S(y,varargin)
-%% This program estimates Ground truth with their original model
-% Input are
-%             y : 3D array [n,Num,K] which is dimension of timeseries,
-%       timepoints, # models respectively
-%             P : Off-diagonal projection matrix
-% (optional)  p : lag-order
-%      GridSize : dimension of a regularization grid
-% Output is
-%       M : structure containing
-%           M.x_est
+%% This core function estimates differential parts of Granger network 
+% with group sparse, group fused lasso from multiple multivariate
+% time-series y using formulation cvx-FGN
+% input: y, multiple multivariate time-series with dimension (n,T,K), n is
+% #channels, T is time-points, K is # of models to be estimated.
+%      : p, VAR order (default, p=1)
+%      : GridSize, the resolution of solution grid(GridSize x GridSize) (default, GridSize=30)
+%      : weight_def, choice of weighting, weight_def = 'static': no weight
+%                                                    = 'adaptive_D' (default) : included weight, available when T>=np
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce.
 [n,T,K] = size(y);
 len_varargin = length(varargin);
-% toggle = 'static';
-% toggle = 'adaptive_D';
 if isempty(varargin)
   p=1;
   GridSize = 30;
-  toggle = 'adaptive_D';
-  data_concat = 0;
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
+  data_concat=0;
 elseif len_varargin==1
   p = varargin{1};
   GridSize = 30;
-  toggle = 'adaptive_D';
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
   data_concat = 0;
 elseif len_varargin ==2
   p = varargin{1};
   GridSize = varargin{2};
-  toggle = 'adaptive_D';
+  weight_def = 'adaptive_D';
+  toggle = 'LLH_full';
   data_concat = 0;
 elseif len_varargin ==3
   p = varargin{1};
   GridSize = varargin{2};
-  toggle = varargin{3};
-  data_concat = 0;
+  weight_def = varargin{3};
+  toggle = 'LLH_full';
+  data_concat=0;
 elseif len_varargin ==4
   p = varargin{1};
   GridSize = varargin{2};
-  toggle = varargin{3};
-  data_concat = varargin{4};
+  weight_def = varargin{3};
+  toggle = varargin{4};
+  data_concat = 0;
+elseif len_varargin ==5
+    p = varargin{1};
+  GridSize = varargin{2};
+  weight_def = varargin{3};
+  toggle = varargin{4};
+  data_concat = varargin{5};  
 else
-  error('must be atmost 5 input')
+    error('must be atmost 6 input')
 end
 if (data_concat)
     Ktmp = K/2;K=2; % divides to 2 groups and set K=2
+    eff_T = Ktmp*(T-p);
     y1 = y(:,:,1:Ktmp);
     y2 = y(:,:,(Ktmp+1):end);
-    H = zeros(n*p,Ktmp*(T-p),2);
-    Y = zeros(n,Ktmp*(T-p),2);
+    H = zeros(n*p,eff_T,2);
+    Y = zeros(n,eff_T,2);
     disp('Concatenating H, Y matrix')
     for kk=1:Ktmp
         [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),1),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),1)] = H_gen(y1(:,:,kk),p);
         [H(:,(T-p)*(kk-1)+1:(T-p)*(kk),2),Y(:,(T-p)*(kk-1)+1:(T-p)*(kk),2)] = H_gen(y2(:,:,kk),p);
     end
-        disp('vectorizing model')
-    [yc,gc] = vectorize_VAR(Y,H,[n,p,2,T*Ktmp+p-Ktmp*p]);
+    disp('vectorizing model')
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,2,eff_T]);
 else
-    H = zeros(n*p,T-p,K);
-    Y = zeros(n,T-p,K);
+    eff_T = T-p;
+    H = zeros(n*p,eff_T,K);
+    Y = zeros(n,eff_T,K);
     disp('Generating H, Y matrix')
     for kk=1:K
         [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
     end
     disp('vectorizing model')
-    [yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
+    [yc,gc] = vectorize_VAR(Y,H,[n,p,K,eff_T]);
 end
 xLS = gc\yc;
-if T>n*p
+if eff_T>n*p
   init_cvx = 0;
 else
   init_cvx = 1;
@@ -74,8 +86,8 @@ ALG_PARAMETER.PRINT_RESULT=0;
 ALG_PARAMETER.IS_ADAPTIVE =1;
 ALG_PARAMETER.dim = [n,p,K,p,p];
 ALG_PARAMETER.rho_init = 1;
-ALG_PARAMETER.epscor = 0.1;
-ALG_PARAMETER.Ts = 50;
+ALG_PARAMETER.epscor = 0.5;
+ALG_PARAMETER.Ts = 2;
 ALG_PARAMETER.is_chol = 1;
 ALG_PARAMETER.multiplier = 2;
 ALG_PARAMETER.toggle = 'formulationS';
@@ -84,7 +96,7 @@ ALG_PARAMETER.is_spectral = 1;
 
 disp('setting up solution path')
 qq=1; %convex case
-[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
+[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,weight_def);
 ALG_PARAMETER.L1 = opt.L1;
 ALG_PARAMETER.L2 = opt.L2;
 M.GridSize = GridSize;
@@ -119,7 +131,7 @@ for ii=1:GridSize % test 20
     ind_differential = cell(1,GridSize);
     flag = zeros(1,GridSize);
     ind = cell(1,GridSize);
-    parfor (jj=1:GridSize,2)
+    parfor (jj=1:GridSize)
         Indplus = Indplus_in;
         Indminus = Indminus_in;
         fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
@@ -140,12 +152,10 @@ for ii=1:GridSize % test 20
                   unique(Indminus(Dminus*x_cls~=0))), ...
             union(Indplus(D*x_cls==0), ...
                   Indminus(D*x_cls==0))); % intuitively, this operation is to find indices of nonzero variables but with zero differences
-%         tmp = (reshape(x_cls(fused_index),[p,length(x_cls(fused_index))/p]));
         tmp =length(find(diff(x_cls(fused_index))==0));
         df = length(find(x_cls))-tmp;
         A(:,:,:,:,1,jj) = A_cls;
-%         error('please insert model_selection for formulationS')
-        score(1,jj) = model_selection_S(Y,H,A_cls,df,'LLH_full');
+        score(1,jj) = model_selection_S(Y,H,A_cls,df,toggle);
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K
@@ -187,6 +197,7 @@ for ii=1:GridSize
     M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
   end
 end
-
+M.flag = reshape([M.model.flag],[GridSize,GridSize]);
+M.LLH_type = toggle;
 M.time = toc(t1);
 end

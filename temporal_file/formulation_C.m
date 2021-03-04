@@ -5,7 +5,7 @@ function M = formulation_C(y,varargin)
 % #channels, T is time-points, K is # of models to be estimated.
 %      : p, VAR order (default, p=1)
 %      : GridSize, the resolution of solution path (default, GridSize=30)
-%      : toggle, choice of weighting, toggle = 'static': no weight
+%      : weight_def, choice of weighting, weight_def = 'static': no weight
 %                                            = 'adaptive_L' (default) : included weight, available when T>=np
 % Originally written by Parinthorn Manomaisaowapak
 % Please email to parinthorn@gmail.com before reuse, reproduce
@@ -15,33 +15,42 @@ len_varargin = length(varargin);
 if isempty(varargin)
     p=1;
     GridSize = 30;
-    toggle = 'adaptive_L';
+    weight_def = 'adaptive_L';
+    toggle = 'LLH_full';
 elseif len_varargin==1
     p = varargin{1};
     GridSize = 30;
-    toggle = 'adaptive_L';
+    weight_def = 'adaptive_L';
+    toggle = 'LLH_full';
 elseif len_varargin ==2
     p = varargin{1};
     GridSize = varargin{2};
-    toggle = 'adaptive_L';
+    weight_def = 'adaptive_L';
+    toggle = 'LLH_full';
 elseif len_varargin ==3
     p = varargin{1};
     GridSize = varargin{2};
-    toggle = varargin{3};
+    weight_def = varargin{3};
+    toggle = 'LLH_full';
+elseif len_varargin ==4
+    p = varargin{1};
+    GridSize = varargin{2};
+    weight_def = varargin{3};
+    toggle = varargin{4};
 else
-    error('must be atmost 4 input')
+    error('must be atmost 5 input')
 end
-H = zeros(n*p,T-p,K);
-Y = zeros(n,T-p,K);
+eff_T = T-p;
+H = zeros(n*p,eff_T,K);
+Y = zeros(n,eff_T,K);
 disp('Generating H matrix')
 for kk=1:K
     [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
 end
 disp('vectorizing model')
-[yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
+[yc,gc] = vectorize_VAR(Y,H,[n,p,K,eff_T]);
 xLS = gc\yc;
-% xLS = x_cheat;
-if T>n*p
+if eff_T>n*p
     init_cvx = 0;
 else
     init_cvx = 1;
@@ -60,7 +69,7 @@ ALG_PARAMETER.is_spectral = 0;
 
 disp('calculating Lambda max')
 qq=0.5; %non-convex case
-[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,toggle);
+[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,weight_def);
 ALG_PARAMETER.L1 = opt.L1;
 ALG_PARAMETER.L2 = opt.L2;
 M.GridSize = GridSize;
@@ -83,7 +92,7 @@ ind_common = cell(1,GridSize);
 ind_differential = cell(1,GridSize);
 flag = zeros(1,GridSize);
 ind = cell(1,GridSize);
-parfor ii=1:GridSize
+for ii=1:GridSize
     a = Lambda_2(:,ii);
     fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
     if init_cvx
@@ -105,7 +114,7 @@ parfor ii=1:GridSize
     tmp_ls =sqrt(sum(tmp_ls.^2,1));
     tmp_reg = sqrt(sum(tmp_reg.^2,1));
     df = length(find(tmp_reg))+(p*K-1)*sum(tmp_reg./tmp_ls,'omitnan');
-    score(1,ii) = model_selection_S(Y,H,A_cls,df,'LLH_full');
+    score(1,ii) = model_selection_S(Y,H,A_cls,df,toggle);
     tmp_ind = cell(1,K);
     diag_ind=1:n+1:n^2;
     for kk=1:K
@@ -139,6 +148,7 @@ for ii=1:GridSize
     M.model(ii).ls_flag = ls_flag(ii);
     
 end
-
+M.flag = reshape([M.model.flag],[1,GridSize]);
+M.LLH_type = toggle;
 M.time = toc(t1);
 end
