@@ -145,7 +145,7 @@ for ii=1:GridSize % test 20
         df = length(find(x_cls))-tmp;
         A(:,:,:,:,1,jj) = A_cls;
 %         error('please insert model_selection for formulationS')
-        score(1,jj) = model_selection_S(Y,A_cls,df);
+        score(1,jj) = model_selection_S(Y,H,A_cls,df,'LLH_full');
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K

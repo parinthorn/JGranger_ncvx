@@ -24,6 +24,6 @@ for jj=1:realz
 %         M = formulation_D(y,p_est,GridSize);
 %         save([outpath,'result_adaptive_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
         M = test_cvxformulation_D(y,p_est,GridSize);
-        save([outpath,'result_adaptive_cvx_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%         save([outpath,'result_adaptive_cvx_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

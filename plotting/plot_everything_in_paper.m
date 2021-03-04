@@ -6,7 +6,7 @@ close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
 table_head = {'CGN','cvxCGN','Song','Greg'};
-table_head_show = {'CGN','cvx-CGN','Songsiri, 17','Gregorova, 15'};
+table_head_show = {'CGN','cvx-CGN','Songsiri17','Gregorova15'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 load([resource_path,'adaptive_formulation_C_result'])
 result.CGN = R;
@@ -66,10 +66,10 @@ for ii=1:2
     
     
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
 set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_2'])
-%     print([figurepath,'3_2'],'-depsc')
+    saveas(gcf,[figurepath,'3_2'])
+    print([figurepath,'3_2'],'-depsc')
 %% 3.3 A
 
 clear
@@ -79,7 +79,7 @@ close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
 table_head = {'CGN','cvxCGN','Song','Skrip'};
-table_head_show = {'CGN','cvx-CGN','Songsiri, 17','Skripikov, 19b'};
+table_head_show = {'CGN','cvx-CGN','Songsiri17','Skripikov19b'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 load([resource_path,'adaptive_formulation_D_result_K5'])
 result.CGN = R;
@@ -131,21 +131,21 @@ for ii=1:2
 end
 set(gcf, 'Position', get(0, 'Screensize'));
 
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
 
-%     saveas(gcf,[figurepath,'3_3_A'])
-%     print([figurepath,'3_3_A'],'-depsc')
+    saveas(gcf,[figurepath,'3_3_A'])
+    print([figurepath,'3_3_A'],'-depsc')
 %% 3.3 B
 clear
 clc
 clf
 close all
-toggle = 'differential';
+toggle = 'total';
 dd=2;
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
 table_head = {'DGN','cvxDGN','Song','Skrip'};
-table_head_show = {'DGN','cvx-DGN','Songsiri, 17','Skripikov, 19b'};
+table_head_show = {'DGN','cvx-DGN','Songsiri17','Skripikov19b'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 K_list = {'K5','K50'};
 
@@ -220,7 +220,7 @@ for ii=1:2
     ylabel([row_name{ii},'(%)'])
     %         end
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
 set(gcf, 'Position', get(0, 'Screensize'));
     saveas(gcf,[figurepath,'3_3_B',toggle])
     print([figurepath,'3_3_B_',toggle],'-depsc')
@@ -234,7 +234,7 @@ close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
 table_head = {'FGN','cvxFGN','Song','Skrip'};
-table_head_show = {'FGN','cvx-FGN','Songsiri, 17','Skripnikov, 19a'};
+table_head_show = {'FGN','cvx-FGN','Songsiri17','Skripnikov19a'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 load([resource_path,'adaptive_formulation_S_result_K5'])
 result.FGN = R;
@@ -284,117 +284,84 @@ for ii=1:2
         end
     end
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
 set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_4'])
-%     print([figurepath,'3_4'],'-depsc')
-%% 3.5 CGN
-
+    saveas(gcf,[figurepath,'3_4'])
+    print([figurepath,'3_4'],'-depsc')
+%% 3.5
 clear
 clc
 clf
 close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
-table_head = {'CGN','cvxCGN'};
-table_head_show = {'CGN','cvx-CGN'};
+table_head = {'C','D','F'};
+
 row_name = {'F1','FPR','TPR','ACC','MCC'};
+
 load([resource_path,'adaptive_formulation_CT150_result_K5'])
-result.CGN = R;
+result.C.ncvx = R;
 load([resource_path,'adaptive_formulation_CT150_cvx_result_K5'])
-result.cvxCGN = R;
-M = zeros(3,5,2);
-STD = zeros(3,5,2);
-summary = zeros(3,5,2,100);
-type_acc = {'total','common','differential'};
-for jj=1:length(table_head)
-    for ii=1:length(row_name)
-        for t=1:3
-            dd=2;
-            M(t,ii,jj) = mean(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            STD(t,ii,jj) = std(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            summary(t,ii,jj,:) = result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:);
-        end
-    end
-end
+result.C.cvx = R;
 
-% table
-printtable([squeeze(M(1,:,:)*100) squeeze(M(2,:,:)*100) squeeze(M(3,:,:)*100)],[squeeze(STD(1,:,:)*100) squeeze(STD(2,:,:)*100) squeeze(STD(3,:,:)*100)],{table_head_show{:},table_head_show{:},table_head_show{:}},row_name)
-
-tt = tiledlayout(2,1);
-tt.TileSpacing = 'compact';
-tt.Padding = 'compact';
-density = {'1%','5%'};
-dd=2;
-for ii=1:2
-    nexttile;
-    for jj=1:length(table_head)
-        for tt=1:3
-            ARR(:,tt) = summary(tt,ii,jj,:);
-        end
-        data_to_plot{1,jj} = 100*ARR;
-    end
-    
-    a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
-    grid on
-    ylabel([row_name{ii},'(%)'])
-    set(findobj(gca,'type','line'),'linew',3)
-end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
-set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_5_CGN'])
-%     print([figurepath,'3_5_CGN'],'-depsc')
-%% 3.5 DGN
-
-clear
-clc
-clf
-close all
-figurepath = './plotting/figures/';
-resource_path = './experiment/result_to_plot/';
-table_head = {'DGN','cvxDGN'};
-table_head_show = {'DGN','cvx-DGN'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
 load([resource_path,'adaptive_formulation_DT150_result_K5'])
-result.DGN = R;
+result.D.ncvx = R;
 load([resource_path,'adaptive_formulation_DT150_cvx_result_K5'])
-result.cvxDGN = R;
-M = zeros(3,5,2);
-STD = zeros(3,5,2);
-summary = zeros(3,5,2,100);
-type_acc = {'total','common','differential'};
+result.D.cvx = R;
+
+load([resource_path,'adaptive_formulation_ST150_result_K5'])
+result.F.ncvx = R;
+load([resource_path,'adaptive_formulation_ST150_cvx_result_K5'])
+result.F.cvx = R;
+
+M = zeros(3,2,5); % [C,D,F] x [ncvx, cvx] x [F1, FPR, TPR, ACC , MCC]
+STD = zeros(3,2,5);
+summary = zeros(3,2,5,100);
+type_acc = {'ncvx','cvx'};
 for jj=1:length(table_head)
     for ii=1:length(row_name)
-        for t=1:3
+        for t=1:2
             dd=2;
-            M(t,ii,jj) = mean(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            STD(t,ii,jj) = std(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            summary(t,ii,jj,:) = result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:);
+            if jj==1
+                toggle= 'common';
+            else
+                toggle = 'total';
+            end
+            M(jj,t,ii) = mean(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
+            STD(jj,t,ii) = std(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
+            summary(jj,t,ii,:) = result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:);
         end
     end
 end
-
+M = permute(M,[3,2,1]);
+STD = permute(STD,[3,2,1]);
 % table
-printtable([squeeze(M(1,:,:)*100) squeeze(M(2,:,:)*100) squeeze(M(3,:,:)*100)],[squeeze(STD(1,:,:)*100) squeeze(STD(2,:,:)*100) squeeze(STD(3,:,:)*100)],{table_head_show{:},table_head_show{:},table_head_show{:}},row_name)
+table_head_show = {'CGN','cvx-CGN','DGN','cvx-DGN','FGN','cvx-FGN'};
+tmp_M =[M(:,1,1) M(:,2,1) M(:,1,2) M(:,2,2) M(:,1,3) M(:,2,3)];
+tmp_STD =[STD(:,1,1) STD(:,2,1) STD(:,1,2) STD(:,2,2) STD(:,1,3) STD(:,2,3)];
+printtable(tmp_M,tmp_STD,table_head_show,row_name)
 
 hh = tiledlayout(2,1);
 hh.TileSpacing = 'compact';
 hh.Padding = 'compact';
 density = {'1%','5%'};
 dd=2;
+ % [C,D,F] x [ncvx, cvx] x [F1, FPR, TPR, ACC , MCC]
 for ii=1:2
     nexttile;
     
-    for jj=1:length(table_head)
+    for jj=1:2
         for tt=1:3
-            ARR(:,tt) = summary(tt,ii,jj,:);
+            ARR(:,tt) = summary(tt,jj,ii,:);
         end
         data_to_plot{1,jj} = 100*ARR;
     end
     
-    a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
+    a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'non-cvx', 'cvx'}, ...
+        'SecondaryLabels',{'CGN' 'DGN' 'FGN'}, 'GroupLabelType', 'Vertical');
+    if ii==1
+        set(gca,'xticklabel',[])
+    end
     grid on
     ylabel([row_name{ii},'(%)'])
     
@@ -402,66 +369,8 @@ for ii=1:2
     
     %         set(gca,'xticklabel',table_head,'fontsize',20)
 end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
 
 set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_5_DGN'])
-%     print([figurepath,'3_5_DGN'],'-depsc')
-%% 3.5 FGN
-
-clear
-clc
-clf
-close all
-figurepath = './plotting/figures/';
-resource_path = './experiment/result_to_plot/';
-table_head = {'FGN','cvxFGN'};
-table_head_show = {'FGN','cvx-FGN'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
-load([resource_path,'adaptive_formulation_ST150_result_K5'])
-result.FGN = R;
-load([resource_path,'adaptive_formulation_ST150_cvx_result_K5'])
-result.cvxFGN = R;
-M = zeros(3,5,2);
-STD = zeros(3,5,2);
-summary = zeros(3,5,2,100);
-type_acc = {'total','common','differential'};
-for jj=1:length(table_head)
-    for ii=1:length(row_name)
-        for t=1:3
-            dd=2;
-            M(t,ii,jj) = mean(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            STD(t,ii,jj) = std(result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:));
-            summary(t,ii,jj,:) = result.(table_head{jj}).(type_acc{t}).(row_name{ii})(dd,:);
-        end
-    end
-end
-
-% table
-printtable([squeeze(M(1,:,:)*100) squeeze(M(2,:,:)*100) squeeze(M(3,:,:)*100)],[squeeze(STD(1,:,:)*100) squeeze(STD(2,:,:)*100) squeeze(STD(3,:,:)*100)],{table_head_show{:},table_head_show{:},table_head_show{:}},row_name)
-
-tt = tiledlayout(2,1);
-tt.TileSpacing = 'compact';
-tt.Padding = 'compact';
-density = {'1%','5%'};
-dd=2;
-for ii=1:2
-    nexttile;
-    
-    for jj=1:length(table_head)
-        for tt=1:3
-            ARR(:,tt) = summary(tt,ii,jj,:);
-        end
-        data_to_plot{1,jj} = 100*ARR;
-    end
-    
-    a=boxplotGroup(data_to_plot, 'PrimaryLabels', {'CGN', 'cvx-CGN'}, ...
-        'SecondaryLabels',{'total' 'common' 'differential'}, 'GroupLabelType', 'Vertical');
-    grid on
-    ylabel([row_name{ii},'(%)'])
-    set(findobj(gca,'type','line'),'linew',3)
-end
-set(findall(gcf,'-property','FontSize'),'FontSize',24)
-set(gcf, 'Position', get(0, 'Screensize'));
-%     saveas(gcf,[figurepath,'3_5_FGN'])
-%     print([figurepath,'3_5_FGN'],'-depsc')
+    saveas(gcf,[figurepath,'3_5'])
+    print([figurepath,'3_5'],'-depsc')

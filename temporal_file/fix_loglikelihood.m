@@ -1,4 +1,4 @@
-function M = fix_loglikelihood(M_in,data)
+function M = fix_loglikelihood(M_in,data,toggle)
 [n,~,p,K] = size(M_in.model(1).A);
 for kk=1:K
     [~,Y(:,:,kk)] = H_gen(data(:,:,kk),size(M_in.model(1).A,3));

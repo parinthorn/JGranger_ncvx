@@ -1,13 +1,13 @@
-function [LLH_full,LLH_hetero,LLH_homo,SSE] = log_likelihood_var(data,A,n,p,K)
+function [LLH_full,LLH_hetero,LLH_homo,SSE] = log_likelihood_var(Y,H,A,n,p,K)
 LLH_full = 0;
 LLH_hetero = 0;
 LLH_homo = 0;
 SSE = 0;
 tmpA = reshape(A,[n,n*p,K]);
 for kk=1:K
-    [H,Y] = H_gen(data(:,:,kk),p);
+%     [H,Y] = H_gen(data(:,:,kk),p);
     Num = size(Y,2);
-    Ek = Y - tmpA(:,:,kk)*H; % Error term
+    Ek = Y(:,:,kk) - tmpA(:,:,kk)*H(:,:,kk); % Error term
     SSE = SSE+sum(Ek.^2,'all');
     Sigma = Ek*Ek'/(Num);
     Sigma = (Sigma+Sigma')/2;
