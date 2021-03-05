@@ -1,4 +1,4 @@
-function M = test_cvxformulation_C(y,varargin)
+function M = cvx_CGN(y,varargin)
 %% This core function estimate the common part of Granger network
 %  using formulation cvx-CGN
 %  input: y, multiple multivariate time-series with dimension (n,T,K), n is

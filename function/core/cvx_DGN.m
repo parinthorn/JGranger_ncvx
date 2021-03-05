@@ -1,4 +1,4 @@
-function M = test_cvxformulation_D(y,varargin)
+function M = cvx_DGN(y,varargin)
 %% This core function estimates both common part and differential parts of 
 %  Granger network from multiple multivariate time-series y using
 %  formulation cvx-DGN

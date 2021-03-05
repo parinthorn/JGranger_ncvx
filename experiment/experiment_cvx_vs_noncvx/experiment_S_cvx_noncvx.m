@@ -21,7 +21,7 @@ for jj=76:80
     % generate data from given seed
     model = E{3,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = formulation_S(y,p_est,GridSize);
+    M = noncvx_FGN(y,p_est,GridSize);
     
     save([outpath,'resultT150_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end
@@ -31,7 +31,7 @@ for jj=1:realz
     % generate data from given seed
     model = E{3,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = test_cvxformulation_S(y,p_est,GridSize);
+    M = cvx_FGN(y,p_est,GridSize);
     save([outpath,'resultT150_cvx_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 
 end

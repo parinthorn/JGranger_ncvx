@@ -24,7 +24,7 @@ for ii=3:4
         model = E{type,ii,dd,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         % M = formulation_C(y,p,GridSize);
-        M = test_cvxformulation_C(y,p,GridSize,'static');
+        M = cvx_CGN(y,p,GridSize,'static');
         save([outpath,'result_JSS_formulationC_',mname{cnt},'percent','_',int2str(jj)],'M')
     end
 end

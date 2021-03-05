@@ -1,7 +1,7 @@
-function M = fix_loglikelihood(M_in,data)
+function M = fix_loglikelihood(M_in,data,toggle)
 [n,~,p,K] = size(M_in.model(1).A);
 for kk=1:K
-    [~,Y(:,:,kk)] = H_gen(data(:,:,kk),size(M_in.model(1).A,3));
+    [H(:,:,kk),Y(:,:,kk)] = H_gen(data(:,:,kk),size(M_in.model(1).A,3));
 end
 GridSize = M_in.GridSize ;
 M = M_in;
@@ -42,7 +42,7 @@ for ii=1:GridSize
     for jj=1:GridSize
         A = M.model(ii,jj).A;
         df = length(find(A));
-        [M.model(ii,jj).stat.model_selection_score.LLH_full,M.model(ii,jj).stat.model_selection_score.LLH_hetero,M.model(ii,jj).stat.model_selection_score.LLH_homo,M.model(ii,jj).stat.model_selection_score.SSE] = log_likelihood_var(Y,A,n,p,K);
+        [M.model(ii,jj).stat.model_selection_score.LLH_full,M.model(ii,jj).stat.model_selection_score.LLH_hetero,M.model(ii,jj).stat.model_selection_score.LLH_homo,M.model(ii,jj).stat.model_selection_score.SSE] = log_likelihood_var(Y,H,A,n,p,K);
         Num = size(Y,2);
         
         gamma = log(n^2*p*K)/log(n*(Num)*K);
@@ -52,7 +52,7 @@ for ii=1:GridSize
         else
             binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
         end
-        fitting = M.model(ii,jj).stat.model_selection_score.LLH_full; % default
+        fitting = M.model(ii,jj).stat.model_selection_score.(toggle); % default
         M.model(ii,jj).stat.model_selection_score.flag = 0;
         M.model(ii,jj).stat.model_selection_score.eBIC =   fitting+log(Num)*df + 2*kappa*binom_term;
         M.model(ii,jj).stat.model_selection_score.GIC_2 =  fitting+df*(n^2*p*K)^(1/3);

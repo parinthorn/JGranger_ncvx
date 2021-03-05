@@ -16,7 +16,7 @@ AAL_116.name_full = {'Precentral gyrus_L','Precentral gyrus_R','Superior frontal
 %% K=2
 % formulation D
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected')
-M = fix_loglikelihood(M,y_total);
+M = fix_loglikelihood(M,y_total,'LLH_hetero');
 M = augment_score(M,size(y_total,2),'LLH_hetero');
 tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 eBIC = [tmp.eBIC];
@@ -27,7 +27,7 @@ result.TDC_index.D2K{ii} = M.model(I(ii)).ind{1}{1};
 result.ADHD_index.D2K{ii} = M.model(I(ii)).ind{1}{2};
 end
 clear M
-
+% formulation S
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected')
 M = fix_loglikelihood(M,y_total);
 M = augment_score(M,size(y_total,2),'LLH_hetero');
@@ -43,13 +43,13 @@ clear M
 %% K=18
 clear I
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = fix_loglikelihood(M.TDC,y_TDC);
+% M.TDC = fix_loglikelihood(M.TDC,y_TDC);
 M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
 tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 eBIC = [tmp.eBIC];
 [~,I.TDC] = sort(eBIC);
 
-M.ADHD_C = fix_loglikelihood(M.ADHD_C,y_ADHD_C);
+% M.ADHD_C = fix_loglikelihood(M.ADHD_C,y_ADHD_C);
 M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'LLH_hetero');
 tmp = [M.ADHD_C.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 eBIC = [tmp.eBIC];
@@ -61,7 +61,7 @@ result.ADHD_index.C18K{ii} = M.ADHD_C.model(I.ADHD_C(ii)).ind_common{1};
 end
 clear M
 
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected','result')
+% save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected_LLHcorrected','result')
 %% Extract common along setting axis
 clear
 clc

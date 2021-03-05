@@ -26,7 +26,9 @@ for jj=1:m
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = formulation_S(y,p_est,GridSize);
-        save([outpath,'result_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%         M = noncvx_FGN(y,p_est,GridSize);
+%         save([outpath,'result_adaptive_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        M = cvx_FGN(y,p_est,GridSize);
+%         save([outpath,'result_adaptive_cvx_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end
