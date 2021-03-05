@@ -22,7 +22,7 @@ tt.TileSpacing = 'compact';
 for ii=1:3
     for jj=1:3
         nexttile;
-        imagesc(AAL_grid{ii,jj})
+        spy(AAL_grid{ii,jj})
     end
 end
 %% Rank all combination table

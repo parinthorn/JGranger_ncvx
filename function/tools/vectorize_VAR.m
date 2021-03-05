@@ -2,6 +2,9 @@ function [y,G] = vectorize_VAR(Y,H,PARAMETER)
 
 n = PARAMETER(1); p = PARAMETER(2); K = PARAMETER(3);
 eff_T = PARAMETER(4);
+if eff_T~=size(Y,2)
+    error('Inconsistent dimension, please check Y, eff_T')
+end
 %% Create G
 
 G = [];

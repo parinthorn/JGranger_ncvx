@@ -1,4 +1,4 @@
-function M_out = correction_S(y,M,varargin)
+function M_out = correction_C(y,M,varargin)
 %% This program estimates Ground truth with their original model
 % Input are
 %             y : 3D array [n,Num,K] which is dimension of timeseries,
@@ -63,22 +63,19 @@ else
 end
 idx = efficient_vect([n,p,K]);
 for ii=1:GridSize % test 20
-    for (jj=1:GridSize)
-        x_cls = M.model(ii,jj).A(idx);
-        A_cls =devect(full(x_cls),n,p,K);
-        df = M.model(ii,jj).stat.model_selection_score.df;
-        score(1,jj) = model_selection_S(Y,H,A_cls,df,toggle);
-    end
-    tmp_struct.stat.model_selection_score(ii,:) = score;
+    
+    x_cls = M.model(ii).A(idx);
+    A_cls =devect(full(x_cls),n,p,K);
+    df = M.model(ii).stat.model_selection_score.df;
+    score(1,ii) = model_selection_S(Y,H,A_cls,df,toggle);
+    
 end
-GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
+GIC_LIST = fieldnames(score);
 for nn=1:length(GIC_LIST)
-[~,M_out.index.(GIC_LIST{nn})] = min([tmp_struct.stat.model_selection_score.(GIC_LIST{nn})]);
+    [~,M_out.index.(GIC_LIST{nn})] = min([score.(GIC_LIST{nn})]);
 end
 for ii=1:GridSize
-  for jj=1:GridSize
-    M_out.model(ii,jj).stat.model_selection_score = tmp_struct.stat.model_selection_score(ii,jj);
-  end
+    M_out.model(ii).stat.model_selection_score =  score(ii);
 end
 M_out.LLH_type = toggle;
 end

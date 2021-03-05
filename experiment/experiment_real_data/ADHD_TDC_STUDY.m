@@ -23,49 +23,49 @@ y_total = y_total-mean(y_total,2); % detrend in time axis
 p = 1; % VAR order
 GridSize = 30; % resolution of regularization grid
 data_concat = 1; % set to 1 for time-series concatenation without dependency 
-toggle = 'adaptive_L'; % set weight, toggle = 'static' is to set weight to unity
-M = test_cvxformulation_D(y_total,p,GridSize,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_v2','M')
+weight_def = 'adaptive_L'; % set weight, toggle = 'static' is to set weight to unity
+toggle = 'LLH_hetero';
+M = cvx_DGN(y_total,p,GridSize,weight_def,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected','M')
 %% cvx-FGN estimation
 p = 1;
 GridSize = 30;
 data_concat = 1;
-toggle = 'adaptive_D';
-M = test_cvxformulation_S(y_total,p,GridSize,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_v2','M')
+weight_def = 'adaptive_D';
+toggle = 'LLH_hetero';
+M = cvx_FGN(y_total,p,GridSize,weight_def,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected','M')
 %% cvx-CGN estimation
 clear M
 p = 1; % VAR order
 GridSize = 30;
 data_concat = 0; % This case does not require concatenation.
-toggle = 'adaptive_L';
-M.TDC = test_cvxformulation_C(y_TDC,p,GridSize,toggle,data_concat); % data with dimension (n,p,K)
-M.ADHD_C = test_cvxformulation_C(y_ADHD_C,p,GridSize,toggle);
+weight_def = 'adaptive_L';
+toggle = 'LLH_hetero';
+M.TDC = test_cvxformulation_C(y_TDC,p,GridSize,weight_def,toggle,data_concat); % data with dimension (n,p,K)
+M.ADHD_C = test_cvxformulation_C(y_ADHD_C,p,GridSize,weight_def);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered','M')
 %% Perform model selection correction by setting noise correlation structure to be diagonal: DGN
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected','M')
 p = 1;
 GridSize = 30;
 data_concat = 1;
-toggle = 'adaptive_L';
-M = correction_S(y_total,M,'LLH_hetero',p,GridSize,toggle,data_concat);
+weight_def = 'adaptive_L';
+toggle = 'LLH_hetero';
+M = correction_S(y_total,M,'LLH_hetero',p,GridSize,weight_def,toggle,data_concat);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected','M')
 %% Perform model selection correction by setting noise correlation structure to be diagonal: FGN
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected','M')
 p = 1;
 GridSize = 30;
 data_concat = 1;
-toggle = 'adaptive_D';
-M = correction_S(y_total,M,'LLH_hetero',p,GridSize,toggle,data_concat);
+weight_def = 'adaptive_D';
+toggle = 'LLH_hetero';
+M = correction_S(y_total,M,'LLH_hetero',p,GridSize,weight_def,data_concat);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected','M')
 %% summarize result
-% T = 172;
-% p=1;
-% K=18;
 % D2K
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected')
-% load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected')
-% M=augment_score(M,T*K-p*K,'LLH_hetero');
 tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 eBIC = [tmp.eBIC];
 [~,I] = sort(eBIC);
@@ -78,9 +78,6 @@ end
 % S2K
 clear M
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected')
-% load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected')
-% load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered')
-% M=augment_score(M,T*K-p*K,'LLH_hetero');
 tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
 eBIC = [tmp.eBIC];
 [~,I] = sort(eBIC);
@@ -106,9 +103,4 @@ for ii=1:3
 result.TDC_index.C18K{ii} = M.TDC.model(I.TDC(ii)).ind_common{1};
 result.ADHD_index.C18K{ii} = M.ADHD_C.model(I.ADHD_C(ii)).ind_common{1};
 end
-result_new = result;
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected')
-
-result_old = result;
-
-
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected_LLHcorrected','result')

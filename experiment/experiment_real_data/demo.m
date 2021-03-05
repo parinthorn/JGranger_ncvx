@@ -28,7 +28,6 @@ M.TDC = test_cvxformulation_C(y_TDC,1,30);
 M.ADHD_C = test_cvxformulation_C(y_ADHD_C,1,30);
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered','M')
 %%
-%%
 % FORMULATION D
 clear M
 M.TDC = test_cvxformulation_D(y_TDC,1,30);
