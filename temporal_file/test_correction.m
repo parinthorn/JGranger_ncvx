@@ -56,8 +56,10 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 5;
+K_list = [5,50];
+% K = 5;
 % K = 50;
+for K=K_list
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
 realz = m;
@@ -82,9 +84,9 @@ for jj=1:realz
         save([outpath,'LLHcorrected_result_adaptive_cvx_formulationD_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end
+end
 
-
-%% This experiment estimate VAR with formulation D by ADMM
+%% This experiment estimate VAR with FGN
 clear
 clc
 inpath = './data_compare/';
