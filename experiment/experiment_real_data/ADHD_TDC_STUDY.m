@@ -104,3 +104,31 @@ result.TDC_index.C18K{ii} = M.TDC.model(I.TDC(ii)).ind_common{1};
 result.ADHD_index.C18K{ii} = M.ADHD_C.model(I.ADHD_C(ii)).ind_common{1};
 end
 save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected_LLHcorrected','result')
+
+%% Convert to weighted Adjacency matrix
+outpath = './experiment/result_to_plot/';
+% D2K
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected')
+AdjTDC = M.model(M.index.eBIC).GC(:,:,1)';
+AdjADHD = M.model(M.index.eBIC).GC(:,:,2)';
+writematrix(AdjTDC,[outpath,'AdjTDC_D2K.txt'],'Delimiter','tab')
+writematrix(AdjADHD,[outpath,'AdjADHD_D2K.txt'],'Delimiter','tab')
+
+% F2K
+clear M
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected')
+AdjTDC = M.model(M.index.eBIC).GC(:,:,1)';
+AdjADHD = M.model(M.index.eBIC).GC(:,:,2)';
+writematrix(AdjTDC,[outpath,'AdjTDC_F2K.txt'],'Delimiter','tab')
+writematrix(AdjADHD,[outpath,'AdjADHD_F2K.txt'],'Delimiter','tab')
+
+% C18K
+clear M
+load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
+M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
+M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'LLH_hetero');
+
+AdjTDC = mean(M.TDC.model(M.TDC.index.eBIC).GC,3)';
+AdjADHD = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3)';
+writematrix(AdjTDC,[outpath,'AdjTDC_C18K.txt'],'Delimiter','tab')
+writematrix(AdjADHD,[outpath,'AdjADHD_C18K.txt'],'Delimiter','tab')

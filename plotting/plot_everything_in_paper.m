@@ -236,9 +236,9 @@ resource_path = './experiment/result_to_plot/';
 table_head = {'FGN','cvxFGN','Song','Skrip'};
 table_head_show = {'FGN','cvx-FGN','Songsiri17','Skripnikov19a'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
-load([resource_path,'adaptive_formulation_S_result_K5'])
+load([resource_path,'LLHcorrected_adaptive_formulation_S_result_K5'])
 result.FGN = R;
-load([resource_path,'adaptive_formulation_S_cvx_result_K5'])
+load([resource_path,'LLHcorrected_adaptive_formulation_S_cvx_result_K5'])
 result.cvxFGN = R;
 load([resource_path,'adaptive_formulation_S_JSS_result_K5'])
 result.Song = R;

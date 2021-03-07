@@ -16,7 +16,7 @@ for ii=1:dd
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{3,3,ii,jj};
-        fname = [resultpath,'result_adaptive_cvx_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
+        fname = [resultpath,'LLHcorrected_result_adaptive_cvx_formulationS_',mname{ii},'percent_lag1_K5_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         toggle_list = {'total','common','differential'};
@@ -38,5 +38,5 @@ for ii=1:dd
          
     end
 end
-save([performance_path,'adaptive_formulation_S_cvx_result_K5'],'R')
-save([performance_path,'adaptive_formulation_S_cvx_ALL_RESULT_K5'],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_S_cvx_result_K5'],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_S_cvx_ALL_RESULT_K5'],'ALL_RESULT')

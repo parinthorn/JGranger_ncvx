@@ -7,8 +7,8 @@ acc_list_2 = {'TPR','FPR','ACC','F1','MCC'};
 name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};%{'bic','aicc'};
 % name_list = {'bic','aic','aicc'};
 performance_path = './experiment/result_to_plot/';
-load([performance_path,'adaptive_formulation_S_cvx_ALL_RESULT_K5'])
-load([performance_path,'adaptive_formulation_S_cvx_result_K5'])
+load([performance_path,'LLHcorrected_adaptive_formulation_S_cvx_ALL_RESULT_K5'])
+load([performance_path,'LLHcorrected_adaptive_formulation_S_cvx_result_K5'])
 % load([resultpath,'formulation_S_index'])
 dd = size(ALL_RESULT,1);
 realz = size(ALL_RESULT,2);
@@ -34,17 +34,17 @@ for ii=1:dd
             set(gca,'xticklabel',[],'yticklabel',[])
             ylabel(acc_list{ss})
             
-%             hold on
-%             for mm=1:length(name_list)
-%                 h = zeros(30,30);
-%                 for jj=1:realz
-% %                     h(index.(name_list{mm})(ii,jj)) = 1;
-%                     h(R.index(ii,jj).(name_list{mm})) = 1;
-%                 end
-%                 [ind_row,ind_col] = ind2sub([30,30],find(h));
-%                 scatter(ind_col,ind_row);
-%             end
-%             hold off
+            hold on
+            for mm=4
+                h = zeros(30,30);
+                for jj=1:realz
+%                     h(index.(name_list{mm})(ii,jj)) = 1;
+                    h(R.index(ii,jj).(name_list{mm})) = 1;
+                end
+                [ind_row,ind_col] = ind2sub([30,30],find(h));
+                scatter(ind_col,ind_row);
+            end
+            hold off
 
         end
     end
