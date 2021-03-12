@@ -18,12 +18,12 @@ name_list = {'bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
 ii=2;
 %%
 realization = 100;
-for jj=1:100
+for jj=1:realization
     fprintf('(%d,%d)\n',ii,jj)
     GTmodel = E{3,jj};
-    fname = [resultpath,'resultT150_adaptive_formulationS_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
+    fname = [resultpath,'LLHcorrected_resultT150_adaptive_formulationS_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score_old(M,T);
+%     M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -43,8 +43,8 @@ for jj=1:100
         mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     
 end
-save([performance_path,'adaptive_formulation_ST150_result_K',int2str(K)],'R')
-% save([performance_path,'adaptive_formulation_ST150_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_ST150_result_K',int2str(K)],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_ST150_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
 %%
 clear R
 clear ALL_RESULT
@@ -52,9 +52,9 @@ realization = 100;
 for jj=1:realization
     fprintf('(%d,%d)\n',ii,jj)
     GTmodel = E{3,jj};
-    fname = [resultpath,'resultT150_cvx_adaptive_formulationS_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
+    fname = [resultpath,'LLHcorrected_resultT150_cvx_adaptive_formulationS_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score_old(M,T);
+%     M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -74,5 +74,5 @@ for jj=1:realization
         mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     
 end
-save([performance_path,'adaptive_formulation_ST150_cvx_result_K',int2str(K)],'R')
-% save([performance_path,'adaptive_formulation_ST150_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_ST150_cvx_result_K',int2str(K)],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_ST150_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')

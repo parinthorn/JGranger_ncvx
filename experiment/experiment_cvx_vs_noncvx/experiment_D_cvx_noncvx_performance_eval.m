@@ -22,9 +22,9 @@ realization = 100;
 for jj=1:realization
     fprintf('(%d,%d)\n',ii,jj)
     GTmodel = E{2,jj};
-    fname = [resultpath,'resultT150_adaptive_formulationD_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
+    fname = [resultpath,'LLHcorrected_resultT150_adaptive_formulationD_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score_old(M,T);
+%     M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -44,8 +44,8 @@ for jj=1:realization
         mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     
 end
-save([performance_path,'adaptive_formulation_DT150_result_K',int2str(K)],'R')
-% save([performance_path,'adaptive_formulation_DT150_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_DT150_result_K',int2str(K)],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_DT150_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
 %%
 clear R
 clear ALL_RESULT
@@ -53,9 +53,9 @@ realization = 100;
 for jj=1:realization
     fprintf('(%d,%d)\n',ii,jj)
     GTmodel = E{2,jj};
-    fname = [resultpath,'resultT150_cvx_adaptive_formulationD_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
+    fname = [resultpath,'LLHcorrected_resultT150_cvx_adaptive_formulationD_',mname{ii},'percent_lag3_K',int2str(K),'_',int2str(jj)];
     load(fname)
-    M = augment_score_old(M,T);
+%     M = augment_score_old(M,T);
     model_acc = performance_eval(M,GTmodel);
     toggle_list = {'total','common','differential'};
     %         M.index.bic=best_index(jj);
@@ -75,5 +75,5 @@ for jj=1:realization
         mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     
 end
-save([performance_path,'adaptive_formulation_DT150_cvx_result_K',int2str(K)],'R')
-% save([performance_path,'adaptive_formulation_DT150_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_DT150_cvx_result_K',int2str(K)],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_DT150_cvx_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
