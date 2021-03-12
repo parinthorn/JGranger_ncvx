@@ -35,9 +35,9 @@ if isempty(SD)
         value_row = [row_name{ii} '& '];
         for jj=1:n
             if jj < n
-                value_row = [value_row [num2str(M(ii,jj),'%2.3f'), ' & ']];
+                value_row = [value_row [num2str(M(ii,jj),'%2.1f'), ' & ']];
             else
-                value_row = [value_row [num2str(M(ii,jj),'%2.3f')]];
+                value_row = [value_row [num2str(M(ii,jj),'%2.1f')]];
             end            
         end
         value_row = [value_row ' \\\\ \n'];
@@ -49,10 +49,10 @@ else
         value_row = [row_name{ii} '& '];
         for jj=1:n
             if jj < n
-                value_row = [value_row [num2str(M(ii,jj),'%2.3f'), ' (',num2str(SD(ii,jj),'%2.2f'), ') & ']];
+                value_row = [value_row ['\\textbf{',num2str(M(ii,jj),'%2.1f'),'}', ' (','\\textbf{',num2str(SD(ii,jj),'%2.1f'),'}', ') & ']];
             else
-                value_row = [value_row [num2str(M(ii,jj),'%2.3f'), ' (',num2str(SD(ii,jj),'%2.2f'), ')']];
-            end            
+                value_row = [value_row ['\\textbf{',num2str(M(ii,jj),'%2.1f'),'}', ' (','\\textbf{',num2str(SD(ii,jj),'%2.1f'),'}', ')']];
+            end         
         end
         value_row = [value_row ' \\\\ \n'];
         fprintf(value_row);

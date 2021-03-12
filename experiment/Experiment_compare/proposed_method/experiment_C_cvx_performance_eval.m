@@ -18,7 +18,7 @@ for ii=1:length(mname)
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,ii+2,2,jj};
-        fname = [resultpath,'result_adaptive_cvx_formulationC_',mname{ii},'percent_',int2str(jj)];
+        fname = [resultpath,'LLHcorrected_result_adaptive_cvx_formulationC_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         ALL_RESULT(ii,jj).model_acc = model_acc;
@@ -36,8 +36,8 @@ for ii=1:length(mname)
         
     end
 end
-save([performance_path,'adaptive_formulation_C_cvx_result'],'R')
-save([performance_path,'adaptive_formulation_C_cvx_ALL_RESULT'],'ALL_RESULT')
+save([performance_path,'LLHcorrected_adaptive_formulation_C_cvx_result'],'R')
+save([performance_path,'LLHcorrected_adaptive_formulation_C_cvx_ALL_RESULT'],'ALL_RESULT')
 
 %%
 clear

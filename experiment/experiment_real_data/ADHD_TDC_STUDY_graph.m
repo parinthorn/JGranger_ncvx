@@ -8,13 +8,16 @@ load('E:\JGranger_ncvx\experiment\experiment_real_data\AAL_116.mat')
 clc
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected')
 GC.total = M.model(M.index.eBIC).GC;
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
 G.TDC = digraph(GC.total(:,:,1)',AAL_116.name);
 G.ADHD = digraph(GC.total(:,:,2)',AAL_116.name);
-% [~,E.TDC] = betweenness_centrality(sparse(GC.total(:,:,1)'));
-% [~,E.ADHD] = betweenness_centrality(sparse(GC.total(:,:,2)'));
-
+% 
 C1 = (centrality(G.TDC,'betweenness','Cost',G.TDC.Edges.Weight));
 C2 = (centrality(G.ADHD,'betweenness','Cost',G.ADHD.Edges.Weight));
+
+% C1 = (centrality(G.TDC,'betweenness'));
+% C2 = (centrality(G.ADHD,'betweenness'));
+
 % C1 = (centrality(G.TDC,'hubs','Importance',G.TDC.Edges.Weight));
 % C2 = (centrality(G.ADHD,'hubs','Importance',G.ADHD.Edges.Weight));
 % C1 = (centrality(G.TDC,'pagerank','Importance',G.TDC.Edges.Weight));
@@ -49,10 +52,15 @@ end
 clc
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected')
 GC.total = M.model(M.index.eBIC).GC;
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
 G.TDC = digraph(GC.total(:,:,1)',AAL_116.name);
 G.ADHD = digraph(GC.total(:,:,2)',AAL_116.name);
 C1 = (centrality(G.TDC,'betweenness','Cost',G.TDC.Edges.Weight));
 C2 = (centrality(G.ADHD,'betweenness','Cost',G.ADHD.Edges.Weight));
+
+% C1 = (centrality(G.TDC,'betweenness'));
+% C2 = (centrality(G.ADHD,'betweenness'));
+
 % C1 = (centrality(G.TDC,'hubs','Importance',G.TDC.Edges.Weight));
 % C2 = (centrality(G.ADHD,'hubs','Importance',G.ADHD.Edges.Weight));
 % C1 = (centrality(G.TDC,'pagerank','Importance',G.TDC.Edges.Weight));
@@ -88,10 +96,16 @@ clc
 load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered_LLHcorrection','M')
 GC.total(:,:,1) = mean(M.TDC.model(M.TDC.index.eBIC).GC,3);
 GC.total(:,:,2) = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3);
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
+
 G.TDC = digraph(GC.total(:,:,1)',AAL_116.name);
 G.ADHD = digraph(GC.total(:,:,2)',AAL_116.name);
 C1 = (centrality(G.TDC,'betweenness','Cost',G.TDC.Edges.Weight));
 C2 = (centrality(G.ADHD,'betweenness','Cost',G.ADHD.Edges.Weight));
+
+% C1 = (centrality(G.TDC,'betweenness'));
+% C2 = (centrality(G.ADHD,'betweenness'));
+
 % C1 = (centrality(G.TDC,'hubs','Importance',G.TDC.Edges.Weight));
 % C2 = (centrality(G.ADHD,'hubs','Importance',G.ADHD.Edges.Weight));
 % C1 = (centrality(G.TDC,'pagerank','Importance',G.TDC.Edges.Weight));

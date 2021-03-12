@@ -15,15 +15,17 @@ for ii=1:length(mname)
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,ii+2,2,jj};
-        fname = [resultpath,'magda_formulationC_',mname{ii},'percent_',int2str(jj)];
+        fname = [resultpath,'LLHcorrected_magda_formulationC_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
-        R.F1(ii,jj) =model_acc(M.index.bic).common.F1;
-        R.MCC(ii,jj) =model_acc(M.index.bic).common.MCC;
-        R.TPR(ii,jj) =model_acc(M.index.bic).common.TPR;
-        R.FPR(ii,jj) =model_acc(M.index.bic).common.FPR;
-        R.ACC(ii,jj) =model_acc(M.index.bic).common.ACC;
-        
+        R.F1(ii,jj) =model_acc(M.index.eBIC).common.F1;
+        R.MCC(ii,jj) =model_acc(M.index.eBIC).common.MCC;
+        R.TPR(ii,jj) =model_acc(M.index.eBIC).common.TPR;
+        R.FPR(ii,jj) =model_acc(M.index.eBIC).common.FPR;
+        R.ACC(ii,jj) =model_acc(M.index.eBIC).common.ACC;
+               fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
+            mean(R.F1(ii,1:jj)),mean(R.MCC(ii,1:jj)),mean(R.ACC(ii,1:jj)),mean(R.FPR(ii,1:jj)),mean(R.TPR(ii,1:jj)))
+ 
     end
 end
 
