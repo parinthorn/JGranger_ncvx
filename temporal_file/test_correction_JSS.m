@@ -93,7 +93,7 @@ for jj=1:m
     end
 end
 %% Experiment: GC estimation, estimating VAR coefficients using DGN, convex DGN, K=5 and K=50.
-clear
+% clear
 clc
 inpath = './data_compare/';
 outpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
@@ -103,7 +103,7 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K_list = [5,50];
+K_list = [50];
 % K = 5;
 % K = 50;
 for K=K_list
@@ -112,7 +112,7 @@ load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for jj=1:realz
+for jj=64:realz
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
