@@ -7,6 +7,13 @@ function M = cvx_CGN(y,varargin)
 %      : GridSize, the resolution of solution path (default, GridSize=30)
 %      : weight_def, choice of weighting, weight_def = 'static': no weight
 %                                            = 'adaptive_L' (default) : included weight, available when T>=np
+%
+% parameter.p : 1,2,3, (default = 1)
+% parameter.gridsize:  integer (default = 20x20)
+% parameter.penalty_weight: 'uniform' (uniform weight = 1)  'LS'  (reciprocal of LS estimate) (default = 'LS')
+% parameter.noisecov: 'full', 'diag', 'identity'   (default = 'full')  This is the structure of covariance of residual error
+% parameter.qnorm = 'cvx','ncvx'  (1,1/2) % toggle
+
 % Originally written by Parinthorn Manomaisaowapak
 % Please email to parinthorn@gmail.com before reuse, reproduce
 [n,T,K] = size(y);
@@ -48,7 +55,29 @@ for kk=1:K
 end
 disp('vectorizing model')
 [yc,gc] = vectorize_VAR(Y,H,[n,p,K,eff_T]);
-xLS = gc\yc;
+
+% produce L1 L2 from [n,p,K] CGN
+switch parameter.formulation
+
+    L1 = XXXX
+    L2 = XXXXX
+    parameter.weight = vector of two/one column (depend on formulation)
+    
+    
+    xLS = gc\yc;
+
+% use this one
+lambda_range = grid_generattion (gc,yc,parameter.gridsize,parameter.weight, parameter.penalty_weight,L1,L2)
+
+
+% create lambda range 
+[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,weight_def);
+
+% Algorithm parameter
+if isnull(ALG_PARAMETER)
+    set default value of ALG_PARAMETER.XXX = good default
+    
+
 if eff_T>n*p
     init_cvx = 0;
 else
@@ -67,9 +96,10 @@ ALG_PARAMETER.gamma = 1; % for adaptive case
 ALG_PARAMETER.is_spectral = 1;
 disp('calculating Lambda max')
 qq=1; %convex case
-[Lambda_1,Lambda_2,opt] = grid_generation(gc,yc,GridSize,ALG_PARAMETER,qq,weight_def);
-ALG_PARAMETER.L1 = opt.L1;
-ALG_PARAMETER.L2 = opt.L2;
+
+
+ALG_PARAMETER.L1 = opt.L1; % remove
+ALG_PARAMETER.L2 = opt.L2; % remove
 M.GridSize = GridSize;
 M.flag = zeros(GridSize);
 if isvector(Lambda_1)
@@ -92,6 +122,17 @@ ind_common = cell(1,GridSize);
 ind_differential = cell(1,GridSize);
 flag = zeros(1,GridSize);
 ind = cell(1,GridSize);
+
+% use this one    
+adaptive_ADMM(gc,yc,L1,L2,a1,a2,ALG_PARAMETER) % call prox of q = 1/2, heuristic update rho
+spectral_ADMM(gc,yc,L1,L2,a1,a2,ALG_PARAMETER) % call prox of q = 1, spectral ADMM
+    
+CHOOSE ALGORITHM
+if non-convex
+    run function adaptive_ADMM
+    else 
+    run function spectral_ADMM
+
 for ii=1:GridSize
     a = Lambda_2(:,ii);
     fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
@@ -102,6 +143,9 @@ for ii=1:GridSize
     else
         x0 = xLS;
     end
+    
+
+    
     [x_reg,~, ~, history] = spectral_ADMM_adaptive(gc, yc,0, a,2,1, ALG_PARAMETER,x0);
     A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
     A_reg(:,:,:,:,ii) = A_reg_tmp; % this is for arranging result into parfor format
