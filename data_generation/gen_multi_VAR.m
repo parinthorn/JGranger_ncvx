@@ -14,10 +14,19 @@ function model = gen_multi_VAR(PARAMETER,opts,varargin)
 %                    'b' = 2, 1 ,0 if no relation,  similar edges, common sparsity
 %                    respectively
 % The output are
-% 'M' : M contains k struct with field
-%        '.ind_nz' : nonzero indices
-%        '.A' : VAR parameter with size [n,n,p,k]
-%        '.info' : contains cells ind_nz
+% 'M' : M contains fields:
+%                      dim: [20 1 5]
+%                     type: 'common'
+%           common_density: 0.0100
+%     differential_density: 0
+%                  ind_VAR: {[23×1 double]  [23×1 double]  [23×1 double]  [23×1 double]  [23×1 double]}
+%                      ind: {5×1 cell}
+%               ind_common: [3×1 double]
+%         ind_differential: {5×1 cell}
+%             VAR_spectrum: {[20×1 double]  [20×1 double]  [20×1 double]  [20×1 double]  [20×1 double]}
+%                       GC: [20×20×5 double]
+%                        A: [20×20×1×5 double]
+%                     seed: 92245542
 %% Function init
 n = PARAMETER(1);
 p = PARAMETER(2);

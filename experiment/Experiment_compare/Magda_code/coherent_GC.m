@@ -39,7 +39,7 @@ for kk=1:K
     [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
 end
 disp('vectorizing model')
-[yc,gc] = vectorize_VAR(Y,H,[n,p,K,T]);
+[yc,gc] = vectorize_VAR(Y,H,[n,p,K,T-p]);
 disp('calculating Lambda max')
 Lmax = lambdamax_grouplasso(gc,yc,[n ,p ,K]);
 Lambda = Lambda*Lmax;
@@ -84,10 +84,10 @@ for ii=1:GridSize
         [x_reg, ~,~, history] = spectral_ADMM_C(gc, yc, a, ALG_PARAMETER,x0);
         A_reg_tmp = devect(full(x_reg),n,p,K); % convert to (n,n,p,K) format
         A_reg(:,:,:,:,ii) = A_reg_tmp; % this is for arranging result into parfor format
-        [x_cls,ls_flag(1,ii)] = constrained_LS_D(gc,yc,find(x_reg));
+        [x_cls,ls_flag(1,ii)] = jointvargc_constrainedLS_DGN(gc,yc,find(x_reg));
         A_cls =devect(full(x_cls),n,p,K);
         A(:,:,:,:,ii) = A_cls;
-        score(1,ii) = model_selection(Y,A_cls);
+        score(1,ii) = model_selection(Y,H,A_cls,'full');
         tmp_ind = cell(1,K);
         diag_ind=1:n+1:n^2;
         for kk=1:K

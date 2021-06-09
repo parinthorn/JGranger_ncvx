@@ -1,22 +1,22 @@
 function score = model_selection_S(Y,H,A,df,toggle)
 [n,~,p,K] = size(A);
-[score.LLH_full,score.LLH_hetero,score.LLH_homo,score.SSE] = log_likelihood_var(Y,H,A,n,p,K);% fitting = -2*Log-Likelihood
+[score.LLH_full,score.LLH_diag,score.LLH_identity] = log_likelihood_var(Y,H,A,n,p,K);% fitting = -2*Log-Likelihood
 df_lasso = length(find(A));
 Num = size(Y,2);
-gamma = log(n^2*p*K)/log(n*(Num));
-kappa = 1.5*(1-1/(2*gamma));
+gamma = log(n^2*p*K)/log(n*(Num)*K);
+kappa = min([1,1.5*(1-1/(2*gamma))]);
 if df==n^2*p*K
     binom_term = 0;
 else
     binom_term = arrayfun(@(x) log_stirling_approx(n^2*p*K)-log_stirling_approx(n^2*p*K-x)-log_stirling_approx(x) , df);
 end
 switch toggle
-    case 'LLH_full'
+    case 'full'
         fitting = score.LLH_full;
-    case 'LLH_hetero'
-        fitting = score.LLH_hetero;
-    case 'LLH_homo'
-        fitting = score.LLH_homo;
+    case 'diag'
+        fitting = score.LLH_diag;
+    case 'identity'
+        fitting = score.LLH_identity;
 end
 score.flag = 0;
 score.eBIC = fitting+log(Num).*df + 2*kappa.*binom_term;

@@ -22,12 +22,22 @@ D = sparse(Dtmp*P);
 realz = m;
 GridSize = 30;
 mname = {'1','5'};
-for jj=8:m
+
+parameter.varorder = p_est;
+parameter.formulation = 'fgn'; % cgn, dgn, fgn
+parameter.penalty_weight = 'uniform'; % LS, uniform
+parameter.GridSize = GridSize;
+parameter.data_concat = 0;
+parameter.noisecov = 'full'; % 'full', 'diag', 'identity'
+parameter.qnorm = 'cvx';  % cvx, ncvx
+ALG_PARAMETER = gen_alg_params(parameter.qnorm, parameter.formulation);
+ALG_PARAMETER.PRINT_RESULT = 0;
+for jj=1:m
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
-        M = cvx_FGN(y,p_est,GridSize,'static');
-        save([outpath,'result_JSS_formulationS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+        M = jointvargc(y,parameter,ALG_PARAMETER);
+        save([outpath,'estim_FGN_JSS_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

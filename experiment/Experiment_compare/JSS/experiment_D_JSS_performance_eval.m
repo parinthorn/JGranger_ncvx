@@ -16,11 +16,10 @@ for jj=1:realization
     for ii=1:dd
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,3,ii,jj};
-        fname = [resultpath,'LLHcorrected_result_JSS_formulationD_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
+        fname = [resultpath,'estim_DGN_JSS_',mname{ii},'percent_lag1_K',int2str(K),'_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         toggle_list = {'total','common','differential'};
-        %         M.index.bic=best_index(jj);
         ALL_RESULT(ii,jj).model_acc = model_acc;
         for kk=1:length(name_list)
             R.index(ii,jj).(name_list{kk}) = M.index.(name_list{kk});
@@ -38,5 +37,5 @@ for jj=1:realization
         
     end
 end
-save([performance_path,'LLHcorrected_adaptive_formulation_D_JSS_result_K',int2str(K)],'R')
-save([performance_path,'LLHcorrected_adaptive_formulation_D_JSS_ALL_RESULT_K',int2str(K)],'ALL_RESULT')
+save([performance_path,'DGN_JSS_result_K',int2str(K)],'R')
+save([performance_path,'DGN_JSS_ALL_RESULT_K',int2str(K)],'ALL_RESULT')

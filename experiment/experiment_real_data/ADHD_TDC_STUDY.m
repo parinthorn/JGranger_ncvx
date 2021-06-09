@@ -7,7 +7,7 @@
 % the common part of GC matrix in each model will be considered as group
 % level GC.
 
-%% Data concatenation
+%% Data concatenation [Run this first]
 clear
 clc
 selected_TDC = {'0010023';'0010024';'0010070';'0010088';'0010092';'0010112';'0010122';'0010123';'0010128';'1000804';'1435954';'3163200';'3243657';'3845761';'4079254';'8692452';'8834383';'9750701'};
@@ -20,115 +20,206 @@ K = size(y_TDC,3);
 y_total = cat(3,y_TDC,y_ADHD_C);
 y_total = y_total-mean(y_total,2); % detrend in time axis
 %% cvx-DGN estimation
-p = 1; % VAR order
-GridSize = 30; % resolution of regularization grid
-data_concat = 1; % set to 1 for time-series concatenation without dependency 
-weight_def = 'adaptive_L'; % set weight, toggle = 'static' is to set weight to unity
-toggle = 'LLH_hetero';
-M = cvx_DGN(y_total,p,GridSize,weight_def,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected','M')
+parameter.varorder = 1;
+parameter.formulation = 'dgn';
+parameter.penalty_weight = 'LS';
+parameter.GridSize = 30; % resolution of regularization grid
+parameter.data_concat = 1; % set to 1 for time-series concatenation without dependency between patients
+parameter.noisecov = 'diag'; % diagonal covariance assumptions
+parameter.qnorm = 'cvx';
+ALG_PARAMETER = gen_alg_params(parameter.qnorm, parameter.formulation);
+M = jointvargc(y_total,parameter,ALG_PARAMETER); % data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_D2K','M') % verified for reproduce
 %% cvx-FGN estimation
-p = 1;
-GridSize = 30;
-data_concat = 1;
-weight_def = 'adaptive_D';
-toggle = 'LLH_hetero';
-M = cvx_FGN(y_total,p,GridSize,weight_def,toggle,data_concat);% data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected','M')
+parameter.varorder = 1;
+parameter.formulation = 'fgn';
+parameter.penalty_weight = 'LS';
+parameter.GridSize = 30; % resolution of regularization grid
+parameter.data_concat = 1; % set to 1 for time-series concatenation without dependency between patients
+parameter.noisecov = 'diag'; % diagonal covariance assumptions
+parameter.qnorm = 'cvx';
+ALG_PARAMETER = gen_alg_params(parameter.qnorm, parameter.formulation);
+M = jointvargc(y_total,parameter,ALG_PARAMETER); % data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_F2K','M') % verified for reproduce
 %% cvx-CGN estimation
 clear M
-p = 1; % VAR order
-GridSize = 30;
-data_concat = 0; % This case does not require concatenation.
-weight_def = 'adaptive_L';
-toggle = 'LLH_hetero';
-M.TDC = test_cvxformulation_C(y_TDC,p,GridSize,weight_def,toggle,data_concat); % data with dimension (n,p,K)
-M.ADHD_C = test_cvxformulation_C(y_ADHD_C,p,GridSize,weight_def);
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered','M')
-%% Perform model selection correction by setting noise correlation structure to be diagonal: DGN
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected','M')
-p = 1;
-GridSize = 30;
-data_concat = 1;
-weight_def = 'adaptive_L';
-toggle = 'LLH_hetero';
-M = correction_S(y_total,M,'LLH_hetero',p,GridSize,weight_def,toggle,data_concat);
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected','M')
-%% Perform model selection correction by setting noise correlation structure to be diagonal: FGN
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected','M')
-p = 1;
-GridSize = 30;
-data_concat = 1;
-weight_def = 'adaptive_D';
-toggle = 'LLH_hetero';
-M = correction_S(y_total,M,'LLH_hetero',p,GridSize,weight_def,data_concat);
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected','M')
-%% summarize result
-% D2K
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected')
-tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
-eBIC = [tmp.eBIC];
-[~,I] = sort(eBIC);
-
-for ii=1:3
-result.TDC_index.D2K{ii} = M.model(I(ii)).ind{1}{1};
-result.ADHD_index.D2K{ii} = M.model(I(ii)).ind{1}{2};
-end
-
-% S2K
-clear M
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected')
-tmp = [M.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
-eBIC = [tmp.eBIC];
-[~,I] = sort(eBIC);
-
-for ii=1:3
-result.TDC_index.S2K{ii} = M.model(I(ii)).ind{1}{1};
-result.ADHD_index.S2K{ii} = M.model(I(ii)).ind{1}{2};
-end
-
-% C18K
-clear M
-clear I % because it will be struct variable.
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
-tmp = [M.TDC.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
-eBIC = [tmp.eBIC];
-[~,I.TDC] = sort(eBIC);
-M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'LLH_hetero');
-tmp = [M.ADHD_C.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];
-eBIC = [tmp.eBIC];
-[~,I.ADHD_C] = sort(eBIC);
-for ii=1:3
-result.TDC_index.C18K{ii} = M.TDC.model(I.TDC(ii)).ind_common{1};
-result.ADHD_index.C18K{ii} = M.ADHD_C.model(I.ADHD_C(ii)).ind_common{1};
-end
-save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\summary_real_DS2K_C18K_timecorrected_LLHcorrected','result')
-
+parameter.varorder = 1;
+parameter.formulation = 'cgn';
+parameter.penalty_weight = 'LS';
+parameter.GridSize = 30; % resolution of regularization grid
+parameter.data_concat = 0;
+parameter.noisecov = 'diag'; % diagonal covariance assumptions
+parameter.qnorm = 'cvx';
+ALG_PARAMETER = gen_alg_params(parameter.qnorm, parameter.formulation);
+M.TDC = jointvargc(y_TDC,parameter,ALG_PARAMETER); % data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+M.ADHD_C = jointvargc(y_ADHD_C,parameter,ALG_PARAMETER); % data with dimension (n,T*K,2), K is # subjects in each TDC, ADHD
+save('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_C18K','M') % verified for reproduce
 %% Convert to weighted Adjacency matrix
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
 outpath = './experiment/result_to_plot/';
 % D2K
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_D_unfiltered_timecorrected_LLHcorrected')
+load([inpath,'estim_D2K'])
 AdjTDC = M.model(M.index.eBIC).GC(:,:,1)';
 AdjADHD = M.model(M.index.eBIC).GC(:,:,2)';
 writematrix(AdjTDC,[outpath,'AdjTDC_D2K.txt'],'Delimiter','tab')
 writematrix(AdjADHD,[outpath,'AdjADHD_D2K.txt'],'Delimiter','tab')
-
 % F2K
 clear M
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_2K_S_unfiltered_timecorrected_LLHcorrected')
+load([inpath,'estim_F2K'])
 AdjTDC = M.model(M.index.eBIC).GC(:,:,1)';
 AdjADHD = M.model(M.index.eBIC).GC(:,:,2)';
 writematrix(AdjTDC,[outpath,'AdjTDC_F2K.txt'],'Delimiter','tab')
 writematrix(AdjADHD,[outpath,'AdjADHD_F2K.txt'],'Delimiter','tab')
-
 % C18K
 clear M
-load('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_18K_C_unfiltered')
-M.TDC = augment_score(M.TDC,size(y_TDC,2),'LLH_hetero');
-M.ADHD_C = augment_score(M.ADHD_C,size(y_ADHD_C,2),'LLH_hetero');
-
+load([inpath,'estim_C18K'])
 AdjTDC = mean(M.TDC.model(M.TDC.index.eBIC).GC,3)';
 AdjADHD = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3)';
 writematrix(AdjTDC,[outpath,'AdjTDC_C18K.txt'],'Delimiter','tab')
 writematrix(AdjADHD,[outpath,'AdjADHD_C18K.txt'],'Delimiter','tab')
+%% Edges Centrality: D2K
+clear
+clc
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
+load('.\experiment\experiment_real_data\AAL_116.mat')
+load([inpath,'estim_D2K'])
+GC.total = M.model(M.index.eBIC).GC;
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
+[~,R.TDC] = betweenness_centrality(sparse(GC.total(:,:,1)')); % transpose for adjacency
+[~,R.ADHD] = betweenness_centrality(sparse(GC.total(:,:,2)'));
+E_TDC = R.TDC';
+E_ADHD = R.ADHD';
+
+E_in = R.TDC'-R.ADHD'; % convert to GC
+E=E_in;
+THRESH =5*std(E_in(E_in~=0));
+E(E_in~=0) = E(E_in~=0)-mean(E(E_in~=0));
+E_test = E;
+
+E(abs(E_test)>THRESH)=1;
+E(abs(E_test)<=THRESH)=0;
+
+
+selected_index = find(E);
+[~,I] = sort(abs(E_in(selected_index)),'descend');
+
+
+for ii=1:length(selected_index)
+    [ee,cc] = ind2sub([116,116],selected_index(I(ii)));
+    Cause_name{ii} = ([AAL_116.name_full{cc}]);
+    Effect_name{ii} = ([AAL_116.name_full{ee}]);
+    
+    
+    Centrality_Diff(ii) = -E_in(selected_index(I(ii)));
+    ADHD_Centrality(ii) = E_ADHD(selected_index(I(ii)));
+    TDC_Centrality(ii) = E_TDC(selected_index(I(ii)));
+    
+    if Centrality_Diff(ii) <0
+        toggle = 'TDC>ADHD(Missing)';
+    else
+        toggle = 'TDC<ADHD(Extra)';
+    end
+    Type_Diff{ii} = toggle;
+    
+end
+T = table(Cause_name',Effect_name',ADHD_Centrality',TDC_Centrality',Centrality_Diff',Type_Diff','VariableNames',{'Cause','Effect','ADHD_centrality','TDC_centrality','Centrality Diff(ADHD-TDC)','Type'});
+
+%% Edges Centrality: F2K
+clear
+clc
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
+load('E:\JGranger_ncvx\experiment\experiment_real_data\AAL_116.mat')
+load([inpath,'estim_F2K'])
+GC.total = M.model(M.index.eBIC).GC;
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
+[~,R.TDC] = betweenness_centrality(sparse(GC.total(:,:,1)')); % transpose for adjacency
+[~,R.ADHD] = betweenness_centrality(sparse(GC.total(:,:,2)'));
+E_TDC = R.TDC';
+E_ADHD = R.ADHD';
+
+E_in = R.TDC'-R.ADHD'; % convert to GC
+E=E_in;
+THRESH =5*std(E_in(E_in~=0));
+E(E_in~=0) = E(E_in~=0)-mean(E(E_in~=0));
+E_test = E;
+
+E(abs(E_test)>THRESH)=1;
+E(abs(E_test)<=THRESH)=0;
+
+
+selected_index = find(E);
+[~,I] = sort(abs(E_in(selected_index)),'descend');
+
+
+for ii=1:length(selected_index)
+    [ee,cc] = ind2sub([116,116],selected_index(I(ii)));
+    Cause_name{ii} = ([AAL_116.name_full{cc}]);
+    Effect_name{ii} = ([AAL_116.name_full{ee}]);
+    
+    
+    Centrality_Diff(ii) = -E_in(selected_index(I(ii)));
+    ADHD_Centrality(ii) = E_ADHD(selected_index(I(ii)));
+    TDC_Centrality(ii) = E_TDC(selected_index(I(ii)));
+    
+    if Centrality_Diff(ii) <0
+        toggle = 'TDC>ADHD(Missing)';
+    else
+        toggle = 'TDC<ADHD(Extra)';
+    end
+    Type_Diff{ii} = toggle;
+    
+end
+T = table(Cause_name',Effect_name',ADHD_Centrality',TDC_Centrality',Centrality_Diff',Type_Diff','VariableNames',{'Cause','Effect','ADHD_centrality','TDC_centrality','Centrality Diff(ADHD-TDC)','Type'});
+
+%% Edges Centrality: C18K
+clear
+clc
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
+load('E:\JGranger_ncvx\experiment\experiment_real_data\AAL_116.mat')
+load([inpath,'estim_C18K'])
+GC.total(:,:,1) = mean(M.TDC.model(M.TDC.index.eBIC).GC,3);
+
+GC.total(:,:,2) = mean(M.ADHD_C.model(M.ADHD_C.index.eBIC).GC,3);
+GC.total(GC.total>0) = 1./GC.total(GC.total>0);
+[~,R.TDC] = betweenness_centrality(sparse(GC.total(:,:,1)')); % transpose for adjacency
+[~,R.ADHD] = betweenness_centrality(sparse(GC.total(:,:,2)'));
+
+E_TDC = R.TDC';
+E_ADHD = R.ADHD';
+E_in = R.TDC'-R.ADHD'; % convert to GC
+E=E_in;
+THRESH =5*std(E(E~=0));
+E(E_in~=0) = E(E_in~=0)-mean(E(E_in~=0));
+E_test = E;
+
+E(abs(E_test)>THRESH)=1;
+E(abs(E_test)<=THRESH)=0;
+
+
+selected_index = find(E);
+[~,I] = sort(abs(E_in(selected_index)),'descend');
+
+
+for ii=1:length(selected_index)
+    [ee,cc] = ind2sub([116,116],selected_index(I(ii)));
+    Cause_name{ii} = ([AAL_116.name_full{cc}]);
+    Effect_name{ii} = ([AAL_116.name_full{ee}]);
+    
+    
+    Centrality_Diff(ii) = -E_in(selected_index(I(ii)));
+    ADHD_Centrality(ii) = E_ADHD(selected_index(I(ii)));
+    TDC_Centrality(ii) = E_TDC(selected_index(I(ii)));
+    
+    if Centrality_Diff(ii) <0
+        toggle = 'TDC>ADHD(Missing)';
+    else
+        toggle = 'TDC<ADHD(Extra)';
+    end
+    Type_Diff{ii} = toggle;
+    
+end
+T = table(Cause_name',Effect_name',ADHD_Centrality',TDC_Centrality',Centrality_Diff',Type_Diff','VariableNames',{'Cause','Effect','ADHD_centrality','TDC_centrality','Centrality Diff(ADHD-TDC)','Type'});
+
+
+
+

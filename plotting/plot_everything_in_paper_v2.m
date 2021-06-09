@@ -8,16 +8,18 @@ resource_path = './experiment/result_to_plot/';
 table_head = {'CGN','cvxCGN','Song','Greg'};
 table_head_show = {'CGN','cvx-CGN','Song17C','Greg15'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
-load([resource_path,'LLHcorrected_adaptive_formulation_C_result'])
+load([resource_path,'CGN_result'])
 result.CGN = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_C_cvx_result'])
+load([resource_path,'CGN_CVX_result'])
 result.cvxCGN = R;
-load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
+% load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
+load([resource_path,'CGN_JSS_result'])
 result.Song = R;
 load([resource_path,'magda_result'])
 result.Greg = R;
 M = zeros(5,4,2);
 STD = zeros(5,4,2);
+MEDIAN = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
     for ii=1:length(row_name)
@@ -25,16 +27,24 @@ for jj=1:length(table_head)
             if  jj~=4
                 M(ii,jj,dd) = mean(result.(table_head{jj}).common.(row_name{ii})(dd,:));
                 STD(ii,jj,dd) = std(result.(table_head{jj}).common.(row_name{ii})(dd,:));
+                MEDIAN(ii,jj,dd) = median(result.(table_head{jj}).common.(row_name{ii})(dd,:));
                 summary(ii,jj,dd,:) = result.(table_head{jj}).common.(row_name{ii})(dd,:);
             else
                 M(ii,jj,dd) = mean(result.(table_head{jj}).(row_name{ii})(dd,:));
                 STD(ii,jj,dd) = std(result.(table_head{jj}).(row_name{ii})(dd,:));
+                MEDIAN(ii,jj,dd) = median(result.(table_head{jj}).(row_name{ii})(dd,:));
                 summary(ii,jj,dd,:) = result.(table_head{jj}).(row_name{ii})(dd,:);
             end
         end
     end
 end
+O(:,:,1) = -M(:,:,1)+M(:,1,1);
+O(:,:,2) = -M(:,:,2)+M(:,1,2);
+O(2,:,:) = -O(2,:,:);
 
+P(:,:,1) = -MEDIAN(:,:,1)+MEDIAN(:,1,1);
+P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
+P(2,:,:) = -P(2,:,:);
 % table
 % printtable([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name)
  printtable_withtoprow([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name,{'Common density: 10%','Common density: 20%'})
@@ -84,10 +94,9 @@ hh.Padding = 'none';
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_CGN'])
-    print([figurepath,'exp_CGN'],'-depsc')
+%     saveas(gcf,[figurepath,'exp_CGN'])
+%     print([figurepath,'exp_CGN'],'-painters','-depsc','-r300')
 %% exp_DGN_A
-
 clear
 clc
 clf
@@ -97,15 +106,18 @@ resource_path = './experiment/result_to_plot/';
 table_head = {'DGN','cvxDGN','Song','Skrip'};
 table_head_show = {'DGN','cvx-DGN','Song17D','Skrip19b'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
-load([resource_path,'LLHcorrected_adaptive_formulation_D_result_K5'])
+load([resource_path,'DGN_result_K5'])
 result.DGN = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_cvx_result_K5'])
+load([resource_path,'DGN_CVX_result_K5'])
 result.cvxDGN = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_JSS_result_K5'])
+load([resource_path,'DGN_JSS_result_K5'])
 result.Song = R;
-load([resource_path,'ResultSkripD_K5'])
+tmp = load([resource_path,'ResultSkripD_K5']);
+R = tmp.R;
+clear tmp
 result.Skrip = R;
 M = zeros(5,4,2);
+MEDIAN = zeros(5,4,2);
 STD = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
@@ -113,12 +125,19 @@ for jj=1:length(table_head)
         for dd=1:2
             M(ii,jj,dd) = mean(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             STD(ii,jj,dd) = std(result.(table_head{jj}).total.(row_name{ii})(dd,:));
+            MEDIAN(ii,jj,dd) = median(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             summary(ii,jj,dd,:) = result.(table_head{jj}).total.(row_name{ii})(dd,:);
             
         end
     end
 end
+O(:,:,1) = -M(:,:,1)+M(:,1,1);
+O(:,:,2) = -M(:,:,2)+M(:,1,2);
+O(2,:,:) = -O(2,:,:);
 
+P(:,:,1) = -MEDIAN(:,:,1)+MEDIAN(:,1,1);
+P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
+P(2,:,:) = -P(2,:,:);
 % table
 % printtable([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name)
 printtable_withtoprow([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name,{'Diff. density: 1%', 'Diff. density: 5%'})
@@ -164,11 +183,9 @@ set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
-% 
-    saveas(gcf,[figurepath,'exp_DGN_A'])
-    print([figurepath,'exp_DGN_A'],'-depsc')
+% saveas(gcf,[figurepath,'exp_DGN_A'])
+% print([figurepath,'exp_DGN_A'],'-painters','-depsc','-r300')
 %% exp_DGN_B_xxx
 clear
 clc
@@ -183,26 +200,31 @@ table_head_show = {'DGN','cvx-DGN','Song17D','Skrip19b'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 K_list = {'K5','K50'};
 
-load([resource_path,'LLHcorrected_adaptive_formulation_D_result_K5'])
+load([resource_path,'DGN_result_K5'])
 result.DGN.K5 = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_cvx_result_K5'])
+load([resource_path,'DGN_CVX_result_K5'])
 result.cvxDGN.K5 = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_JSS_result_K5'])
+load([resource_path,'DGN_JSS_result_K5'])
 result.Song.K5 = R;
-load([resource_path,'ResultSkripD_K5'])
+tmp=load([resource_path,'ResultSkripD_K5']);
+R = tmp.R;
+clear tmp
 result.Skrip.K5 = R;
 
 
-load([resource_path,'LLHcorrected_adaptive_formulation_D_result_K50'])
+load([resource_path,'DGN_result_K50'])
 result.DGN.K50 = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_cvx_result_K50'])
+load([resource_path,'DGN_CVX_result_K50'])
 result.cvxDGN.K50 = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_D_JSS_result_K50'])
+load([resource_path,'DGN_JSS_result_K50'])
 result.Song.K50 = R;
-load([resource_path,'ResultSkripD_K50'])
+tmp = load([resource_path,'ResultSkripD_K50']);
+R = tmp.R;
+clear tmp
 result.Skrip.K50 = R;
 M = zeros(5,4,2);
 STD = zeros(5,4,2);
+MEDIAN = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 
 for jj=1:length(table_head)
@@ -212,11 +234,21 @@ for jj=1:length(table_head)
             dd=2;
             M(ii,jj,kk) = mean(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
             STD(ii,jj,kk) = std(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
+            MEDIAN(ii,jj,kk) = median(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
             summary(ii,jj,kk,:) = result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:);
             
         end
     end
 end
+O(:,:,1) = -M(:,:,1)+M(:,1,1);
+O(:,:,2) = -M(:,:,2)+M(:,1,2);
+O(2,:,:) = -O(2,:,:);
+
+P(:,:,1) = -MEDIAN(:,:,1)+MEDIAN(:,1,1);
+P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
+P(2,:,:) = -P(2,:,:);
+H = table([O(1:2,2:end,1);O(1:2,2:end,2);P(1:2,2:end,1);P(1:2,2:end,2)]);
+
 M = permute(M,[1,3,2]);
 STD = permute(STD,[1,3,2]);
 
@@ -265,8 +297,8 @@ set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_DGN_B_',toggle])
-    print([figurepath,'exp_DGN_B_',toggle],'-depsc')
+% saveas(gcf,[figurepath,'exp_DGN_B_',toggle])
+% print([figurepath,'exp_DGN_B_',toggle],'-painters','-depsc','-r300')
 %% exp_FGN
 
 clear
@@ -276,17 +308,18 @@ close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
 table_head = {'FGN','cvxFGN','Song','Skrip'};
-table_head_show = {'FGN','cvx-FGN','Song17F','Skrip19a'};
+table_head_show = {'FGN','cvx-FGN','Song15','Skrip19a'};
 row_name = {'F1','FPR','TPR','ACC','MCC'};
-load([resource_path,'LLHcorrected_adaptive_formulation_S_result_K5'])
+load([resource_path,'FGN_result_K5'])
 result.FGN = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_S_cvx_result_K5'])
+load([resource_path,'FGN_CVX_result_K5'])
 result.cvxFGN = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_S_JSS_result_K5'])
+load([resource_path,'FGN_JSS_result_K5'])
 result.Song = R;
 load([resource_path,'skripS_result'])
 result.Skrip = R;
 M = zeros(5,4,2);
+MEDIAN = zeros(5,4,2);
 STD = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
@@ -294,12 +327,19 @@ for jj=1:length(table_head)
         for dd=1:2
             M(ii,jj,dd) = mean(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             STD(ii,jj,dd) = std(result.(table_head{jj}).total.(row_name{ii})(dd,:));
+            MEDIAN(ii,jj,dd) = median(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             summary(ii,jj,dd,:) = result.(table_head{jj}).total.(row_name{ii})(dd,:);
             
         end
     end
 end
+O(:,:,1) = -M(:,:,1)+M(:,1,1);
+O(:,:,2) = -M(:,:,2)+M(:,1,2);
+O(2,:,:) = -O(2,:,:);
 
+P(:,:,1) = -MEDIAN(:,:,1)+MEDIAN(:,1,1);
+P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
+P(2,:,:) = -P(2,:,:);
 % table
 printtable_withtoprow([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name,{'Diff. density: 1%', 'Diff. density: 5%'})
 
@@ -345,8 +385,8 @@ set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_FGN'])
-    print([figurepath,'exp_FGN'],'-depsc')
+% saveas(gcf,[figurepath,'exp_FGN'])
+% print([figurepath,'exp_FGN'],'-painters','-depsc','-r300')
 %% exp_cvxcompare
 clear
 clc
@@ -358,23 +398,24 @@ table_head = {'C','D','F'};
 
 row_name = {'F1','FPR','TPR','ACC','MCC'};
 
-load([resource_path,'LLHcorrected_adaptive_formulation_CT150_result_K5'])
+load([resource_path,'T150_CGN_result_K5'])
 result.C.ncvx = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_CT150_cvx_result_K5'])
+load([resource_path,'T150_CGN_CVX_result_K5'])
 result.C.cvx = R;
 
-load([resource_path,'LLHcorrected_adaptive_formulation_DT150_result_K5'])
+load([resource_path,'T150_DGN_result_K5'])
 result.D.ncvx = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_DT150_cvx_result_K5'])
+load([resource_path,'T150_DGN_CVX_result_K5'])
 result.D.cvx = R;
 
-load([resource_path,'LLHcorrected_adaptive_formulation_ST150_result_K5'])
+load([resource_path,'T150_FGN_result_K5'])
 result.F.ncvx = R;
-load([resource_path,'LLHcorrected_adaptive_formulation_ST150_cvx_result_K5'])
+load([resource_path,'T150_FGN_CVX_result_K5'])
 result.F.cvx = R;
 
 M = zeros(3,2,5); % [C,D,F] x [ncvx, cvx] x [F1, FPR, TPR, ACC , MCC]
 STD = zeros(3,2,5);
+MEDIAN = zeros(3,2,5);
 summary = zeros(3,2,5,100);
 type_acc = {'ncvx','cvx'};
 for jj=1:length(table_head)
@@ -388,12 +429,25 @@ for jj=1:length(table_head)
             end
             M(jj,t,ii) = mean(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             STD(jj,t,ii) = std(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
+            MEDIAN(jj,t,ii) = median(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             summary(jj,t,ii,:) = result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:);
         end
     end
 end
 M = permute(M,[3,2,1]);
 STD = permute(STD,[3,2,1]);
+MEDIAN = permute(MEDIAN,[3,2,1]); 
+
+O(:,:,1) = -M(:,:,1)+M(:,1,1);
+O(:,:,2) = -M(:,:,2)+M(:,1,2);
+O(:,:,3) = -M(:,:,2)+M(:,1,3);
+O(2,:,:) = -O(2,:,:);
+
+P(:,:,1) = -MEDIAN(:,:,1)+MEDIAN(:,1,1);
+P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
+P(:,:,3) = -MEDIAN(:,:,3)+MEDIAN(:,1,3);
+P(2,:,:) = -P(2,:,:);
+
 % table
 table_head_show = {'CGN','cvx-CGN','DGN','cvx-DGN','FGN','cvx-FGN'};
 tmp_M =100*[M(:,1,1) M(:,2,1) M(:,1,2) M(:,2,2) M(:,1,3) M(:,2,3)];
@@ -445,8 +499,8 @@ set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_cvxcompare'])
-    print([figurepath,'exp_cvxcompare'],'-depsc')
+% saveas(gcf,[figurepath,'exp_cvxcompare'])
+% print([figurepath,'exp_cvxcompare'],'-painters','-depsc','-r300')
 %% exp_CGN_ROC
 
 clear
@@ -456,7 +510,7 @@ close all
 type_list = {'total','common','differential'};
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
-method_path = {'LLHcorrected_adaptive_formulation_C_ALL_RESULT.mat','LLHcorrected_adaptive_formulation_C_cvx_ALL_RESULT.mat'};
+method_path = {'CGN_ALL_RESULT.mat','CGN_CVX_ALL_RESULT.mat'};
 for mm=1:2
 load([resource_path,method_path{mm}])
 ii =2;sample = 6;
@@ -520,9 +574,9 @@ set(gca,'FontSize',28)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_CGN_ROC'])
-    print([figurepath,'exp_CGN_ROC'],'-depsc')
-%% exp_DGN_supp
+% saveas(gcf,[figurepath,'exp_CGN_ROC'])
+% print([figurepath,'exp_CGN_ROC'],'-painters','-depsc','-r300')
+%% exp_DGN_supp K5 (cvx)
 
 clear
 clc
@@ -530,9 +584,9 @@ clf
 close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
-load([resource_path,'LLHcorrected_adaptive_formulation_D_cvx_ALL_RESULT_K50.mat'])
+load([resource_path,'DGN_CVX_ALL_RESULT_K5.mat'])
 sample = 74;
-tt=tiledlayout(1,2,'padding','compact','tilespacing','none');
+tt=tiledlayout(1,2);
 type_list = {'common','differential'};
 type_list_show = {'common part','differential part'};
 score_type = 'F1';
@@ -565,21 +619,18 @@ ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
     end
     xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
     
-    set(gca,'FontSize',28,'xaxisLocation','top')
+    set(gca,'FontSize',36)
     
 %     set(gca,)
 end
 
 end
-rr=colorbar('FontSize',18);
-set(get(rr,'label'),'string','F1 (%)');
-pp = get(0, 'Screensize');
-% pp(3) = pp(3)*0.75;
-set(gcf, 'Position', pp);
-    saveas(gcf,[figurepath,'exp_DGN_supp'])
-    print([figurepath,'exp_DGN_supp'],'-depsc')
-    
-%% exp_FGN_supp
+rr=colorbar('FontSize',36);
+rr.Title.String='F1 (%)';
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'exp_DGN_supp_K5'])
+% print([figurepath,'exp_DGN_supp_K5'],'-painters','-depsc','-r300')
+%% exp_DGN_supp K50 (cvx)
 
 clear
 clc
@@ -587,34 +638,106 @@ clf
 close all
 figurepath = './plotting/figures/';
 resource_path = './experiment/result_to_plot/';
-load([resource_path,'LLHcorrected_adaptive_formulation_S_cvx_ALL_RESULT_K5.mat'])
+load([resource_path,'DGN_CVX_ALL_RESULT_K50.mat'])
 sample = 74;
+tt=tiledlayout(1,2);
+type_list = {'common','differential'};
+type_list_show = {'common part','differential part'};
+score_type = 'F1';
+text_label = {'Diff. density 1%','Diff. density 5%'};
+for dd=2:2
+sample_acc = ALL_RESULT(dd,sample);
+
+
+
+for ii=1:length(type_list)
+    nexttile;
+    metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
+    bestcase = max(metrics);
+    metrics = reshape(metrics,[30,30]);
+    imagesc(100*metrics)
+%     grid on
+%     text_show = sprintf([type_list_show{ii},' best ',score_type,' score: %2.1f'],100*bestcase);
+    text_show = type_list_show{ii};
+    title(text_show)
+    axis('square')
+    colormap((1-gray).^0.4)
+    caxis([0,100])
+    set(gca,'xticklabel',[],'yticklabel',[])
+    if ii==2
+%         rr= colorbar('location','eastoutside');
+%         set(get(rr,'label'),'string','F1 (%)');
+    end
+    if ii==1
+ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
+    end
+    xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+    
+    set(gca,'FontSize',36)
+    
+%     set(gca,)
+end
+
+end
+rr=colorbar('FontSize',36);
+rr.Title.String='F1 (%)';
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'exp_DGN_supp_K50'])
+% print([figurepath,'exp_DGN_supp_K50'],'-painters','-depsc','-r300')
+    
+%% exp_FGN_supp (cvx)
+
+clear
+clc
+clf
+close all
+figurepath = './plotting/figures/';
+resource_path = './experiment/result_to_plot/';
+load([resource_path,'FGN_CVX_ALL_RESULT_K5.mat'])
+load([resource_path,'FGN_CVX_result_K5.mat'])
+sample = [1:100];%72
+selected_index = [1:100];
 tt=tiledlayout(1,2,'padding','compact','tilespacing','none');
 type_list = {'total','common','differential'};
 type_list_show = {'cvx-FGN, total bestcase'};
 score_type = 'F1';
 text_label = {'Differential  density 1%','Differential density 5%'};
 for dd=1:2
-
-
-
-
-    % for ii=2:2
     ii =1;
     GridF1_avg = zeros(30,30);
+    GridF1 = zeros(30,30,length(sample));
+    I_best = zeros(length(sample),1);
+    J_best = zeros(length(sample),1);
+    I_score = zeros(length(sample),1);
+    J_score = zeros(length(sample),1);
     F1_avg = 0;
     nexttile;
-    for sample=1:100
-        sample_acc = ALL_RESULT(dd,sample);
-        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
+    for sample_ind=1:length(sample)
+        sample_acc = ALL_RESULT(dd,sample(sample_ind));
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.(score_type)];
         
-        bestcase = max(metrics);
+        [bestcase,best_index] = max(metrics);
+        score_index = R.index(dd,sample_ind).eBIC;
+        
+        [I_best(sample_ind),J_best(sample_ind)] = ind2sub([30,30],best_index);
+        [I_score(sample_ind),J_score(sample_ind)] = ind2sub([30,30],score_index);
+        
         metrics = reshape(metrics,[30,30]);
-        GridF1_avg=GridF1_avg+metrics/100;
-        F1_avg=F1_avg+bestcase/100;
+        GridF1(:,:,sample_ind) = metrics;
+        GridF1_avg=GridF1_avg+metrics/length(sample);
+        F1_avg=F1_avg+bestcase/length(sample);
     end
-
-    imagesc(100*GridF1_avg)
+    distance{dd} = [I_best J_best]-[I_score J_score];
+    bestval(dd) = F1_avg;
+    imagesc(100*mean(GridF1(:,:,selected_index),3))
+    hold on
+    scatter(J_best(selected_index),I_best(selected_index),300,'sr','filled')
+    scatter(J_score(selected_index),I_score(selected_index),150,'ob','filled')
+%     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
+    hold off
+    if dd==2
+    legend('maximum F1 index','eBIC selected index','FontSize',28)
+    end
 %     grid on
     text_show = sprintf([type_list_show{1},' ',score_type,' score: %2.1f'],100*F1_avg);
 %     title(text_show)
@@ -624,31 +747,289 @@ for dd=1:2
     set(gca,'xticklabel',[],'yticklabel',[])
     if dd==1
 %                 colorbar('Location','westoutside')
-        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
         
         set(gca,'xaxisLocation','top')
-        ylabel('$\leftarrow \lambda_{1}$','Interpreter','latex')
+        ylabel('$\leftarrow \lambda_{1}$','Interpreter','latex','FontSize',38)
         
     else
-        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
         
         set(gca,'xaxisLocation','top')
     end
     
     if ii==1
-        title(text_label{dd})
+        title([text_label{dd},sprintf('\n avg best F1: %.2f %%',100*F1_avg)],'FontSize',38)
         
     end
-    
-    set(gca,'FontSize',28)
-% end
-
 end
 
 rr=colorbar('FontSize',18);
 set(get(rr,'label'),'string','F1 (%)');
 % rr.Position(4)=rr.Position(4)-0.005;
 % rr.Position(2)=rr.Position(2)+0.005/2;
-set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[figurepath,'exp_FGN_supp'])
-    print([figurepath,'exp_FGN_supp'],'-depsc')
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.8;
+set(gcf, 'Position', pp);
+% saveas(gcf,[figurepath,'exp_FGN_supp_cvx'])
+% print([figurepath,'exp_FGN_supp_cvx'],'-painters','-depsc','-r300')
+
+%% exp_FGN_supp (non-cvx)
+
+clear
+clc
+clf
+close all
+figurepath = './plotting/figures/';
+resource_path = './experiment/result_to_plot/';
+load([resource_path,'FGN_ALL_RESULT_K5.mat'])
+load([resource_path,'FGN_result_K5.mat'])
+sample = [1:100];%72
+selected_index = [1:1:100];
+tt=tiledlayout(1,2,'padding','compact','tilespacing','none');
+type_list = {'total','common','differential'};
+type_list_show = {'FGN, total bestcase'};
+score_type = 'F1';
+text_label = {'Differential  density 1%','Differential density 5%'};
+for dd=1:2
+    ii =1;
+    GridF1_avg = zeros(30,30);
+    GridF1 = zeros(30,30,length(sample));
+    I_best = zeros(length(sample),1);
+    J_best = zeros(length(sample),1);
+    I_score = zeros(length(sample),1);
+    J_score = zeros(length(sample),1);
+    F1_avg = 0;
+    nexttile;
+    for sample_ind=1:length(sample)
+        sample_acc = ALL_RESULT(dd,sample(sample_ind));
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
+        
+        [bestcase,best_index] = max(metrics);
+        score_index = R.index(dd,sample_ind).eBIC;
+        
+        [I_best(sample_ind),J_best(sample_ind)] = ind2sub([30,30],best_index);
+        [I_score(sample_ind),J_score(sample_ind)] = ind2sub([30,30],score_index);
+        
+        metrics = reshape(metrics,[30,30]);
+        GridF1(:,:,sample_ind) = metrics;
+        GridF1_avg=GridF1_avg+metrics/length(sample);
+        F1_avg=F1_avg+bestcase/length(sample);
+    end
+    distance{dd} = [I_best J_best]-[I_score J_score];
+    bestval(dd) = F1_avg;
+    imagesc(100*mean(GridF1(:,:,selected_index),3))
+    hold on
+    scatter(J_best(selected_index),I_best(selected_index),300,'sr','filled')
+    scatter(J_score(selected_index),I_score(selected_index),150,'ob','filled')
+%     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
+    hold off
+    if dd==2
+    legend('maximum F1 index','eBIC selected index','FontSize',28)
+    end
+%     grid on
+    text_show = sprintf([type_list_show{1},' ',score_type,' score: %2.1f'],100*F1_avg);
+%     title(text_show)
+    axis('square')
+    colormap((1-gray).^0.4)
+    caxis([0,100])
+    set(gca,'xticklabel',[],'yticklabel',[])
+    if dd==1
+%                 colorbar('Location','westoutside')
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
+        
+        set(gca,'xaxisLocation','top')
+        ylabel('$\leftarrow \lambda_{1}$','Interpreter','latex','FontSize',38)
+        
+    else
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
+        
+        set(gca,'xaxisLocation','top')
+    end
+    
+    if ii==1
+        title([text_label{dd},sprintf('\n avg best F1: %.2f %%',100*F1_avg)],'FontSize',38)
+        
+    end
+end
+
+rr=colorbar('FontSize',18);
+set(get(rr,'label'),'string','F1 (%)');
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.8;
+set(gcf, 'Position', pp);
+% saveas(gcf,[figurepath,'exp_FGN_supp_noncvx'])
+% print([figurepath,'exp_FGN_supp_noncvx'],'-painters','-depsc','-r300')
+%%
+clear
+clf 
+clc
+close all
+figurepath = './plotting/figures/';
+resource_path = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_S_result\';
+load([resource_path,'LLHcorrected_result_adaptive_cvx_formulationS_1percent_lag1_K5_5.mat'])
+Mcvx = M;
+load([resource_path,'LLHcorrected_result_adaptive_formulationS_1percent_lag1_K5_5.mat'])
+Mncvx = M;
+width = 100/2000;
+figure(2)
+tt = tiledlayout(1,2,'padding','compact','tilespacing','none');
+nexttile;
+tmp = [Mncvx.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];tmp = reshape([tmp.df],30,30)/2000;
+histogram(tmp,'BinWidth', width,'Normalization','probability')
+title('Differential density: 1%')
+% title('non-convex')
+% nexttile;
+hold on
+tmp = [Mcvx.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];tmp = reshape([tmp.df],30,30)/2000;
+histogram(tmp,'BinWidth',  width,'Normalization','probability')
+% title('convex')
+hold off
+colormap((gray).^(0.4))
+
+% legend('FGN','cvx-FGN')
+    xlabel('estimated model density','FontSize',36)
+    ylabel('Probability','FontSize',36)
+    ylim([0 0.4])
+    grid on
+set(gca,'FontSize',36)
+load([resource_path,'LLHcorrected_result_adaptive_cvx_formulationS_5percent_lag1_K5_5.mat'])
+Mcvx = M;
+load([resource_path,'LLHcorrected_result_adaptive_formulationS_5percent_lag1_K5_5.mat'])
+Mncvx = M;
+nexttile;
+tmp = [Mncvx.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];tmp = reshape([tmp.df],30,30)/2000;
+histogram(tmp,'BinWidth',  width,'Normalization','probability')
+
+title('Differential density: 5%')
+hold on
+% nexttile;
+tmp = [Mcvx.model]; tmp = [tmp.stat]; tmp = [tmp.model_selection_score];tmp = reshape([tmp.df],30,30)/2000;
+histogram(tmp, 'BinWidth', width,'Normalization','probability')
+hold off
+colormap((gray).^(0.4))
+legend('FGN','cvx-FGN')
+    xlabel('estimated model density','FontSize',36)
+%     ylabel('probability','FontSize',36)
+    ylim([0 0.4])
+    grid on
+
+set(gca,'FontSize',36,'yticklabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'exp_FGN_densityhistogram'])
+% print([figurepath,'exp_FGN_densityhistogram'],'-depsc','-r300')
+    
+%% supplementary material
+figurepath = './plotting/figures/';
+resource_path = './experiment/result_to_plot/';
+n=5;p=10;K=3;
+T= 80;
+N = T-p;
+Y = randn(n,N,K);
+H = randn(n*p,N,K);
+
+[yc,gc] = vectorize_VAR(Y,H,[n,p,K,N]);
+
+IND_DIAG = 1:n+1:n^2; % indices of diagonal elements
+P1 = speye(n^2); 
+P1(IND_DIAG,:) = [];
+P = sparse(kron(P1,speye(p*K)));
+Dtmp = diffmat(n,p,K);
+D = sparse(Dtmp*P);
+
+imagesc(gc ~=0)
+pbaspect([size(gc,2) size(gc,1) 1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_Gmatrix'])
+% print([figurepath,'supplementary_Gmatrix'],'-depsc','-r300')
+
+imagesc(P ~=0)
+pbaspect([size(P,2) size(P,1) 1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_Gmatrix'])
+% print([figurepath,'supplementary_Pmatrix'],'-depsc','-r300')
+
+imagesc(D ~=0)
+pbaspect([size(D,2) size(D,1)  1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_Gmatrix'])
+% print([figurepath,'supplementary_Dmatrix'],'-depsc','-r300')
+
+imagesc(gc'*gc ~=0)
+pbaspect([1 1 1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_GtGmatrix'])
+% print([figurepath,'supplementary_GtGmatrix'],'-depsc','-r300')
+
+imagesc(P'*P ~=0)
+pbaspect([1 1 1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_PtPmatrix'])
+% print([figurepath,'supplementary_PtPmatrix'],'-depsc','-r300')
+
+imagesc(D'*D ~=0)
+pbaspect([1 1 1])
+colormap(1-gray)
+grid on
+set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+set(gcf,'WindowState','fullscreen')
+% saveas(gcf,[figurepath,'supplementary_DtDmatrix'])
+% print([figurepath,'supplementary_DtDmatrix'],'-depsc','-r300')
+%%
+n=5;p=10;K=5;
+T= 80;
+IND_DIAG = 1:n+1:n^2; % indices of diagonal elements
+P1 = speye(n^2); 
+P1(IND_DIAG,:) = [];
+P = sparse(kron(P1,speye(p*K)));
+Dtmp = diffmat(n,p,K);
+D = sparse(Dtmp*P);
+
+%%
+
+figurepath = './plotting/figures/';
+resource_path = './experiment/result_to_plot/';
+Connectivity_List = [25,31; ...
+                     26,32; ...
+                     27,40];
+Adj = zeros(116,116);
+Adj(25,31) = -1;
+Adj(26,32) = 1;
+Adj(27,40) = -1;
+% T = table(Adj);
+writematrix(Adj,[figurepath,'VisualizeReal.txt'],'Delimiter','\t')
+
+%%
+figurepath = './plotting/figures/';
+Connectivity_List = [25,31; ...
+                     26,32; ...
+                     27,40];
+Adj = zeros(116,116);
+% Adj(25,31) = -1;
+% Adj(26,32) = 1;
+% Adj(27,40) = -1;
+
+Adj(26,25) = -1;
+Adj(6,10) = 1;
+Adj(26,28) = 1;
+Adj(9,25) = 1;
+Adj(26,9) = 1;
+
+% T = table(Adj);
+writematrix(Adj,[figurepath,'VisualizeReal_ORB.txt'],'Delimiter','\t')
+

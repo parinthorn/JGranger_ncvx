@@ -1,8 +1,7 @@
-function [P_p,P_pK,P1_p,P1_pK,P] = weighted_projection(xLS,q,PARAMETER)
-n = PARAMETER.dim(1);
-p = PARAMETER.dim(2);
-K = PARAMETER.dim(3);
-gamma = PARAMETER.gamma;
+function [P_p,P_pK,P1_p,P1_pK,P] = weighted_projection(xLS,q,PARAMETER,gamma)
+n = PARAMETER(1);
+p = PARAMETER(2);
+K = PARAMETER(3);
 
 IND_DIAG = 1:n+1:n^2; % indices of diagonal elements
 P1 = speye(n^2); 

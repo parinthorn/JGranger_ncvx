@@ -27,7 +27,7 @@ for ii=3:4
         model = E{type,ii,dd,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = coherent_GC(y,P,p_est,GridSize);                
-        save([outpath,'magda_formulationC_',mname{cnt},'percent','_',int2str(jj),'_K',int2str(K)],'M')
+%         save([outpath,'magda_formulationC_',mname{cnt},'percent','_',int2str(jj),'_K',int2str(K)],'M')
 
     end
 end

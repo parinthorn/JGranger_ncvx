@@ -16,7 +16,7 @@ for ii=1:length(mname)
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,ii+2,2,jj};
-        fname = [resultpath,'LLHcorrected_result_JSS_formulationC_',mname{ii},'percent_',int2str(jj)];
+        fname = [resultpath,'estim_CGN_JSS_',mname{ii},'percent_',int2str(jj)];
         load(fname)
         model_acc = performance_eval(M,GTmodel);
         ALL_RESULT(ii,jj).model_acc = model_acc;
@@ -36,17 +36,17 @@ for ii=1:length(mname)
 
     end
 end
-save([resultpath,'LLHcorrected_adaptive_formulation_C_JSS_result'],'R')
-save([resultpath,'LLHcorrected_adaptive_formulation_C_JSS_ALL_RESULT'],'ALL_RESULT')
+save([resultpath,'CGN_JSS_result'],'R')
+save([resultpath,'CGN_JSS_ALL_RESULT'],'ALL_RESULT')
 %%
 clear
 clc
 inpath = './data_compare/';
-resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\';
+resultpath = './experiment/result_to_plot/';
 mname = {'10','20'};
 name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
-load([resultpath,'LLHcorrected_adaptive_formulation_C_JSS_result'])
-load([resultpath,'LLHcorrected_adaptive_formulation_C_JSS_ALL_RESULT'])
+load([resultpath,'CGN_JSS_result'])
+load([resultpath,'CGN_JSS_ALL_RESULT'])
 acc_list = {'TPR','FPR','ACC','F1','MCC'};
 realization = 100;
 ARR = zeros(5,length(name_list));
