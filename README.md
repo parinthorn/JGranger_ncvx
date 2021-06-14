@@ -5,6 +5,8 @@ This project is for jointly estimating multiple Granger graphical models from a 
 
 The contributors are:
 Parinthorn Manomaisaowapak and Jitkomut Songsiri 
+
+
 Department of Electrical Engineering, 
 Faculty of Engineering Chulalongkorn University, Bangkok, 
 Thailand e-mail: parinthorn@gmail.com,  jitkomut.s@chula.ac.th
