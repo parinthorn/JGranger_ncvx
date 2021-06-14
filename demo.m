@@ -1,9 +1,9 @@
-%% This demo program show the process of, data generation, estimation and performance evaluation
+%% This demo program show the process of, data generation and estimation
 clear
 clc
 
 %% demo data preparation
-inpath = './data_compare/';
+inpath = './experiment/model_parameters/';
 type = 2; %D type
 cd = 3;
 T = 100;
@@ -18,7 +18,7 @@ model = E{type,cd,1,1};
 %% The time-series 'y' has dimension [n,T,K], [n channel x T time-points x K sets]
 y = sim_VAR(model.A,T,1,model.seed,0); % time-series generation, or can be the array with same structure
 parameter.varorder = 1;
-parameter.formulation = 'fgn'; % cgn, dgn, fgn
+parameter.formulation = 'cgn'; % cgn, dgn, fgn
 parameter.penalty_weight = 'LS'; % LS, uniform
 parameter.GridSize = 30;
 parameter.data_concat = 0;
@@ -32,7 +32,7 @@ plot_group_GC(M.model(M.index.eBIC).GC)
 
 switch parameter.formulation
     case 'cgn'
-        tmp = [M.model.stat]; tmp = [tmp.model_selection_score];eBIC = reshape([tmp.eBIC],parameter.GridSize,1); figure; plot(eBIC)
+        tmp = [M.model.stat]; tmp = [tmp.model_selection_score];eBIC = reshape([tmp.eBIC],parameter.GridSize,1); figure; plot(eBIC);
     case 'dgn'
         tmp = [M.model.stat]; tmp = [tmp.model_selection_score];eBIC = reshape([tmp.eBIC],parameter.GridSize,parameter.GridSize); imagesc(eBIC)
     case 'fgn'
