@@ -1043,7 +1043,7 @@ writematrix(Adj,[figurepath,'VisualizeReal_ORB.txt'],'Delimiter','\t')
 
 clear
 clc
-inpath = './data_compare/';
+inpath = './experiment/model_parameters/';
 % outpath = './results2plot/';
 % mkdir(outpath)
 type = 2; %D type
@@ -1060,7 +1060,7 @@ model = E{type,cd,1,1};
 y = sim_VAR(model.A,T,1,model.seed,0);
 n = size(y,1);
 parameter.varorder = p_est;
-parameter.formulation = 'dgn'; % cgn, dgn, fgn
+parameter.formulation = 'fgn'; % cgn, dgn, fgn
 parameter.penalty_weight = 'LS'; % LS, uniform
 parameter.GridSize = 30;
 parameter.data_concat = 0;
@@ -1099,10 +1099,16 @@ end
 Lambda = logspace(-6,0,parameter.GridSize);
 ii = 21;
 jj = 23;
-a1.cvx = Lambdacrit_1.cvx*Lambda(ii)*0;
+a1.cvx = Lambdacrit_1.cvx*Lambda(ii);
 a2.cvx = Lambdacrit_2.cvx*Lambda(jj);
-a1.ncvx = Lambdacrit_1.ncvx*Lambda(ii)*0;
+a1.ncvx = Lambdacrit_1.ncvx*Lambda(ii);
 a2.ncvx = Lambdacrit_2.ncvx*Lambda(jj);
+
+if strcmp(parameter.formulation,'cgn')
+    a1.cvx = a1.cvx*0;
+    a1.ncvx = a1.ncvx*0;
+end
+
 
 ALG_PARAMETER.cvx = gen_alg_params('cvx', parameter.formulation);
 ALG_PARAMETER.cvx.PRINT_RESULT = 0;
@@ -1123,56 +1129,65 @@ formulation = parameter.formulation;
 % tt=tiledlayout(2,1);
 figure(1);
 % tmp = diff(history.cvx.objval);
+
 semilogy(history.cvx.reldiff_norm,'linewidth',2)
 grid on
-xlabel('iterations')
-h=ylabel('$\frac{\Vert x^{+}-x \Vert_{2}}{\Vert x \Vert_{2}}$','Interpreter','latex');
+xlabel('iterations $(k)$','Interpreter','latex')
+h=ylabel('$\frac{\Vert x_{k+1}-x_{k} \Vert_{2}}{\Vert x_{k} \Vert_{2}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
 set(h, 'FontSize', 60) 
 set(gcf,'WindowState','fullscreen')
 ylim([10^-7,2*sqrt(2)])
-print([figurepath,'algperf_xreldiff_cvx_',formulation],'-dsvg','-r300')
+print([figurepath,'algperf_xreldiff_cvx_',formulation],'-depsc','-r300')
 
 
 figure(2);
 semilogy(abs(((history.cvx.objval)-history.cvx.objval(end))/history.cvx.objval(end)),'linewidth',2)
+yyaxis right
+plot(history.cvx.rho,'linewidth',2)
+ylabel('$\rho$','Interpreter','latex')
+yyaxis left
 grid on
-xlabel('iterations')
-h=ylabel('$\frac{F(x^{+})-p^{*}}{p^{*}}$','Interpreter','latex');
+xlabel('iterations $(k)$','Interpreter','latex')
+h=ylabel('$\frac{F(x_{k})-p^{*}}{p^{*}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
 set(h, 'FontSize', 60) 
 set(gcf,'WindowState','fullscreen')
 ylim([10^-11,2*sqrt(2)])
-print([figurepath,'algperf_objreldiff_cvx_',formulation],'-dsvg','-r300')
+print([figurepath,'algperf_objreldiff_cvx_',formulation],'-depsc','-r300')
 
 
 figure(3);
 % tmp = diff(history.ncvx.objval);
 semilogy(history.ncvx.reldiff_norm,'linewidth',2)
 grid on
-xlabel('iterations')
-h=ylabel('$\frac{\Vert x^{+}-x \Vert_{2}}{\Vert x \Vert_{2}}$','Interpreter','latex');
+xlabel('iterations $(k)$','Interpreter','latex')
+h=ylabel('$\frac{\Vert x_{k+1}-x_{k} \Vert_{2}}{\Vert x_{k} \Vert_{2}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
 set(h, 'FontSize', 60) 
 set(gcf,'WindowState','fullscreen')
 ylim([10^-7,2*sqrt(2)])
-print([figurepath,'algperf_xreldiff_ncvx_',formulation],'-dsvg','-r300')
+print([figurepath,'algperf_xreldiff_ncvx_',formulation],'-depsc','-r300')
 
 
 figure(4);
 semilogy(abs(((history.ncvx.objval)-history.ncvx.objval(end))/history.ncvx.objval(end)),'linewidth',2)
+yyaxis right
+plot(history.ncvx.rho,'linewidth',2)
+ylabel('$\rho$','Interpreter','latex')
+yyaxis left
 grid on
-xlabel('iterations')
-h=ylabel('$\frac{F(x^{+})-p^{*}}{p^{*}}$','Interpreter','latex');
+xlabel('iterations $(k)$','Interpreter','latex')
+h=ylabel('$\frac{F(x_{k})-p^{*}}{p^{*}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
 set(h, 'FontSize', 60) 
 set(gcf,'WindowState','fullscreen')
 ylim([10^-8,2*sqrt(2)])
-print([figurepath,'algperf_objreldiff_ncvx_',formulation],'-dsvg','-r300')
+print([figurepath,'algperf_objreldiff_ncvx_',formulation],'-depsc','-r300')
 
 %% convex CGN comparison
 PARAMETER.proj_ind = P*(1:1:n^2*p_est*K)';
@@ -1317,3 +1332,94 @@ uistack(h2,'top')
 uistack(h1,'top')
 
 print([figurepath,'algperf_cvxCGN'],'-dsvg','-r300')
+%% vectorization visualization
+
+n = 3;p=5;K=3;
+T = 10;
+y = randn(n,T,K);
+x = ones(n^2,1);
+x_tmp = zeros(p,K);
+for kk=1:K
+    x_tmp(:,kk) = kk;
+end
+x = kron(x,x_tmp(:));
+b=(1:K)';
+b = kron(b,ones(n*T,1));
+
+N = T-p;
+H = zeros(n*p,N,K);
+Y = zeros(n,N,K);
+disp('Generating H, Y matrix')
+for kk=1:K
+    [H(:,:,kk),Y(:,:,kk)] = H_gen(y(:,:,kk),p);
+end
+
+G = [];
+%blkH = zeros(Num,n*p,K);
+BLKH = zeros(N,n*p*K,K);
+E1 = zeros(K,1); E1(1) = 1;
+PLOT_G = zeros(n*N, p*n^2*K,K);
+for k=1:K,
+    H0 = zeros(n,N,p);
+    for j=1:p,
+        H0(:,:,j) = H((j-1)*n+1:j*n,:,k);
+    end
+    ind = linindex(n,N,p,'col');
+    vecH = H0(ind);
+    TMP = zeros(n*p*K*N,1);
+    [~,IND] = blocksub(TMP,p,p*(K-1));
+    TMP(IND) = vecH;
+    TMP = reshape(TMP,n*p*K,N);
+    TMP = TMP';
+    BLKH(:,:,k) = sparse([zeros(N,(k-1)*p) TMP(:,1:end-(k-1)*p)]);
+    BLKG = kron(speye(n),BLKH(:,:,k)); % not efficient when n is large
+    % size of BLKG is nN x pn^2K
+    G = [G;BLKG];
+    PLOT_G(:,:,k) = BLKG;
+end
+G = sparse(G);
+
+tt = tiledlayout(3,3,'Padding','compact','TileSpacing','compact');
+color = {[1,0,0],[0,0.5,0],[0,0,1]};
+for k=1:K
+
+    
+    
+    
+        nexttile(3*k-2);
+    hAxes = gca;
+    imagesc(hAxes, ones(n*T,1))
+    colormap( hAxes , [1 1 1;color{k}] )
+    pbaspect([6 length(b) 1])
+    set(gca,'xticklabel',[],'yticklabel',[])
+    ylabel(sprintf('$v^{(%d)}$',k),'Interpreter','latex')
+%     axis('square')
+    grid on
+    grid minor
+    set(gca,'FontSize',30)
+    if k==K
+        xlabel('$b$','Interpreter','latex')
+    end
+    
+        nexttile(3*k-1);
+    hAxes = gca;
+    imagesc(hAxes, PLOT_G(:,:,k)~=0)
+    colormap( hAxes , [1 1 1;color{k}] )
+    set(gca,'xticklabel',[],'yticklabel',[])
+    ylabel(sprintf('$G^{(%d)}$',k),'Interpreter','latex')
+%     axis('square')
+    grid on
+    grid minor
+    set(gca,'FontSize',30)
+end
+xlabel('$G$','Interpreter','latex')
+nexttile(3,[3,1]);
+hAxes = gca;
+imagesc(hAxes, x)
+colormap( hAxes , [1,0,0;0,0.5,0;0,0,1] )
+pbaspect([5 length(x) 1])
+set(gca,'xticklabel',[],'yticklabel',[])
+xlabel('$x$','Interpreter','latex')
+    set(gca,'FontSize',30)
+grid on
+grid minor

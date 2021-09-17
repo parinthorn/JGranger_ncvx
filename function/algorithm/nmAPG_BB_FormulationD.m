@@ -40,8 +40,8 @@ ayITR = 0;
 if ALLPRINT
     fprintf('%3s\t%10s\t%10s\n','iter', 'objective','step size');
 end
+t_iteration = tic;
 while k<IT_MAX
-    ta = tic;
     yk = xk+(tkm1/tk)*(zk-xk)+((tkm1-1)/tk)*(xk-xkm1);
     GtGyk_Gtb = GtG*yk-Gtb;
     
@@ -106,9 +106,14 @@ while k<IT_MAX
     qkp1 = eta*qk+1;
     ckp1 = (eta*qk*ck+objval)/qkp1;
     ykm1 = yk;
-    history.tpi(k,1) = toc(ta);
+    history.t(k,1) = toc(t_iteration);
     history.objval(k,1) = objval;
     history.c(k,1) = ckp1;
+    if k==1
+        history.reldiff_norm(k)  = 1;
+    else
+        history.reldiff_norm(k)  = norm(xkp1-xk)/norm(xk);
+    end
     if (norm(xkp1-xk)<(TOL*norm(xk)))  || ((k>1) && (abs(objval-history.objval(k-1))<objTOL*objval))
         x = sparse(xkp1);
         history.flag = 0;
