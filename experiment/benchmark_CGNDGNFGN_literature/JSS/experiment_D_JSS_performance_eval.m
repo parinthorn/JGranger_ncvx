@@ -1,10 +1,10 @@
 % clear
 clc
-inpath = './data_compare/';
+inpath = './experiment/model_parameters/';
 
 
 resultpath = 'G:/My Drive/0FROM_SHARED_DRIVE/THESIS/formulation_D_result/';
-performance_path = './experiment/result_to_plot/';
+performance_path = './results2plot/';
 mname = {'1','5'};
 dd = length(mname);
 % K=5;
@@ -32,6 +32,7 @@ for jj=1:realization
             R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
             R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
+        R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
         fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
             mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
         

@@ -8,7 +8,7 @@ for kk=1:K
     tmp(diag_ind) = 0;
     commonNZ = commonNZ & (tmp~=0);
 end
-s = figure;
+s = [];
 for kk =1:K
         tmp = GC(:,:,kk);
     tmp(diag_ind) = 0;

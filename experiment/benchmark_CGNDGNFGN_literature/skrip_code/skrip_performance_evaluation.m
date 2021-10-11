@@ -64,16 +64,16 @@ for ii=1:dd
     end
 end
 
-% save([outpath,'skrip_formulationS_accuracy_K5'],'score')
+save([outpath,'skrip_formulationS_accuracy_K5'],'score')
 %%
-ARR = zeros(5,2);
-acc_name = {'TPR','FPR','ACC','F1','MCC'};
-
-for ii=1:2
-    for jj=1:5
-        ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
-    end
-end
-
-t = array2table(ARR,'VariableNames',{'5%','10%'},'RowNames', acc_name);
-t.Variables =  round(t.Variables*100,2);
+% ARR = zeros(5,2);
+% acc_name = {'TPR','FPR','ACC','F1','MCC'};
+% 
+% for ii=1:2
+%     for jj=1:5
+%         ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
+%     end
+% end
+% 
+% t = array2table(ARR,'VariableNames',{'5%','10%'},'RowNames', acc_name);
+% t.Variables =  round(t.Variables*100,2);

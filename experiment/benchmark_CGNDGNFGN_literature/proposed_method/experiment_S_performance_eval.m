@@ -29,6 +29,7 @@ for ii=1:dd
             R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
             R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
+        R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
                        fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
             mean(R.total.F1(ii,1:jj)),mean(R.total.MCC(ii,1:jj)),mean(R.total.ACC(ii,1:jj)),mean(R.total.FPR(ii,1:jj)),mean(R.total.TPR(ii,1:jj)))
     end

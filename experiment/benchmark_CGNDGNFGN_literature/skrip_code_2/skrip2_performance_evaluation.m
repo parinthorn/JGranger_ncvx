@@ -79,14 +79,14 @@ end
 save([performance_path,'ResultSkripD_K',int2str(K)],'R')
 
 %%
-ARR = zeros(5,2);
-acc_name = {'TPR','FPR','ACC','F1','MCC'};
-
-for ii=1:2
-    for jj=1:5
-        ARR(jj,ii) = 100*mean(score(ii).total.(acc_name{jj}));
-    end
-end
-
-t = array2table(ARR,'VariableNames',{'1%','5%'},'RowNames', acc_name);
-t.Variables =  round(t.Variables,2);
+% ARR = zeros(5,2);
+% acc_name = {'TPR','FPR','ACC','F1','MCC'};
+% 
+% for ii=1:2
+%     for jj=1:5
+%         ARR(jj,ii) = 100*mean(score(ii).total.(acc_name{jj}));
+%     end
+% end
+% 
+% t = array2table(ARR,'VariableNames',{'1%','5%'},'RowNames', acc_name);
+% t.Variables =  round(t.Variables,2);

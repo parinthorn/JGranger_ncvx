@@ -148,7 +148,7 @@ switch formulation
             ind_differential = cell(1,GridSize);
             flag = zeros(1,GridSize);
             ind = cell(1,GridSize);
-            for jj=1:GridSize  % this can be changed to parfor loops
+            parfor jj=1:GridSize  % this can be changed to parfor loops
                 fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
                 a2 = Lambdacrit_2*Lambda(jj);
                 [x_reg,~,~,history] = fitmodel(a1,a2);

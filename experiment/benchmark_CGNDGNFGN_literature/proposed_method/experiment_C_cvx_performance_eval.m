@@ -33,6 +33,7 @@ for ii=1:length(mname)
             R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
             R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
         end
+        R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
         
     end
 end
@@ -40,31 +41,31 @@ save([performance_path,'CGN_cvx_result'],'R')
 save([performance_path,'CGN_cvx_ALL_RESULT'],'ALL_RESULT')
 
 %%
-clear
-clc
-inpath = './experiment/model_parameters/';
-performance_path = './results2plot/';
-mname = {'10','20'};
-name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
-load([performance_path,'adaptive_formulation_C_cvx_result'])
-load([performance_path,'adaptive_formulation_C_cvx_ALL_RESULT'])
-acc_list = {'TPR','FPR','ACC','F1','MCC'};
-realization = 100;
-ARR = zeros(5,length(name_list));
-for ii=1:length(mname)
-    for nn=1:length(name_list)
-        for kk=1:length(acc_list)
-            for jj=1:realization
-                index_selected = R.index(ii,jj).(name_list{nn});
-                
-                summary.common.(acc_list{kk})(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).common.(acc_list{kk});
-            end
-            ARR(kk,nn) = mean(summary.common.(acc_list{kk})(ii,:));
-        end
-%         ARR(:,nn)= [mean(summary.common.F1(ii,:)),mean(summary.common.MCC(ii,:)),mean(summary.common.ACC(ii,:)),mean(summary.common.FPR(ii,:)),mean(summary.common.TPR(ii,:))]';
-    end
-    disp(['common density:',mname{ii}])
-    t = array2table(ARR,'VariableNames',name_list,'RowNames', acc_list);
-    t.Variables =  round(t.Variables*100,2);
-    disp(t)
-end
+% clear
+% clc
+% inpath = './experiment/model_parameters/';
+% performance_path = './results2plot/';
+% mname = {'10','20'};
+% name_list = {'bic_lasso','bic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+% load([performance_path,'adaptive_formulation_C_cvx_result'])
+% load([performance_path,'adaptive_formulation_C_cvx_ALL_RESULT'])
+% acc_list = {'TPR','FPR','ACC','F1','MCC'};
+% realization = 100;
+% ARR = zeros(5,length(name_list));
+% for ii=1:length(mname)
+%     for nn=1:length(name_list)
+%         for kk=1:length(acc_list)
+%             for jj=1:realization
+%                 index_selected = R.index(ii,jj).(name_list{nn});
+%                 
+%                 summary.common.(acc_list{kk})(ii,jj) =ALL_RESULT(ii,jj).model_acc(index_selected).common.(acc_list{kk});
+%             end
+%             ARR(kk,nn) = mean(summary.common.(acc_list{kk})(ii,:));
+%         end
+% %         ARR(:,nn)= [mean(summary.common.F1(ii,:)),mean(summary.common.MCC(ii,:)),mean(summary.common.ACC(ii,:)),mean(summary.common.FPR(ii,:)),mean(summary.common.TPR(ii,:))]';
+%     end
+%     disp(['common density:',mname{ii}])
+%     t = array2table(ARR,'VariableNames',name_list,'RowNames', acc_list);
+%     t.Variables =  round(t.Variables*100,2);
+%     disp(t)
+% end
