@@ -84,7 +84,7 @@ switch formulation
         flag = zeros(1,GridSize);
         ind = cell(1,GridSize);
         t1 = tic;
-        for ii=1:GridSize % this can be changed to parfor loops
+        parfor ii=1:GridSize % this can be changed to parfor loops
             fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
             a2 = Lambdacrit_2*Lambda(ii);
             [x_reg,~,~,history] = fitmodel(0,a2);
