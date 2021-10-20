@@ -19,10 +19,27 @@ SNR.exp_CGN_K5 = zeros(2,100);
 SNR.exp_DGN_K50 = zeros(2,100);
 SNR.exp_FGN_K5 = zeros(2,100);
 load([inpath,'model_K5','_p1']) % struct E
+n=20;
+p=1;
+K=5;
+sigmasq = 1;
+arr1 = [];
+arr2 = [];
+arr3 = [];
+
 for ii=3:4
     for jj=1:m
         % generate data from given seed
         model = E{2,ii,2,jj};
+        for kk =1:K
+            Ak = model.A(:,:,:,kk);
+            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
+            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
+            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
+            SNR_new = 10*log10( trace(Sy)/trace(Se));
+            disp(SNR_new)
+            arr1 = [arr1 SNR_new];
+        end
         SNR.exp_CGN_K5(ii-2,jj) = max(max(abs(model.A(:))));
     end
 end
@@ -30,6 +47,15 @@ for jj=1:100
     for ii=1:2
         % generate data from given seed
         model = E{3,3,ii,jj};
+        for kk =1:K
+            Ak = model.A(:,:,:,kk);
+            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
+            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
+            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
+            SNR_new = 10*log10( trace(Sy)/trace(Se));
+            disp(SNR_new)
+            arr2 = [arr2 SNR_new];
+        end
         SNR.exp_FGN_K5(ii,jj) = max(max(abs(model.A(:))));
     end
 end
@@ -40,14 +66,39 @@ for jj=1:100
     for ii=1:2
         % generate data from given seed
         model = E{2,3,ii,jj};
+        for kk =1:K
+            Ak = model.A(:,:,:,kk);
+            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
+            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
+            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
+            SNR_new = 10*log10( trace(Sy)/trace(Se));
+            disp(SNR_new)
+            arr3 = [arr3 SNR_new];
+        end
         SNR.exp_DGN_K50(ii,jj) = max(max(abs(model.A(:))));
     end
 end
 
 x =  [SNR.exp_CGN_K5(:) SNR.exp_FGN_K5(:) SNR.exp_DGN_K50(:)];
 
+
 histogram(x, 'Normalization','probability')
-%% No. 21 Bootstraping
+%%
+close all
+subplot(1,3,1)
+histogram(arr1, 'Normalization','probability')
+xlabel("SNR (dB)")
+ylabel("Occurrence frequency")
+title("Data for CGN")
+subplot(1,3,2)
+histogram(arr2, 'Normalization','probability')
+xlabel("SNR (dB)")
+title("Data for FGN")
+subplot(1,3,3)
+histogram(arr3, 'Normalization','probability')
+xlabel("SNR (dB)")
+title("Data for DGN")
+%% No. 21 Bootstrapping
 clear
 clc
 inpath = './experiment/model_parameters/';
@@ -103,25 +154,67 @@ for bb=1:50
         mean(R.total.F1),mean(R.total.MCC),mean(R.total.ACC),mean(R.total.FPR),mean(R.total.TPR))
 end
 %% No. 21 Bootstraping
+% clear
+% clc
+load("H:\Pycharm_projects\bootstrapping_results.mat")
 tt = tiledlayout(5, 1);
 for kk=1:5
     nexttile;
     histogram(PERF_INDEX(:,kk), 'Normalization', 'Probability')
 end
 
+%% load data
+clear
+clc
+load("H:\Pycharm_projects\reviewer_bootstrapping_data.mat")
 %% No. 21 Bootstraping
+
+% cnt = 0;
+% figure(1)
+% selected_model = M_bootstrap(1).model(M_bootstrap(1).index.eBIC);
+% plot_group_GC(selected_model.GC)
+% sgtitle("Bootstrapping sample: #1")
+%
+% figure(2)
+% selected_model = M_bootstrap(25).model(M_bootstrap(25).index.eBIC);
+% plot_group_GC(selected_model.GC)
+% sgtitle("Bootstrapping sample: #25")
+%
+% figure(3)
+% selected_model = M_bootstrap(50).model(M_bootstrap(50).index.eBIC);
+% plot_group_GC(selected_model.GC)
+% sgtitle("Bootstrapping sample: #50")
+model_ind = [1, 25, 50];
 cnt = 0;
-figure(1)
-selected_model = M_bootstrap(1).model(M_bootstrap(1).index.eBIC);
-plot_group_GC(selected_model.GC)
-
-figure(2)
-selected_model = M_bootstrap(25).model(M_bootstrap(25).index.eBIC);
-plot_group_GC(selected_model.GC)
-
-figure(3)
-selected_model = M_bootstrap(50).model(M_bootstrap(50).index.eBIC);
-plot_group_GC(selected_model.GC)
+clf
+close all
+for ii=1:3
+    selected_model = M_bootstrap(model_ind(ii)).model(M_bootstrap(model_ind(ii)).index.eBIC);
+    GC = selected_model.GC;
+    [n,~,K] = size(GC);
+    commonNZ = ones(n,n)-eye(n);
+    diag_ind = 1:n+1:n^2;
+    for kk=1:K
+        tmp = GC(:,:,kk);
+        tmp(diag_ind) = 0;
+        commonNZ = commonNZ & (tmp~=0);
+    end
+    s = [];
+    for kk =1:K
+        cnt=cnt+1;
+        tmp = GC(:,:,kk);
+        tmp(diag_ind) = 0;
+        subplot(3,K,cnt)
+        spy(tmp,'r')
+        hold on
+        spy(commonNZ,'k')
+        hold off
+        axis('square')
+        set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+    end
+    title(sprintf("Bootstrapping sample: #%d", model_ind(ii)))
+    hold off
+end
 
 %% No. 32 check total density of ncvx vs cvx model
 
@@ -130,11 +223,11 @@ clc
 inpath = './experiment/model_parameters/';
 
 T = 150;
-p_true = 3;
-p_est = 3;
+p_true = 1;
+p_est = 1;
 K = 5;
 n = 20;
-load([inpath,'compare_convex_model_K',int2str(K),'_p',int2str(p_true)]) % struct E
+load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 m= size(E,2);
 realz = m;
 GridSize = 30;
@@ -149,7 +242,7 @@ for jj=1:realz
     for kk = 1:5
         nz_number = nz_number +length(model.ind{kk});
     end
-    density.DGN(jj) = nz_number/(n^2*K);
+    density.DGN(jj) = nz_number/((n^2-n)*K);
     
 end
 
@@ -163,7 +256,7 @@ for jj=1:realz
     for kk = 1:5
         nz_number = nz_number +length(model.ind{kk});
     end
-    density.FGN(jj) = nz_number/(n^2*K);
+    density.FGN(jj) = nz_number/((n^2-n)*K);
     
 end
 
@@ -171,12 +264,15 @@ tt = tiledlayout(1, 2);
 nexttile;
 histogram(density.DGN, 'Normalization', 'Probability')
 title('n=20, p=3, K=5 (DGN)')
+xlabel("model density")
+ylabel("Occurrence")
 
 
 nexttile;
 histogram(density.FGN, 'Normalization', 'Probability')
 title('n=20, p=3, K=5 (FGN)')
-
+xlabel("model density")
+ylabel("Occurrence")
 
 %% ROC
 
@@ -197,12 +293,12 @@ R1 = R;
 load([resource_path,'CGN_CVX_result.mat'])
 R2 = R;
 
-DATA_INDEX = 77:77;
+DATA_INDEX = 1:1;
 ii =2;
 for mm=1:2
     load([resource_path,method_path{mm}])
-
-
+    
+    
     tmp_avg = zeros(2,30);
     max1_avg = 0;
     max2_avg = 0;
@@ -302,7 +398,7 @@ legend('CGN on common density 10%','CGN on common density 20%','cvx-CGN on commo
 % end
 % legend
 axis([0 30 70 100])
-axis('square')
+axis([0, 100, 0, 130])
 % legend('Common density 10%','Common density 20%','location','northeast')
 % title(sprintf('10%%, F1 bestcase: %2.1f, 20%%,  F1 bestcase: %2.1f',100*max1_avg{1},100*max2_avg{1}))
 % ylabel('F1 score')
@@ -311,9 +407,9 @@ xlabel('FPR (%)')
 ylabel('TPR (%)')
 grid on
 set(gca,'FontSize',28)
-pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
-set(gcf, 'Position', pp);
+% pp = get(0, 'Screensize');
+% pp(3) = pp(3)*0.75;
+% set(gcf, 'Position', pp);
 % saveas(gcf,[figurepath,'exp_CGN_ROC'])
 % print([figurepath,'exp_CGN_ROC'],'-painters','-depsc','-r300')
 
@@ -329,6 +425,19 @@ y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
 K = size(y_TDC,3);
 y_total = cat(3,y_TDC,y_ADHD_C);
 y_total = y_total-mean(y_total,2); % detrend in time axis
+
+
+
+%%
+for ii=1:116
+    subplot(2,1,1)
+    autocorr(y_total(ii,:, 1))
+    subplot(2,1,2)
+    parcorr(y_total(ii,:, 1))
+    pause()
+end
+
+
 %%
 % clear
 % clc
@@ -349,14 +458,37 @@ y_total = y_total-mean(y_total,2); % detrend in time axis
 % plot(t,z)
 
 for ii=1:116
-subplot(2,1,1)
-autocorr(y_total(ii,:))
-subplot(2,1,2)
-parcorr(y_total(ii,:))
-pause()
+    subplot(2,1,1)
+    autocorr(y_total(ii,:))
+    subplot(2,1,2)
+    parcorr(y_total(ii,:))
+    pause()
 end
 
 
+%% test SNR
+
+clear
+clc
+inpath = './experiment/model_parameters/';
+type = 2; %D type
+cd = 3;
+T = 100000;
+p_true = 1;
+p_est = 1;
+K = 5;
+% K = 50;
+load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
+
+
+model = E{type,3,2,1};
+y = sim_VAR(model.A,T,1,model.seed,0);
+
+Chunk = 10000;
+for ii=1:T-Chunk
+    bootstrap_sample = y(:,ii:ii+Chunk,1);
+    cov_size(ii) = log(det(cov(bootstrap_sample')));
+end
 
 
 
