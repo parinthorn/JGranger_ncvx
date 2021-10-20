@@ -74,11 +74,14 @@ ALG_PARAMETER.cvx = gen_alg_params(parameter.cvx.qnorm, parameter.cvx.formulatio
 
 model = E{type,3,2,1};
 y = sim_VAR(model.A,T,1,model.seed,0);
-M = jointvargc(y,parameter.cvx,ALG_PARAMETER.cvx);
+% M = jointvargc(y,parameter.cvx,ALG_PARAMETER.cvx);
 for ii = 1:50
+    t1 = tic;
     y_bootstrap = y(:,ii:T-50+ii-1,:);
     disp(length(ii:T-50+ii-1))
     M_bootstrap(ii) = jointvargc(y_bootstrap,parameter.cvx,ALG_PARAMETER.cvx);
+    t2 = toc(t1);
+    disp(fprintf("Time elapsed: %.2f seconds", t2))
 end
 %% No. 21 Bootstraping
 GTmodel = model;
@@ -122,6 +125,8 @@ plot_group_GC(selected_model.GC)
 figure(3)
 selected_model = M_bootstrap(50).model(M_bootstrap(50).index.eBIC);
 plot_group_GC(selected_model.GC)
+%% Bootstrapped distribution
+
 
 %% No. 32 check total density of ncvx vs cvx model
 
@@ -356,12 +361,214 @@ parcorr(y_total(ii,:))
 pause()
 end
 
+%% ROC curve
 
 
 
+clear
+clc
+clf
+close all
+type_list = {'total','common','differential'};
+figurepath = './results2plot/figures/';
+resource_path = './results2plot/';
+method_path = {'CGN_ALL_RESULT.mat','CGN_CVX_ALL_RESULT.mat'};
+
+
+load([resource_path,'CGN_result.mat'])
+R1 = R;
+
+load([resource_path,'CGN_CVX_result.mat'])
+R2 = R;
+sample_all = [1, 31, 61, 91];
+for oo = sample_all
+DATA_INDEX = oo:oo;
+ii =2;
+for mm=1:2
+    load([resource_path,method_path{mm}])
+
+
+    tmp_avg = zeros(2,30);
+    max1_avg = 0;
+    max2_avg = 0;
+    for jj=DATA_INDEX
+        sample_acc = ALL_RESULT(1,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.F1];max1 = {max(tmp(1,:))};
+        
+        sample_acc = ALL_RESULT(2,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.F1];max2 = {max(tmp(2,:))};
+        
+        tmp_avg = tmp_avg+tmp/length(DATA_INDEX);
+        max1_avg = max1_avg+max1{1}/length(DATA_INDEX);
+        max2_avg = max2_avg+max2{1}/length(DATA_INDEX);
+    end
+    F1_array{mm} = tmp_avg;
+    
+    tmp_avg = zeros(2,30);
+    max1_avg = 0;
+    max2_avg = 0;
+    for jj=DATA_INDEX
+        sample_acc = ALL_RESULT(1,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.FPR];max1 = {max(tmp(1,:))};
+        
+        sample_acc = ALL_RESULT(2,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.FPR];max2 = {max(tmp(2,:))};
+        
+        tmp_avg = tmp_avg+tmp/length(DATA_INDEX);
+        max1_avg = max1_avg+max1{1}/length(DATA_INDEX);
+        max2_avg = max2_avg+max2{1}/length(DATA_INDEX);
+    end
+    FPR_array{mm} = tmp_avg;
+    
+    tmp_avg = zeros(2,30);
+    max1_avg = 0;
+    max2_avg = 0;
+    for jj=DATA_INDEX
+        sample_acc = ALL_RESULT(1,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.TPR];max1 = {max(tmp(1,:))};
+        
+        sample_acc = ALL_RESULT(2,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.TPR];max2 = {max(tmp(2,:))};
+        
+        tmp_avg = tmp_avg+tmp/length(DATA_INDEX);
+        max1_avg = max1_avg+max1{1}/length(DATA_INDEX);
+        max2_avg = max2_avg+max2{1}/length(DATA_INDEX);
+    end
+    TPR_array{mm} = tmp_avg;
+end
+
+figure(1)
+% plot(100*[FPR_array{1};FPR_array{2}]',100*[TPR_array{1};TPR_array{2}]','Linewidth',4)
+
+subplot(2,2,1)
+plot(100*FPR_array{1}(1,:),100*TPR_array{1}(1, :),'Linewidth',4)
+hold on
+index = R1.index(1, DATA_INDEX).eBIC;
+scatter(100*FPR_array{1}(1,index),100*TPR_array{1}(1,index),72,[0 0.7 0], 'filled');
+a1 = scatter(100*FPR_array{1}(1,:),100*TPR_array{1}(1,:),36,[0 0 1]);
+% text(100*FPR_array{1}(1,:),100*TPR_array{1}(1,:), cellstr(string(100*F1_array{1}(1,:)) ))
+% datatip(a1,100*FPR_array{1}(1,:),100*TPR_array{1}(1,:), dataTipTextRow('F1',100*F1_array{1}(1,:)) )
+
+row = dataTipTextRow('F1',100*F1_array{1}(1,:),'%+4.4g');
+a1.DataTipTemplate.DataTipRows(end+1) = row;
+axis([0 30 70 100])
+axis('square')
+xlabel('FPR (%)')
+ylabel('TPR (%)')
+grid on
+title(sprintf("CGN, d=10%%, F1=%.2f %%", 100*F1_array{1}(1,index)))
+hold off
+
+
+subplot(2,2,2)
+plot(100*FPR_array{1}(2,:),100*TPR_array{1}(2, :),'Linewidth',4)
+hold on
+index = R1.index(2, DATA_INDEX).eBIC;
+scatter(100*FPR_array{1}(2,index),100*TPR_array{1}(2,index),72,[0 0.7 0], 'filled');
+a2 = scatter(100*FPR_array{1}(2,:),100*TPR_array{1}(2,:),36,[0 0 1]);
+% text(100*FPR_array{1}(2,:),100*TPR_array{1}(2,:), cellstr(string(100*F1_array{1}(2,:)) ))
+% datatip(a1,100*FPR_array{1}(1,:),100*TPR_array{1}(1,:), 'F1', 100*F1_array{1}(1,:))
+row = dataTipTextRow('F1',100*F1_array{1}(2,:),'%+4.4g');
+a2.DataTipTemplate.DataTipRows(end+1) = row;
+axis([0 30 70 100])
+axis('square')
+xlabel('FPR (%)')
+ylabel('TPR (%)')
+grid on
+title(sprintf("CGN, d=20%%, F1=%.2f %%", 100*F1_array{1}(2,index)))
+hold off
+
+
+subplot(2,2,3)
+plot(100*FPR_array{2}(1,:),100*TPR_array{2}(1, :),'Linewidth',4)
+hold on
+index = R2.index(1, DATA_INDEX).eBIC;
+scatter(100*FPR_array{2}(1,index),100*TPR_array{2}(1,index),72,[0 0.7 0], 'filled');
+a3 = scatter(100*FPR_array{2}(1,:),100*TPR_array{2}(1,:),36,[0 0 1]);
+% text(100*FPR_array{2}(1,:),100*TPR_array{2}(1,:), cellstr(string(100*F1_array{2}(1,:)) ))
+% datatip(a1,100*FPR_array{1}(1,:),100*TPR_array{1}(1,:), 'F1', 100*F1_array{1}(1,:))
+row = dataTipTextRow('F1',100*F1_array{2}(1,:),'%+4.4g');
+a3.DataTipTemplate.DataTipRows(end+1) = row;
+axis([0 30 70 100])
+axis('square')
+xlabel('FPR (%)')
+ylabel('TPR (%)')
+grid on
+title(sprintf("cvx-CGN, d=10%%, F1=%.2f %%", 100*F1_array{2}(1,index)))
+hold off
+
+
+subplot(2,2,4)
+plot(100*FPR_array{2}(2,:),100*TPR_array{2}(2, :),'Linewidth',4)
+hold on
+index = R2.index(2, DATA_INDEX).eBIC;
+scatter(100*FPR_array{2}(2,index),100*TPR_array{2}(2,index),72,[0 0.7 0], 'filled');
+a4 = scatter(100*FPR_array{2}(2,:),100*TPR_array{2}(2,:),36,[0 0 1]);
+% text(100*FPR_array{2}(2,:),100*TPR_array{2}(2,:), cellstr(string(100*F1_array{2}(2,:)) ))
+% datatip(a1,100*FPR_array{1}(1,:),100*TPR_array{1}(1,:), 'F1', 100*F1_array{1}(1,:))
+row = dataTipTextRow('F1',100*F1_array{2}(2,:),'%+4.4g');
+a4.DataTipTemplate.DataTipRows(end+1) = row;
+axis([0 30 70 100])
+axis('square')
+xlabel('FPR (%)')
+ylabel('TPR (%)')
+grid on
+title(sprintf("cvx-CGN, d=20%%, F1=%.2f %%", 100*F1_array{2}(2,index)))
 
 
 
+hold off
+
+
+% legend('CGN on common density 10%','CGN on common density 20%','cvx-CGN on common density 10%','cvx-CGN on common density 20%','location','southeast')
+% u = gca;
+% color_list = {[0,0,1],[0,1,0],[0,0,0],[0,0,0]};
+% for kk=1:4
+% u.Children(kk).Color = color_list{kk};
+% end
+% legend
+
+% set(gca,'FontSize',28)
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.75;
+set(gcf, 'Position', pp);
+saveas(gcf,[figurepath,'exp_CGN_ROC'])
+print([figurepath,'reviewer_response_exp_CGN_ROC_sample', int2str(oo)],'-dpng','-r300')
+
+end
+
+%% fMRI ACF, PACF
+figurepath = './results2plot/figures/';
+
+cnt = 0;
+clear fMRI
+for ii=1:116
+    for jj=1:36
+        cnt=cnt+1;
+        fMRI.pacf(cnt,:) = parcorr(y_total(ii,:,jj), 'NumLags', 10);
+        fMRI.acf(cnt,:) = xcov(y_total(ii,:,jj), 10, 'coeff');
+
+    end
+end
+
+tt = tiledlayout(1,2,'TileSpacing','compact','Padding','compact');
+nexttile;
+boxplot(abs(fMRI.pacf(:,2:end)))
+xlabel('Lags')
+ylabel('value (scaled to 1)')
+title('Partial autocorrelation')
+nexttile;
+boxplot(abs(fMRI.acf(:,12:end)))
+xlabel('Lags')
+ylabel('value (scaled to 1)')
+title('Autocorrelation')
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.75;
+set(gcf, 'Position', pp);
+
+print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-dpng','-r300')
 
 
 
