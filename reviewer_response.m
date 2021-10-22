@@ -223,13 +223,14 @@ end
 clear
 clc
 inpath = './experiment/model_parameters/';
+figurepath = './results2plot/';
 
 T = 150;
-p_true = 1;
-p_est = 1;
+p_true = 3;
+p_est = 3;
 K = 5;
 n = 20;
-load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
+load([inpath,'compare_convex_model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 m= size(E,2);
 realz = m;
 GridSize = 30;
@@ -275,7 +276,18 @@ histogram(density.FGN, 'Normalization', 'Probability')
 title('n=20, p=3, K=5 (FGN)')
 xlabel("model density")
 ylabel("Occurrence")
+sgtitle("Total density histogram (10% common, 5% differential)", 'FontSize', 28)
 
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+
+tt.TileSpacing = 'compact';
+tt.Padding = 'compact';
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.75;
+set(gcf, 'Position', pp);
+
+print([figurepath,'reviewer_response_comparecvx_density_histogram'],'-painters','-depsc','-r300')
+print([figurepath,'reviewer_response_comparecvx_density_histogram'],'-painters','-dpng','-r300')
 %% ROC
 
 

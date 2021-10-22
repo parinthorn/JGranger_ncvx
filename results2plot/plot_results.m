@@ -66,6 +66,13 @@ for ii=1:2
             end
             boxplot(100*ARR)
             
+            if ii==2
+            a = get(get(gca,'children'),'children');   % Get the handles of all the objects
+            t = get(a,'tag');   % List the names of all the objects
+            box1 = a(9:12);   % The 7th object is the first box
+            set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
+            end
+            
             if ii==1
             title(density_name{dd})
             set(gca,'xticklabel',[])
@@ -95,7 +102,8 @@ pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
 %     saveas(gcf,[figurepath,'exp_CGN'])
-%     print([figurepath,'exp_CGN'],'-painters','-depsc','-r300')
+% print([figurepath,'exp_CGN'],'-painters','-depsc','-r300')
+% print([figurepath,'exp_CGN_sample'],'-painters','-dpng','-r300')
 %% exp_DGN_A
 clear
 clc
@@ -157,6 +165,12 @@ for ii=1:2
             ARR(:,jj) = summary(ii,jj,dd,:);
             end
             boxplot(100*ARR)
+            if ii==2
+            a = get(get(gca,'children'),'children');   % Get the handles of all the objects
+            t = get(a,'tag');   % List the names of all the objects
+            box1 = a(9:12);   % The 7th object is the first box
+            set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
+            end
             
             if ii==1
             title(density_name{dd})
@@ -275,6 +289,12 @@ for ii=1:2
             ARR(:,kk) = summary(ii,jj,kk,:);
         end
         boxplot(100*ARR)
+        if ii==2
+            a = get(get(gca,'children'),'children');   % Get the handles of all the objects
+            t = get(a,'tag');   % List the names of all the objects
+            box1 = a(5:6);   % The 7th object is the first box
+            set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
+        end
         grid on
         if jj==1
             ylabel(([row_name{ii},' (%)']))
@@ -359,6 +379,12 @@ for ii=1:2
             ARR(:,jj) = summary(ii,jj,dd,:);
             end
             boxplot(100*ARR)
+            if ii==2
+            a = get(get(gca,'children'),'children');   % Get the handles of all the objects
+            t = get(a,'tag');   % List the names of all the objects
+            box1 = a(9:12);   % The 7th object is the first box
+            set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
+            end
             
             if ii==1
             title(density_name{dd})
@@ -470,6 +496,12 @@ for ii=1:2
             ARR(:,tt) = summary(jj,tt,ii,:) ;
         end
         boxplot(100*ARR)
+        if ii==2
+            a = get(get(gca,'children'),'children');   % Get the handles of all the objects
+            t = get(a,'tag');   % List the names of all the objects
+            box1 = a(5:6);   % The 7th object is the first box
+            set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
+            end
         
         
         if ii==1
