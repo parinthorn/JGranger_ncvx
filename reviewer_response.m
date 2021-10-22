@@ -658,25 +658,45 @@ for ii=1:116
     end
 end
 
-tt = tiledlayout(1,2,'TileSpacing','compact','Padding','compact');
-nexttile;
+tt = tiledlayout(2,2,'TileSpacing','compact','Padding','compact');
+
+patient_index = 5;
+ax1=nexttile;
+
+
+stem(abs(fMRI.pacf(patient_index,2:end)))
+xlabel('Lags')
+ylabel('value (scaled to 1)')
+title('Partial autocorrelation (sample)')
+ax2=nexttile;
+stem(abs(fMRI.acf(patient_index,12:end)))
+xlabel('Lags')
+ylabel('value (scaled to 1)')
+title('Autocorrelation (sample)')
+
+ax3=nexttile;
 boxplot(abs(fMRI.pacf(:,2:end)))
 xlabel('Lags')
 ylabel('value (scaled to 1)')
-title('Partial autocorrelation')
-nexttile;
+title('Partial autocorrelation (distribution)')
+ax4=nexttile;
 boxplot(abs(fMRI.acf(:,12:end)))
 xlabel('Lags')
 ylabel('value (scaled to 1)')
-title('Autocorrelation')
+title('Autocorrelation (distribution)')
 set(findall(gcf,'-property','FontSize'),'FontSize',18)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*0.75;
 set(gcf, 'Position', pp);
 
+linkaxes([ax1,ax2, ax3, ax4],'x');
+
+
+set(findall(gcf,'-property','FontSize'),'FontSize',18)
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1;
+set(gcf, 'Position', pp);
 print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-dpng','-r300')
-
-
-
+print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-depsc','-r300')
 
 
