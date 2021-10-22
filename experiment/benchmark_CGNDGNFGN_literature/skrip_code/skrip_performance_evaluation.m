@@ -4,7 +4,7 @@ clc
 close all
 modelpath = './experiment/model_parameters/';
 inpath = './experiment/benchmark_CGNDGNFGN_literature/skrip_code/data_R_formulationS/';
-outpath = './result2plot/';
+outpath = './results2plot/';
 type = 3; %S type
 cd = 3; %common density set to percent(cd); percent=[1%, 5%, 10%, 20%]
 T = 100;

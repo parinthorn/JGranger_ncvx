@@ -14,7 +14,7 @@ load([inpath,'model_K5_p1'])
 % R.FPR = zeros(length(mname),realization);
 % R.ACC = zeros(length(mname),realization);
 toggle_list = {'common'};
-for ii=2:length(mname)
+for ii=1:length(mname)
     for jj=1:realization
         fprintf('(%d,%d)\n',ii,jj)
         GTmodel = E{2,ii+2,2,jj};
