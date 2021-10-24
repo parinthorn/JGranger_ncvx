@@ -36,7 +36,7 @@ if numel((M.model))==GridSize
         
         model_acc(ii).VAR_coeff = performance_score(squeeze(stat.accuracy.VAR_coeff.confusion_matrix));
         
-        model_acc(ii).bias = sqrt(sum((GTmodel.A-M.model(ii).A).^2,'all')/sum(GTmodel.model(ii).A.^2,'all'));
+        model_acc(ii).bias = sqrt(sum((GTmodel.A-M.model(ii).A).^2,'all')/sum(GTmodel.A.^2,'all'));
     end
     return
 end
