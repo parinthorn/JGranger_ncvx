@@ -44,7 +44,7 @@ for ii=1:dd
         differential_score = performance_score(differential_confusion);
         total_confusion = compare_sparsity(model.ind,ind_nz,n,p,K,'single_differential');
         total_score = performance_score(total_confusion);
-        total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
+        total_score.bias = sqrt(sum((A(:)-model.A(:)).^2,'all')/sum(model.A(:).^2,'all'));
         score(ii).total.TPR(jj) = total_score.TPR;
         score(ii).total.FPR(jj) = total_score.FPR;
         score(ii).total.ACC(jj) = total_score.ACC;
@@ -72,6 +72,7 @@ for ii=1:dd
                 R.(acc_type{n1}).(acc_list{n2})(ii,jj) =  score(ii).(acc_type{n1}).(acc_list{n2})(jj);
             end
         end
+        R.bias(ii,jj) = total_score.bias;
 
     end
 end

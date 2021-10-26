@@ -19,11 +19,6 @@ for kk =1:K
     hold off
     axis('square')
     set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
-%     subplot(2,K,i+K)
-%     imagesc((GC(i)))
-%     axis('square')
-%     colormap ((1-gray));
-%     set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
 end
 hold off
 end

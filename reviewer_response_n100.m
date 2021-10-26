@@ -7,8 +7,8 @@ n = 100; % time-series dimension
 p = 2;  % ground-truth VAR order
 K = 2; % number of models
 realization = 100; % number of model's realizations
-common_density = [0.1]; % for p=1, common GC network density [We actually used only 0.1, 0.2]
-differential_density = [0.01]; % differential GC network density
+common_density = [0.01]; % for p=1, common GC network density [We actually used only 0.1, 0.2]
+differential_density = [0.005]; % differential GC network density
 model = {'common','differential','similar'}; % type of similarity
 mname = {'C','D','S'};
 cnt = 0;
@@ -31,6 +31,83 @@ for m=1:length(model)
     end
 end
 save([model_parameter_path,['reviewer_response_model_K' int2str(K),'_p',int2str(p)]],'E')
+%% plot ground-truth
+model_parameter_path = './experiment/model_parameters/';
+K=2;
+p=2;
+load([model_parameter_path,['reviewer_response_model_K' int2str(K),'_p',int2str(p)]],'E')
+sample_model = 60;
+tt = tiledlayout(2,3);
+tt.TileSpacing = 'compact';
+tt.Padding = 'compact';
+mname = {'common','differential','fused'};
+figurepath = './results2plot/figures/';
+
+for kk =1:K
+for ii=1:3
+    model = E{ii,1,1,sample_model};
+    GC = model.GC;
+    
+    
+    [n,~,K] = size(GC);
+    commonNZ = ones(n,n)-eye(n);
+    diag_ind = 1:n+1:n^2;
+    for zz=1:K
+        tmp = GC(:,:,zz);
+        tmp(diag_ind) = 0;
+        commonNZ = commonNZ & (tmp~=0);
+    end
+    s = [];
+    
+        tmp = GC(:,:,kk);
+        tmp(diag_ind) = 0;
+        nexttile;
+%         spy(tmp, 10, 'k')
+%         spyc(tmp)
+        sA = tmp;
+        indx=find(sA);
+        [Nx Ny]=size(sA);
+        sA=full(sA(indx));
+        ns = length(indx);
+        [ix iy]=ind2sub([Nx Ny],indx);
+%         xx = GC(:);
+        imap = sA;
+        scatter(iy,ix,[],imap,'Marker','s', 'MarkerFaceColor', 'flat')
+set(gca,'box','on', 'BoxStyle','full')
+
+% H = gca;
+% H.LineWidth = 1.5;
+% set(gca,'box','off')
+        
+        
+        hold on
+        spy(tmp.*(1-commonNZ),10,'r')
+        hold off
+%         axis('square')
+        xlim([-5 105])
+        ylim([-5 105])
+        set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+        if ii==1
+            ylabel(sprintf('k = %d', kk))
+        end
+        if kk==1
+            title(mname{ii})
+        end
+    end
+    hold off
+    colormap((1-gray).^1.8)
+%             colorbar;
+
+    
+end
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1/3;
+pp(4) = pp(4)*1/3;
+pp = pp+200;
+set(gcf, 'Position', pp);
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+print([figurepath,'reviewer_response_sampleGC'],'-painters','-depsc','-r300')
+print([figurepath,'reviewer_response_sampleGC'],'-painters','-dpng','-r300')
 
 %% Estimation
 clear

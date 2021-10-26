@@ -37,6 +37,7 @@ for jj=1:realization
         R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
         R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
     end
+    R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
     fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
         mean(R.common.F1(ii,1:jj)),mean(R.common.MCC(ii,1:jj)),mean(R.common.ACC(ii,1:jj)),mean(R.common.FPR(ii,1:jj)),mean(R.common.TPR(ii,1:jj)))
     
@@ -68,6 +69,7 @@ for jj=1:realization
         R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
         R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
     end
+    R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
     fprintf(' F1 avg:%.3f \n MCC avg:%.3f \n ACC avg:%.3f \n FPR avg:%.3f \n TPR avg:%.3f \n', ...
         mean(R.common.F1(ii,1:jj)),mean(R.common.MCC(ii,1:jj)),mean(R.common.ACC(ii,1:jj)),mean(R.common.FPR(ii,1:jj)),mean(R.common.TPR(ii,1:jj)))
     

@@ -7,13 +7,13 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 table_head = {'CGN','cvxCGN','Song','Greg'};
 table_head_show = {'CGN','cvx-CGN','Song17C','Greg15'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
+row_name = {'F1','FPR','TPR','ACC','MCC', 'bias'};
 load([resource_path,'CGN_result'])
 result.CGN = R;
 load([resource_path,'CGN_CVX_result'])
 result.cvxCGN = R;
-load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
-% load([resource_path,'CGN_JSS_result'])
+% load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
+load([resource_path,'CGN_JSS_result'])
 result.Song = R;
 load([resource_path,'magda_result'])
 result.Greg = R;
@@ -23,6 +23,10 @@ MEDIAN = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
     for ii=1:length(row_name)
+        if ii==6
+            result.(table_head{jj}).common.bias = result.(table_head{jj}).bias;
+        end
+        
         for dd=1:2
             if  jj~=4
                 M(ii,jj,dd) = mean(result.(table_head{jj}).common.(row_name{ii})(dd,:));
@@ -113,7 +117,7 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 table_head = {'DGN','cvxDGN','Song','Skrip'};
 table_head_show = {'DGN','cvx-DGN','Song17D','Skrip19b'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
+row_name = {'F1','FPR','TPR','ACC','MCC','bias'};
 load([resource_path,'DGN_result_K5'])
 result.DGN = R;
 load([resource_path,'DGN_CVX_result_K5'])
@@ -130,6 +134,9 @@ STD = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
     for ii=1:length(row_name)
+        if ii==6
+            result.(table_head{jj}).total.bias = result.(table_head{jj}).bias;
+        end
         for dd=1:2
             M(ii,jj,dd) = mean(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             STD(ii,jj,dd) = std(result.(table_head{jj}).total.(row_name{ii})(dd,:));
@@ -212,7 +219,7 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 table_head = {'DGN','cvxDGN','Song','Skrip'};
 table_head_show = {'DGN','cvx-DGN','Song17D','Skrip19b'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
+row_name = {'F1','FPR','TPR','ACC','MCC', 'bias'};
 K_list = {'K5','K50'};
 
 load([resource_path,'DGN_result_K5'])
@@ -237,15 +244,19 @@ tmp = load([resource_path,'ResultSkripD_K50']);
 R = tmp.R;
 clear tmp
 result.Skrip.K50 = R;
-M = zeros(5,4,2);
-STD = zeros(5,4,2);
-MEDIAN = zeros(5,4,2);
-summary = zeros(5,4,2,100);
+M = zeros(6,4,2);
+STD = zeros(6,4,2);
+MEDIAN = zeros(6,4,2);
+summary = zeros(6,4,2,100);
 
 for jj=1:length(table_head)
     
     for ii=1:length(row_name)
+
         for kk=1:length(K_list)
+        if ii==6
+            result.(table_head{jj}).(K_list{kk}).(toggle).bias = result.(table_head{jj}).(K_list{kk}).bias;
+        end            
             dd=2;
             M(ii,jj,kk) = mean(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
             STD(ii,jj,kk) = std(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
@@ -267,8 +278,8 @@ H = table([O(1:2,2:end,1);O(1:2,2:end,2);P(1:2,2:end,1);P(1:2,2:end,2)]);
 M = permute(M,[1,3,2]);
 STD = permute(STD,[1,3,2]);
 
-Mt = reshape(M,[5,8]);
-STDt = reshape(STD,[5,8]);
+Mt = reshape(M,[6,8]);
+STDt = reshape(STD,[6,8]);
 M2 = Mt(:,[1,5,2,6,3,7,4,8]);
 STD2 =  STDt(:,[1,5,2,6,3,7,4,8]);
 % table
@@ -330,14 +341,14 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 table_head = {'FGN','cvxFGN','Song','Skrip'};
 table_head_show = {'FGN','cvx-FGN','Song15','Skrip19a'};
-row_name = {'F1','FPR','TPR','ACC','MCC'};
+row_name = {'F1','FPR','TPR','ACC','MCC', 'bias'};
 load([resource_path,'FGN_result_K5'])
 result.FGN = R;
 load([resource_path,'FGN_CVX_result_K5'])
 result.cvxFGN = R;
 load([resource_path,'FGN_JSS_result_K5'])
 result.Song = R;
-load([resource_path,'skripS_result'])
+load([resource_path,'ResultSkripS_K5'])
 result.Skrip = R;
 M = zeros(5,4,2);
 MEDIAN = zeros(5,4,2);
@@ -345,6 +356,9 @@ STD = zeros(5,4,2);
 summary = zeros(5,4,2,100);
 for jj=1:length(table_head)
     for ii=1:length(row_name)
+        if ii==6
+            result.(table_head{jj}).total.bias = result.(table_head{jj}).bias;
+        end
         for dd=1:2
             M(ii,jj,dd) = mean(result.(table_head{jj}).total.(row_name{ii})(dd,:));
             STD(ii,jj,dd) = std(result.(table_head{jj}).total.(row_name{ii})(dd,:));

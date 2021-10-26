@@ -19,9 +19,11 @@ realization = 100;
 % m=20;
 GridSize = 30;
 mname = {'1','5'};
+acc_type = {'total','common','differential'};
+acc_list = {'F1','FPR','ACC','TPR','MCC'};
 
 for ii=1:dd
-
+    
     for jj=1:realization
         
         fprintf('(%d,%d)\n',ii,jj)
@@ -42,38 +44,46 @@ for ii=1:dd
         differential_score = performance_score(differential_confusion);
         total_confusion = compare_sparsity(model.ind,ind_nz,n,p,K,'single_VAR');
         total_score = performance_score(total_confusion);
-        total_score.bias = sqrt(sum((A-model.A).^2,'all')/sum(model.A.^2,'all'));
+        total_score.bias = sqrt(sum((A(:)-model.A(:)).^2,'all')/sum(model.A(:).^2,'all'));
         score(ii).total.TPR(jj) = total_score.TPR;
         score(ii).total.FPR(jj) = total_score.FPR;
         score(ii).total.ACC(jj) = total_score.ACC;
         score(ii).total.F1(jj) = total_score.F1;
         score(ii).total.MCC(jj) = total_score.MCC;
         score(ii).bias(jj) =total_score.bias;
-
+        
         score(ii).common.TPR(jj) = common_score.TPR;
         score(ii).common.FPR(jj) = common_score.FPR;
         score(ii).common.ACC(jj) = common_score.ACC;
         score(ii).common.F1(jj) = common_score.F1;
-         score(ii).common.MCC(jj) = common_score.MCC;
-
+        score(ii).common.MCC(jj) = common_score.MCC;
+        
         score(ii).differential.TPR(jj) = differential_score.TPR;
         score(ii).differential.FPR(jj) = differential_score.FPR;
         score(ii).differential.ACC(jj) = differential_score.ACC;
         score(ii).differential.F1(jj) = differential_score.F1;
         score(ii).differential.MCC(jj) = differential_score.MCC;
+        
+        for n1=1:length(acc_type)
+            for n2=1:length(acc_list)
+                R.(acc_type{n1}).(acc_list{n2})(ii,jj) =  score(ii).(acc_type{n1}).(acc_list{n2})(jj);
+            end
+        end
+        R.bias(ii,jj) = total_score.bias;
+        
     end
 end
 
-save([outpath,'skrip_formulationS_accuracy_K5'],'score')
+save([outpath,'ResultSkripS_K5'],'R')
 %%
 % ARR = zeros(5,2);
 % acc_name = {'TPR','FPR','ACC','F1','MCC'};
-% 
+%
 % for ii=1:2
 %     for jj=1:5
 %         ARR(jj,ii) = mean(score(ii).total.(acc_name{jj}));
 %     end
 % end
-% 
+%
 % t = array2table(ARR,'VariableNames',{'5%','10%'},'RowNames', acc_name);
 % t.Variables =  round(t.Variables*100,2);
