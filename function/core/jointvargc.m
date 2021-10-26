@@ -9,7 +9,11 @@ noisecov = parameter.noisecov; %'full', 'diag', 'identity'
 penalty_weight = parameter.penalty_weight; % 'LS', 'uniform'
 formulation = parameter.formulation; % cgn, dgn, fgn
 qnorm = parameter.qnorm; % cvx, ncvx
-is_YH = parameter.is_YH;
+if isfield(parameter, 'is_YH')
+    is_YH = parameter.is_YH;
+else
+    is_YH = 0;
+end
 %======= vectorization
 if (data_concat)
     Ktmp = K/2;K=2; % divides to 2 groups and set K=2
@@ -91,7 +95,7 @@ switch formulation
         flag = zeros(1,GridSize);
         ind = cell(1,GridSize);
         t1 = tic;
-        parfor ii=1:GridSize % this can be changed to parfor loops
+        for ii=1:GridSize % this can be changed to parfor loops
             fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
             a2 = Lambdacrit_2*Lambda(ii);
             [x_reg,~,~,history] = fitmodel(0,a2);
@@ -155,7 +159,7 @@ switch formulation
             ind_differential = cell(1,GridSize);
             flag = zeros(1,GridSize);
             ind = cell(1,GridSize);
-            parfor jj=1:GridSize  % this can be changed to parfor loops
+            for jj=1:GridSize  % this can be changed to parfor loops
                 fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
                 a2 = Lambdacrit_2*Lambda(jj);
                 [x_reg,~,~,history] = fitmodel(a1,a2);

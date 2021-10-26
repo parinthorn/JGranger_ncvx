@@ -12,8 +12,8 @@ load([resource_path,'CGN_result'])
 result.CGN = R;
 load([resource_path,'CGN_CVX_result'])
 result.cvxCGN = R;
-% load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
-load([resource_path,'CGN_JSS_result'])
+load(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\formulation_C_magda\adaptive_formulation_C_JSS_result.mat'])
+% load([resource_path,'CGN_JSS_result'])
 result.Song = R;
 load([resource_path,'magda_result'])
 result.Greg = R;
@@ -99,7 +99,7 @@ set(findall(gcf,'-property','FontSize'),'FontSize',28)
 hh.TileSpacing = 'none';
 hh.Padding = 'none';
 pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
+pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
 %     saveas(gcf,[figurepath,'exp_CGN'])
 % print([figurepath,'exp_CGN'],'-painters','-depsc','-r300')
@@ -195,7 +195,8 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
+% pp(2) = pp(4);
+pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
 % saveas(gcf,[figurepath,'exp_DGN_A'])
@@ -315,7 +316,7 @@ end
 xlabel(hh, '$K$','Interpreter','Latex','FontSize',28)
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
+pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
 % saveas(gcf,[figurepath,'exp_DGN_B_',toggle])
 % print([figurepath,'exp_DGN_B_',toggle],'-painters','-depsc','-r300')
@@ -409,7 +410,7 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
+pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
 % saveas(gcf,[figurepath,'exp_FGN'])
 % print([figurepath,'exp_FGN'],'-painters','-depsc','-r300')
@@ -529,7 +530,7 @@ for ii=1:2
 end
 set(findall(gcf,'-property','FontSize'),'FontSize',28)
 pp = get(0, 'Screensize');
-pp(3) = pp(3)*0.75;
+pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
 % saveas(gcf,[figurepath,'exp_cvxcompare'])
 % print([figurepath,'exp_cvxcompare'],'-painters','-depsc','-r300')

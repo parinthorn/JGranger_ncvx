@@ -1,8 +1,10 @@
 function [A,ind,VAR_spectrum,ind_VAR] = gen_VAR(n,p,density,diffdensity,GENERATION_TYPE,S)
-THRESH = 0.2;
-GAIN = 0.2;
+THRESH = 0.1;
+GAIN = 0.1;
 CONVERGE = 0;
+CHANGE_SPARSITY_STRUCTURE_AFTER_TRIAL = 5;
 while (~CONVERGE)
+%     disp("DIVERGE")
     if GENERATION_TYPE==2
         S = sprand(n,n,density)+eye(n);
     end
@@ -19,6 +21,7 @@ while (~CONVERGE)
         A = zeros(n,n,p);
         ii = 0;
         while UNSTABLE
+%             disp("UNSTABLE")
             ii = ii+1;
             for k=1:p
                 A(:,:,k) = 0.1*sprandn(S(:,:,1));
@@ -40,7 +43,7 @@ while (~CONVERGE)
                 VAR_spectrum = eig(full(AA));
                 UNSTABLE = 0;
                 CONVERGE = 1;
-            elseif ii>20
+            elseif ii>CHANGE_SPARSITY_STRUCTURE_AFTER_TRIAL
                 break
             end
         end
@@ -68,7 +71,7 @@ while (~CONVERGE)
                 VAR_spectrum = eig(full(AA));
                 UNSTABLE = 0;
                 CONVERGE = 1;
-            elseif ii>20
+            elseif ii>CHANGE_SPARSITY_STRUCTURE_AFTER_TRIAL
                 break
             end
         end
