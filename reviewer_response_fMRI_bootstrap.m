@@ -65,7 +65,8 @@ for ii=0:T_eff-block_length-1
     bootstrap_sample{ii+1} = (1:block_length) + ii;
 %     bootstrap_index = randi([1 100],1,5);
 end
-s = RandStream('mlfg6331_64');
+seed_code = 1;
+s = RandStream('mlfg6331_64', 'seed', seed_code);
 
 for tt=1:repetitions
 
@@ -89,9 +90,9 @@ parameter.cvx.Y= Y_bootstrap;
 parameter.cvx.H=H_bootstrap;
 parameter.cvx.eff_T=eff_T;
 
-M_bootstrap = jointvargc(Y_bootstrap,parameter.cvx,ALG_PARAMETER.cvx);
+M = jointvargc(Y_bootstrap,parameter.cvx,ALG_PARAMETER.cvx);
 
-save(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_D2K_bootstrap_', int2str(tt)],'M') % verified for reproduce
+save(['G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_D2K', '_seed_',int2str(seed_code),'_bootstrap_', int2str(tt)],'M') % verified for reproduce
 end
 
 % 

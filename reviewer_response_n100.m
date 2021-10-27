@@ -64,15 +64,16 @@ for ii=1:3
         nexttile;
 %         spy(tmp, 10, 'k')
 %         spyc(tmp)
-        sA = tmp;
-        indx=find(sA);
-        [Nx Ny]=size(sA);
-        sA=full(sA(indx));
-        ns = length(indx);
-        [ix iy]=ind2sub([Nx Ny],indx);
+%         sA = tmp;
+%         indx=find(sA);
+%         [Nx Ny]=size(sA);
+%         sA=full(sA(indx));
+%         ns = length(indx);
+%         [ix iy]=ind2sub([Nx Ny],indx);
 %         xx = GC(:);
-        imap = sA;
-        scatter(iy,ix,[],imap,'Marker','s', 'MarkerFaceColor', 'flat')
+%         imap = sA;
+%         scatter(iy,ix,[],imap,'Marker','s', 'MarkerFaceColor', 'flat')
+imagesc(tmp)
 set(gca,'box','on', 'BoxStyle','full')
 
 % H = gca;
@@ -81,14 +82,14 @@ set(gca,'box','on', 'BoxStyle','full')
         
         
         hold on
-        spy(tmp.*(1-commonNZ),10,'r')
+        spy(tmp.*(1-commonNZ),4,'sr')
         hold off
 %         axis('square')
         xlim([-5 105])
         ylim([-5 105])
         set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
         if ii==1
-            ylabel(sprintf('k = %d', kk))
+            ylabel(sprintf('model #%d', kk))
         end
         if kk==1
             title(mname{ii})
