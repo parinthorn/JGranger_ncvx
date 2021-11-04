@@ -3,12 +3,12 @@
 clear
 clc
 model_parameter_path = './experiment/model_parameters/';
-n = 100; % time-series dimension
+n = 20; % time-series dimension
 p = 2;  % ground-truth VAR order
-K = 2; % number of models
-realization = 100; % number of model's realizations
-common_density = [0.01]; % for p=1, common GC network density [We actually used only 0.1, 0.2]
-differential_density = [0.005]; % differential GC network density
+K = 3; % number of models
+realization = 1; % number of model's realizations
+common_density = [0.1]; % for p=1, common GC network density [We actually used only 0.1, 0.2]
+differential_density = [0.05]; % differential GC network density
 model = {'common','differential','similar'}; % type of similarity
 mname = {'C','D','S'};
 cnt = 0;
@@ -30,49 +30,51 @@ for m=1:length(model)
         end
     end
 end
-save([model_parameter_path,['reviewer_response_model_K' int2str(K),'_p',int2str(p)]],'E')
+% save([model_parameter_path,['reviewer_response_model_K' int2str(K),'_p',int2str(p)]],'E')
 %% plot ground-truth
-model_parameter_path = './experiment/model_parameters/';
-K=2;
+% model_parameter_path = './experiment/model_parameters/';
+K=3;
 p=2;
-load([model_parameter_path,['reviewer_response_model_K' int2str(K),'_p',int2str(p)]],'E')
-sample_model = 60;
-tt = tiledlayout(2,3);
-tt.TileSpacing = 'compact';
-tt.Padding = 'compact';
+% load([model_parameter_path,['model_K' int2str(5),'_p',int2str(p)]],'E')
+sample_model = 1;
+tt = tiledlayout(K,3);
+tt.TileSpacing = 'None';
+tt.Padding = 'None';
 mname = {'common','differential','fused'};
 figurepath = './results2plot/figures/';
-
-for kk =1:K
 for ii=1:3
+for kk =1:K
+
     model = E{ii,1,1,sample_model};
-    GC = model.GC;
+    GC = model.GC(:,:,1:K);
+    A = model.A;
+    A = squeeze(sqrt(sum(A.^2,3)));
+
     
     
-    [n,~,K] = size(GC);
+    [n,~,K] = size(A);
     commonNZ = ones(n,n)-eye(n);
     diag_ind = 1:n+1:n^2;
     for zz=1:K
-        tmp = GC(:,:,zz);
-        tmp(diag_ind) = 0;
+        tmp = A(:,:,zz);
         commonNZ = commonNZ & (tmp~=0);
     end
     s = [];
     
-        tmp = GC(:,:,kk);
-        tmp(diag_ind) = 0;
+        tmp = A(:,:,kk);
         nexttile;
 %         spy(tmp, 10, 'k')
 %         spyc(tmp)
-        sA = tmp;
-        indx=find(sA);
-        [Nx Ny]=size(sA);
-        sA=full(sA(indx));
-        ns = length(indx);
-        [ix iy]=ind2sub([Nx Ny],indx);
+%         sA = tmp;
+%         indx=find(sA);
+%         [Nx Ny]=size(sA);
+%         sA=full(sA(indx));
+%         ns = length(indx);
+%         [ix iy]=ind2sub([Nx Ny],indx);
 %         xx = GC(:);
-        imap = sA;
-        scatter(iy,ix,[],imap,'Marker','s', 'MarkerFaceColor', 'flat')
+%         imap = sA;
+%         scatter(iy,ix,[],imap,'Marker','s', 'MarkerFaceColor', 'flat')
+imagesc(tmp)
 set(gca,'box','on', 'BoxStyle','full')
 
 % H = gca;
@@ -81,21 +83,24 @@ set(gca,'box','on', 'BoxStyle','full')
         
         
         hold on
-        spy(tmp.*(1-commonNZ),10,'r')
+        spy(tmp.*(1-commonNZ),30,'r')
         hold off
 %         axis('square')
-        xlim([-5 105])
-        ylim([-5 105])
+%         xlim([-5 105])
+%         ylim([-5 105])
         set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
         if ii==1
-            ylabel(sprintf('k = %d', kk))
+                        title(sprintf('model #%d', kk))
+
+%             title()
         end
         if kk==1
-            title(mname{ii})
+%             title()
+ylabel(mname{ii})
         end
     end
     hold off
-    colormap((1-gray).^1.8)
+    colormap((1-gray))
 %             colorbar;
 
     
