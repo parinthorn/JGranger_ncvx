@@ -118,7 +118,7 @@ mkdir(outpath)
 
 T = 2500;
 p_true = 2;
-p_est = 1;
+p_est = 2;
 K = 2;
 load([inpath,'reviewer_response_model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 m= size(E,4);
@@ -127,7 +127,7 @@ GridSize = 30;
 mname = {'1','5'};
 ii=2;
 parameter.cvx.varorder = p_est;
-parameter.cvx.formulation = 'dgn'; % cgn, dgn, fgn
+parameter.cvx.formulation = 'cgn'; % cgn, dgn, fgn
 parameter.cvx.penalty_weight = 'LS'; % LS, uniform
 parameter.cvx.GridSize = GridSize;
 parameter.cvx.data_concat = 0;
@@ -146,7 +146,7 @@ parameter.ncvx.qnorm = 'ncvx';
 ALG_PARAMETER.ncvx = gen_alg_params(parameter.ncvx.qnorm, parameter.ncvx.formulation);
 % ALG_PARAMETER.ncvx.PRINT_RESULT = 1;
 %% Non-CVX
-for jj=1:realz
+for jj=10:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
@@ -165,7 +165,90 @@ for jj=1:realz
     M = jointvargc(y,parameter.cvx,ALG_PARAMETER.cvx);
     inference_time(jj) = toc(t1);
     fprintf("model: %d, time:%.2f", jj, inference_time(jj))
-    save([outpath,'reviewer_response_estim_DGN_cvx_T2500_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+    save([outpath,'reviewer_response_estim_CGN_cvx_T2500_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 
 end
 
+%% cvx-CGN evaluation
+clear
+% clc
+inpath = './experiment/model_parameters/';
+resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\experiment_compare_cvx/';
+performance_path = './results2plot/';
+mname = {'5'};
+name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+realization = 10;
+load([inpath,'reviewer_response_model_K2_p2'])
+toggle_list = {'common'};
+p_est = 2;
+K=2;
+for ii=1:length(mname)
+    for jj=1:realization
+        fprintf('(%d,%d)\n',ii,jj)
+        GTmodel = E{2,1,1,jj};
+        fname = [resultpath,'reviewer_response_estim_CGN_cvx_T2500_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)];
+        load(fname)
+        model_acc = performance_eval(M,GTmodel);
+        ALL_RESULT(ii,jj).model_acc = model_acc;
+        for kk=1:length(name_list)
+            R.index(ii,jj).(name_list{kk}) = M.index.(name_list{kk});
+        end
+        for tt = 1:length(toggle_list)
+            toggle = toggle_list{tt};
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
+        end
+        R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
+        
+    end
+end
+% save([performance_path,'reviewer_response_CVX_CGN_result'],'R')
+% save([performance_path,'reviewer_response_CVX_CGN_ALL_RESULT'],'ALL_RESULT')
+
+%% CGN evaluation
+clear
+clc
+inpath = './experiment/model_parameters/';
+resultpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\experiment_compare_cvx/';
+performance_path = './results2plot/';
+mname = {'5'};
+name_list = {'bic_lasso','bic','aic','aicc','eBIC','GIC_2','GIC_3','GIC_4','GIC_5','GIC_6'};
+realization = 10;
+load([inpath,'reviewer_response_model_K2_p2'])
+toggle_list = {'common'};
+p_est = 2;
+K=2;
+for ii=1:length(mname)
+    for jj=1:realization
+        fprintf('(%d,%d)\n',ii,jj)
+        GTmodel = E{2,1,1,jj};
+        fname = [resultpath,'reviewer_response_estim_CGN_T2500_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)];
+        load(fname)
+        model_acc = performance_eval(M,GTmodel);
+        ALL_RESULT(ii,jj).model_acc = model_acc;
+        for kk=1:length(name_list)
+            R.index(ii,jj).(name_list{kk}) = M.index.(name_list{kk});
+        end
+        for tt = 1:length(toggle_list)
+            toggle = toggle_list{tt};
+            R.(toggle).F1(ii,jj) =model_acc(M.index.eBIC).(toggle).F1;
+            R.(toggle).MCC(ii,jj) =model_acc(M.index.eBIC).(toggle).MCC;
+            R.(toggle).TPR(ii,jj) =model_acc(M.index.eBIC).(toggle).TPR;
+            R.(toggle).FPR(ii,jj) =model_acc(M.index.eBIC).(toggle).FPR;
+            R.(toggle).ACC(ii,jj) =model_acc(M.index.eBIC).(toggle).ACC;
+        end
+        R.bias(ii,jj) =model_acc(M.index.eBIC).bias;
+        
+    end
+end
+% save([performance_path,'reviewer_response_CGN_result'],'R')
+% save([performance_path,'reviewer_response_CGN_ALL_RESULT'],'ALL_RESULT')
+%%
+load([performance_path,'reviewer_response_CVX_CGN_result'],'R')
+load([performance_path,'reviewer_response_CVX_CGN_ALL_RESULT'],'ALL_RESULT')
+%%
+load([performance_path,'reviewer_response_CGN_result'],'R')
+load([performance_path,'reviewer_response_CGN_ALL_RESULT'],'ALL_RESULT')

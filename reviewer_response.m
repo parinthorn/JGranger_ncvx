@@ -7,7 +7,7 @@
 
 % Visualize model
 
-%% No. 12 Calculate SNR using SNR = max(A)/sigma
+%% No. 12 Calculate SNR
 clear
 clc
 inpath = './experiment/model_parameters/';
@@ -33,13 +33,11 @@ for ii=3:4
         model = E{2,ii,2,jj};
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
-            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
-            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
-            SNR_new = 10*log10( trace(Sy)/trace(Se));
-            disp(SNR_new)
-            arr1 = [arr1 SNR_new];
+            C{kk} = Ak;
         end
+        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        arr1 = [arr1 SNR_new];
+        
         SNR.exp_CGN_K5(ii-2,jj) = max(max(abs(model.A(:))));
     end
 end
@@ -49,13 +47,10 @@ for jj=1:100
         model = E{3,3,ii,jj};
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
-            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
-            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
-            SNR_new = 10*log10( trace(Sy)/trace(Se));
-            disp(SNR_new)
-            arr2 = [arr2 SNR_new];
+            C{kk} = Ak;
         end
+        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        arr2 = [arr2 SNR_new];
         SNR.exp_FGN_K5(ii,jj) = max(max(abs(model.A(:))));
     end
 end
@@ -68,13 +63,11 @@ for jj=1:100
         model = E{2,3,ii,jj};
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            A = [reshape(Ak,n,n*p) ; [eye(n*(p-1)) zeros(n*(p-1),n)]];
-            B = [eye(n); zeros(n*(p-1),n)]; C = [eye(n) zeros(n,n*(p-1))];
-            Se = sigmasq*eye(n); Sx = dlyap(A,B*Se*B'); Sy = C*Sx*C'; % sigmasq is the noise variance you generated in VAR system
-            SNR_new = 10*log10( trace(Sy)/trace(Se));
-            disp(SNR_new)
-            arr3 = [arr3 SNR_new];
+            C{kk} = Ak;
         end
+        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        arr3 = [arr3 SNR_new];
+        
         SNR.exp_DGN_K50(ii,jj) = max(max(abs(model.A(:))));
     end
 end
@@ -86,18 +79,18 @@ histogram(x, 'Normalization','probability')
 %%
 close all
 subplot(1,3,1)
-histogram(arr1, 'Normalization','probability')
+histogram(arr1)
 xlabel("SNR (dB)")
 ylabel("Occurrence frequency")
 title("Data for CGN")
 subplot(1,3,2)
-histogram(arr2, 'Normalization','probability')
+histogram(arr2)
 xlabel("SNR (dB)")
-title("Data for FGN")
+title("Data for FGN(K=5)")
 subplot(1,3,3)
-histogram(arr3, 'Normalization','probability')
+histogram(arr3)
 xlabel("SNR (dB)")
-title("Data for DGN")
+title("Data for DGN (K=50)")
 %% No. 21 Bootstrapping
 clear
 clc

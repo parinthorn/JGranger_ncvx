@@ -12,7 +12,7 @@ s = [];
 for kk =1:K
         tmp = GC(:,:,kk);
     tmp(diag_ind) = 0;
-    subplot(1,K,kk)
+    nexttile;
     spy(tmp,'r')
     hold on
     spy(commonNZ,'k')

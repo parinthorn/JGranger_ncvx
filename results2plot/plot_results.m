@@ -437,7 +437,7 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 table_head = {'C','D','F'};
 
-row_name = {'F1','FPR','TPR','ACC','MCC'};
+row_name = {'F1','FPR','TPR','ACC','MCC', 'bias'};
 
 load([resource_path,'T150_CGN_result_K5'])
 result.C.ncvx = R;
@@ -460,14 +460,19 @@ MEDIAN = zeros(3,2,5);
 summary = zeros(3,2,5,100);
 type_acc = {'ncvx','cvx'};
 for jj=1:length(table_head)
-    for ii=1:length(row_name)
-        for t=1:2
-            dd=2;
-            if jj==1
+                if jj==1
                 toggle= 'common';
             else
                 toggle = 'total';
             end
+    for ii=1:length(row_name)
+
+        for t=1:2
+                            if ii==6
+            result.(table_head{jj}).(type_acc{t}).(toggle).bias = result.(table_head{jj}).(type_acc{t}).bias;
+        end
+            dd=2;
+
             M(jj,t,ii) = mean(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             STD(jj,t,ii) = std(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             MEDIAN(jj,t,ii) = median(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
