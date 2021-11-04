@@ -390,3 +390,47 @@ delete(h2.ShowButton)
 delete(h2.HideButton)
 exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_ADHD.png'])
 exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_ADHD.eps'])
+
+%%
+% ORBsupmedL -> ACG.L (blue)
+% REC.L -> PHG.R (blue)
+% ORBsupmed.R -> ACG.R (red)
+clf
+close all
+myLabel = AAL_116.name([25, 26, 27, 31, 32, 40]);
+for jj = 1:length(myLabel)
+    newStr = strrep(myLabel{jj},'_',' ');
+    myLabel{jj} = newStr;
+    
+end
+
+myColorMap=[0 0 1; ...
+            1 0 0; ...
+            0 0 1; ...
+            0 0 0; ...
+            0 0 0; ...
+            0 0 0];
+
+GC=[0 0 0 0 0 0; ...
+    0 0 0 0 0 0; ...
+    0 0 0 0 0 0; ...
+    1 0 0 0 0 0; ...
+    0 1 0 0 0 0; ...
+    0 0 1 0 0 0];
+ % 25 26 27 31 32 40 
+permutation_index = [1,3,2,5,4,6];
+ 
+ h2=circularGraph(GC(permutation_index,permutation_index)','Colormap',myColorMap(permutation_index, :),'Label',myLabel(permutation_index));
+h2.Node(4).Visible = 0;
+h2.Node(5).Visible = 0;
+h2.Node(6).Visible = 0;
+% pp = get(0, 'Screensize');
+% pp(3) = pp(3)*1;
+% set(gcf, 'Position', pp);
+delete(h2.ShowButton)
+delete(h2.HideButton)
+
+figurepath = './results2plot/figures/';
+
+exportgraphics(gcf,[figurepath,'reviewer_response_mostdiffnode.png'])
+exportgraphics(gcf,[figurepath,'reviewer_response_mostdiffnode.eps'])
