@@ -1,5 +1,3 @@
-
-
 function [ind_nz,A,y] = gen_sparseAR(n,p,noise_var,density,Num)
 % gen_sparseAR generates a sparse vector autoregressive model
 % 

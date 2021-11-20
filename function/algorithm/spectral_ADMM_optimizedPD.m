@@ -1,4 +1,28 @@
 function [x,L1x,L2x, history] = spectral_ADMM_optimizedPD(G, b,a1,a2,struct_L,ALG_PARAMETER)
+% This function solve the problem 
+% min_x (1/2)||Gx-b||_2^2 + a1||L_1x||_{2,1} + a2||L_2x||_{2,1}
+% by ADMM with adaptive penalty parameter \rho
+% The update rule is stated in the Thesis.
+% Input  G: vectorized H matrix for all k
+%        b: vectorized Y matrix for all k
+%       a1: control differential density
+%       a2: control common density
+%       L1: desired affine transformation
+%       L2: desired affine transformation
+%       ALG_PARAMETER: generated from gen_alg_params.m
+% Output 
+% x: converged solution
+% L1x: L1*x
+% L2x: L2*x
+% history: history of algorithm
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
+
+% It is the same with spectral_ADMM.m but optimized for Px, Dx computation
+% However, somehow MATLAB's routime for computing Px, Dx is faster.
+
+
 pp=2;
 qq=1;
 FREQ_PRINT = ALG_PARAMETER.FREQ_PRINT;

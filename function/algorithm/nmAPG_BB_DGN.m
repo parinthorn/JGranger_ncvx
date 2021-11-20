@@ -1,18 +1,38 @@
 function [x,history]= nmAPG_BB_DGN(G,b,a1,a2,PARAMETER,varargin)
-IT_MAX = 100000;
-TOL = 1e-6;
-objTOL = 1e-8;
-ALLPRINT = 1;FREQ = 1;
+% This function solve DGN formulation with nmAPG algorithm and numerical
+% proximal operator.
+%
+% Input
+% G: vectorized matrix H of all K
+% b: vectorized matrix Y of all K
+% a1: differential regularization
+% a2: common regularization
+% PARAMETER: commented in the code
+% varargin: x0 = initial solution
+% 
+% Output
+% x: solution
+% history: algorithm history tracking
+%
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 
-PInd = PARAMETER.proj_ind;
-pp = PARAMETER.p;
-qq = PARAMETER.q;
-n = PARAMETER.dim(1);
-p = PARAMETER.dim(2);
-K = PARAMETER.dim(3);
-d = PARAMETER.delta;
-eta = PARAMETER.eta;
-rho = PARAMETER.rho;
+IT_MAX = 100000; % max iterations
+TOL = 1e-6; % parameter relative change tolerance
+objTOL = 1e-8;% objective relative change tolerance
+ALLPRINT = 0; % print to console toggle
+FREQ = 1; % print to console frequency
+
+PInd = PARAMETER.proj_ind; % projection by indexing
+pp = PARAMETER.p; % problem parameters, see in Thesis
+qq = PARAMETER.q; % problem parameters, see in Thesis
+n = PARAMETER.dim(1); % timeseries dimension
+p = PARAMETER.dim(2); % selected VAR order
+K = PARAMETER.dim(3); % number of groups
+d = PARAMETER.delta; % nmAPG parameter
+eta = PARAMETER.eta; % nmAPG parameter
+rho = PARAMETER.rho; % nmAPG parameter
 
 IS_LINESEARCH = PARAMETER.IS_LINESEARCH;
 if isempty(varargin)

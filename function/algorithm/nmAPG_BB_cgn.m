@@ -1,20 +1,37 @@
 function [x,history]= nmAPG_BB_cgn(G,b,lambda,PARAMETER,varargin)
-IT_MAX = 100000;
-TOL = 1e-6;
-objTOL = 1e-8;
-ALLPRINT = 0;FREQ = 1;
+% This function solve CGN formulation with nmAPG algorithm.
+%
+% Input
+% G: vectorized matrix H of all K
+% b: vectorized matrix Y of all K
+% lambda: regularization
+% PARAMETER: commented in the code
+% varargin: x0 = initial solution
+% 
+% Output
+% x: solution
+% history: algorithm history tracking
+%
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 
-PInd = PARAMETER.proj_ind;
-pp = PARAMETER.p;
-qq = PARAMETER.q;
-n = PARAMETER.dim(1);
-p = PARAMETER.dim(2);
-K = PARAMETER.dim(3);
-d = PARAMETER.delta;
-eta = PARAMETER.eta;
-rho = PARAMETER.rho;
+IT_MAX = 100000; % max iterations
+TOL = 1e-6; % parameter relative change tolerance
+ALLPRINT = 0; % print to console toggle
+FREQ = 1; % print to console frequency
 
-IS_LINESEARCH = PARAMETER.IS_LINESEARCH;
+PInd = PARAMETER.proj_ind; % projection by indexing
+pp = PARAMETER.p; % problem parameters, see in Thesis
+qq = PARAMETER.q; % problem parameters, see in Thesis
+n = PARAMETER.dim(1); % timeseries dimension
+p = PARAMETER.dim(2); % selected VAR order
+K = PARAMETER.dim(3); % number of groups
+d = PARAMETER.delta; % nmAPG parameter
+eta = PARAMETER.eta; % nmAPG parameter
+rho = PARAMETER.rho; % nmAPG parameter
+
+IS_LINESEARCH = PARAMETER.IS_LINESEARCH;  % nmAPG BB linesearch toggle
 if isempty(varargin)
     x0 = zeros(n^2*p*K,1);
 else

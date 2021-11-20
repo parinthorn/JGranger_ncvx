@@ -1,12 +1,27 @@
 function [x,L1x,L2x, history] = adaptive_ADMM(G, b,a1,a2,L1,L2,ALG_PARAMETER)
 % This function solve the problem 
 % min_x (1/2)||Gx-b||_2^2 + a1||L_1x||_{2,q} + a2||L_2x||_{2,q}
-% with adaptive penalty parameter \rho
+% by ADMM with adaptive penalty parameter \rho
+% The update rule is stated in manuscript: https://arxiv.org/abs/2105.07196
+% Input  G: vectorized H matrix for all k
+%        b: vectorized Y matrix for all k
+%       a1: control differential density
+%       a2: control common density
+%       L1: desired affine transformation
+%       L2: desired affine transformation
+%       ALG_PARAMETER: generated from gen_alg_params.m
+% Output 
+% x: converged solution
+% L1x: L1*x
+% L2x: L2*x
+% history: history of algorithm
 %
-pp=2;
-qq=0.5;
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 
-FREQ_PRINT = ALG_PARAMETER.FREQ_PRINT;
+pp=2;  % L2 norm for the regularization
+qq=0.5;  % L1/2 for regularization
+FREQ_PRINT = ALG_PARAMETER.FREQ_PRINT;  % print to console every FREQ_PRINT iteration
 MAXITERS = ALG_PARAMETER.MAXITERS;
 ABSTOL = ALG_PARAMETER.ABSTOL; %1e-7
 RELTOL = ALG_PARAMETER.RELTOL; %1e-5

@@ -1,4 +1,26 @@
 function M = jointvargc(y,parameter, ALG_PARAMETER)
+% This function computes the formulation CGN, DGN, FGN on the give data y.
+% Input
+% y: size(y)=[n, T, K] -> [dimension, timepoints, number of groups]
+% parameter.p_var: VAR order
+% parameter.GridSize: Resolution of the regularization grid search
+% parameter.noisecov: the constraint on noise covariance when computing 
+% Log-likelihood to be dense matrix, diagonal matrix or multiple of 
+% identity matrix ['full', 'diag', 'identity']
+% parameter.penalty_weight: ['LS', 'uniform'] adaptive weight or equal weight
+% parameter.formulation: ['cgn', 'dgn', 'fgn']
+% parameter.qnorm: ['cvx', 'ncvx']
+% Output
+% M.model: the resulting models in each pair of regularization
+% M.flag: divergence flag, 0 is converge, -1 is diverge.
+% M.time: inference time (seconds)
+% M.GridSize: parameter.GridSize
+% M.noisecov: parameter.noisecov
+% M.penalty_weight: parameter.penalty_weight
+% M.formulation: parameter.formulation
+% M.qnorm: parameter.qnorm
+%
+%
 % Originally written by Parinthorn Manomaisaowapak
 % Please email to parinthorn@gmail.com before reuse, reproduce
 [n,T,K] = size(y);

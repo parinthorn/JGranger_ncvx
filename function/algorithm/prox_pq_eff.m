@@ -2,6 +2,10 @@ function prox_x = prox_pq_eff(z,v,PARAMETERS)
 % This function computes proximal operator 
 % of composite norm pq v*(||x||_p,q)^q
 % for p=2, q=1 or p=2, q=0.5
+%
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 p = PARAMETERS(1);
 q = PARAMETERS(2);
 gLen = PARAMETERS(3);

@@ -1,4 +1,8 @@
 function r = prox_pq_Px(z,PInd,v,reg,pp,qq,PARAMETER,gLen)
+% This function compute proxmal operator of Px
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 n = PARAMETER(1);
 p = PARAMETER(2);
 K = PARAMETER(3);

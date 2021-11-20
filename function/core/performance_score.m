@@ -1,4 +1,13 @@
 function score = performance_score(stat)
+% This function compute performance index from confution matrix
+% Input
+% stat: confusion matrix
+% Output
+% score: performance score [F1, ACC, TPR, MCC]
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
+
 if size(stat,3) ==4
     TP=stat(:,:,1);
     TN=stat(:,:,2);

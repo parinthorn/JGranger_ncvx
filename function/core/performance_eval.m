@@ -1,4 +1,15 @@
 function model_acc = performance_eval(M,GTmodel)
+% This function compute confusion matrix for the estimated model, 
+% performance index in all regularization pairs.
+% Input
+% M: output of jointvargc.m
+% GTmodel: Groundtruth model
+% Output
+% model_acc: performance index [common, differential, total, VAR, estimation error]
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
+
 n = GTmodel.dim(1);
 p = GTmodel.dim(2);
 K = GTmodel.dim(3);

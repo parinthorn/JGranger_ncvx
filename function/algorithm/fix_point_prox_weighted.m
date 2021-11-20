@@ -1,4 +1,21 @@
 function [x,prox_objval,flag,obj_prox_array] = fix_point_prox_weighted(z,nz_ind,w1,w2,q)
+% This function numerically solve the problem
+% min_{x} g(x) + 1/2v ||x-z||_2^2
+% where g(x) is reported in the thesis[1], with a given sparsity of x
+% Input
+% z: input vector
+% nz_ind: given sparsity of x
+% w1: parameter of g(x)
+% w2: parameter of g(x)
+% Output
+% x: converged solution
+% prox_objval: converged objective of proximal operator
+% flag: convergence flag 0 is converge, -1 is not converge
+% obj_prox_array: history of proximal objective
+% 
+%
+% Originally written by Parinthorn Manomaisaowapak
+% Please email to parinthorn@gmail.com before reuse, reproduce
 tol = 1e-3;
 [p,K] = size(z);
 % size(nz_ind) = K
@@ -29,18 +46,7 @@ for tt=1:MAX_ITER
         std_vec = std(tmp_vec(:,:,SAFEGUARD_STEP:tt),0,3);
         mean_vec = mean(tmp_vec(:,:,SAFEGUARD_STEP:tt),3);
         std_vec(mean_vec~=0) = std_vec(mean_vec~=0)./abs(mean_vec((mean_vec~=0)));
-%         d1 = obj_prox(tt-18:tt-3);
-%         d2 = flipud(obj_prox(tt-16:tt-1));
-%         std_prox = std(obj_prox(tt-10:tt));
-%         cond = std_prox/mean(obj_prox(tt-10:tt));
         if any(std_vec>1e-2,'all')
-%             plot(obj_prox_array(1:tt))
-            
-%             for kk=1:K
-%                 subplot(1,K,kk)
-%                 plot(squeeze(tmp_vec(:,kk,SAFEGUARD_STEP:tt))')
-%             end
-%             pause(0.1)
             flag = -1;
             x = nan;
             obj_prox_array = inf;
@@ -49,10 +55,5 @@ for tt=1:MAX_ITER
         end
     end
 end
-% for kk=1:K
-%     subplot(1,K,kk)
-%     plot(squeeze(tmp_vec(:,kk,SAFEGUARD_STEP:tt))')
-% end
-% pause(0.1)
 flag = -1;
 end
