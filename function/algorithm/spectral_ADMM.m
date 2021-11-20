@@ -199,6 +199,7 @@ end
 
 % if PRINT_RESULT
 t_end = toc(t_start);
+history.total_time = t_end;
 history.tpi = t_end/k;
 % end
 % return sparse result

@@ -33,7 +33,7 @@ for jj=1:realz
     y = sim_VAR(model.A,T,1,model.seed,0);
     M = jointvargc_optimizedPD(y,parameter.ncvx,ALG_PARAMETER.ncvx);
     
-    save([outpath,'estim_FGN_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%     save([outpath,'estim_FGN_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end
 %% CVX
 ii=2;
@@ -42,6 +42,6 @@ for jj=1:realz
     model = E{3,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
     M = jointvargc_optimizedPD(y,parameter.cvx,ALG_PARAMETER.cvx);
-    save([outpath,'estim_FGN_cvx_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%     save([outpath,'estim_FGN_cvx_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 
 end

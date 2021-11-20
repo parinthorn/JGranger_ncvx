@@ -94,11 +94,13 @@ switch formulation
         ind_differential = cell(1,GridSize);
         flag = zeros(1,GridSize);
         ind = cell(1,GridSize);
+        total_time = zeros(1,GridSize);
         t1 = tic;
-        for (ii=1:GridSize) % this can be changed to parfor loops
+        parfor (ii=1:GridSize, 8) % this can be changed to parfor loops
             fprintf('Grid : (%d)/(%d) \n',ii,GridSize)
             a2 = Lambdacrit_2*Lambda(ii);
             [x_reg,~,~,history] = fitmodel(0,a2);
+            total_time(ii) = history.total_time;
             A_reg_tmp = devect(full(x_reg),n,p_var,K); % convert to (n,n,p,K) format
             A_reg(:,:,:,:,ii) = A_reg_tmp; % this is for arranging result into parfor format
             [x_cls,ls_flag(1,ii)] = jointvargc_constrainedLS_DGN(G,b,find(x_reg));
@@ -142,6 +144,7 @@ switch formulation
             M.model(ii).ind_differential = ind_differential(ii);
             M.model(ii).flag = flag(ii);
             M.model(ii).ls_flag = ls_flag(ii);
+            M.model(ii).total_time = total_time(ii);
             
         end
         M.flag = reshape([M.model.flag],[1,GridSize]);
@@ -159,10 +162,12 @@ switch formulation
             ind_differential = cell(1,GridSize);
             flag = zeros(1,GridSize);
             ind = cell(1,GridSize);
-            for jj=1:GridSize  % this can be changed to parfor loops
+            total_time = zeros(1,GridSize);
+            parfor (jj=1:GridSize, 12)  % this can be changed to parfor loops
                 fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
                 a2 = Lambdacrit_2*Lambda(jj);
                 [x_reg,~,~,history] = fitmodel(a1,a2);
+                total_time(1, jj) = history.total_time;
                 A_reg_tmp = devect(full(x_reg),n,p_var,K); % convert to (n,n,p,K) format
                 A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
                 [x_cls,ls_flag(1,jj)] = jointvargc_constrainedLS_DGN(G,b,find(x_reg));
@@ -189,6 +194,7 @@ switch formulation
             tmp_struct.ind_differential(ii,:) = ind_differential;
             tmp_struct.flag(ii,:) = flag;
             tmp_struct.ls_flag(ii,:) = ls_flag;
+            tmp_struct.total_time(ii, :) = total_time;
             
         end
         GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
@@ -211,6 +217,7 @@ switch formulation
                 M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
                 M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
                 M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
+                M.model(ii,jj).total_time = tmp_struct.total_time(ii, jj);
             end
         end
         M.flag = reshape([M.model.flag],[GridSize,GridSize]);
@@ -234,13 +241,14 @@ switch formulation
             ind_differential = cell(1,GridSize);
             flag = zeros(1,GridSize);
             ind = cell(1,GridSize);
-            
+            total_time = zeros(1,GridSize);
             for jj=1:GridSize
                 fprintf('Grid : (%d,%d)/(%d, %d) \n',ii,jj,GridSize,GridSize)
                 Indplus = Indplus_in;
                 Indminus = Indminus_in;
                 a2 = Lambdacrit_2*Lambda(jj);
                 [x_reg,Px,Dx,history] = fitmodel(a1,a2);
+                total_time(1, jj) = history.total_time;
                 A_reg_tmp = devect(full(x_reg),n,p_var,K); % convert to (n,n,p,K) format
                 A_reg(:,:,:,:,1,jj) = A_reg_tmp; % this is for arranging result into parfor format
                 x_cls = jointvargc_constrainedLS_FGN(G,b,D,Dx,P,Px,'off');
@@ -275,6 +283,7 @@ switch formulation
             tmp_struct.ind_differential(ii,:) = ind_differential;
             tmp_struct.flag(ii,:) = flag;
             tmp_struct.ls_flag(ii,:) = ls_flag;
+            tmp_struct.total_time(ii, :) = total_time;
         end
         GIC_LIST = fieldnames(tmp_struct.stat.model_selection_score);
         for nn=1:length(GIC_LIST)
@@ -296,6 +305,7 @@ switch formulation
                 M.model(ii,jj).ind_common = tmp_struct.ind_common(ii,jj);
                 M.model(ii,jj).ind_differential = tmp_struct.ind_differential(ii,jj);
                 M.model(ii,jj).flag = tmp_struct.flag(ii,jj);
+                M.model(ii,jj).total_time = tmp_struct.total_time(ii, jj);
             end
         end
         M.flag = reshape([M.model.flag],[GridSize,GridSize]);

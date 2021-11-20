@@ -1,4 +1,8 @@
-function [x,L1x,L2x, history] = adaptive_ADMM (G, b,a1,a2,L1,L2,ALG_PARAMETER)
+function [x,L1x,L2x, history] = adaptive_ADMM(G, b,a1,a2,L1,L2,ALG_PARAMETER)
+% This function solve the problem 
+% min_x (1/2)||Gx-b||_2^2 + a1||L_1x||_{2,q} + a2||L_2x||_{2,q}
+% with adaptive penalty parameter \rho
+%
 pp=2;
 qq=0.5;
 
@@ -148,6 +152,7 @@ end
 
 % if PRINT_RESULT
 t_end = toc(t_start);
+history.total_time = t_end;
 history.tpi = t_end/k;
 % end
 % return sparse result

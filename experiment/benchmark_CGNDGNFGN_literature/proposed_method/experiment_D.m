@@ -9,8 +9,8 @@ cd = 3;
 T = 100;
 p_true = 1;
 p_est = 1;
-K = 5;
-% K = 50;
+% K = 5;
+K = 50;
 load([inpath,'model_K',int2str(K),'_p',int2str(p_true)]) % struct E
 [~,~,dd,m] = size(E);
 realz = m;
@@ -27,14 +27,15 @@ ALG_PARAMETER.cvx = gen_alg_params(parameter.cvx.qnorm, parameter.cvx.formulatio
 parameter.ncvx = parameter.cvx;
 parameter.ncvx.qnorm = 'ncvx';
 ALG_PARAMETER.ncvx = gen_alg_params(parameter.ncvx.qnorm, parameter.ncvx.formulation);
-for jj=1:realz
+for jj=80:realz
     for ii=1:dd
         % generate data from given seed
         model = E{type,cd,ii,jj};
         y = sim_VAR(model.A,T,1,model.seed,0);
         M = jointvargc(y,parameter.ncvx,ALG_PARAMETER.ncvx);
 %         save([outpath,'estim_DGN_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
-        M = jointvargc_optimizedPD(y,parameter.cvx,ALG_PARAMETER.cvx);
+        M = jointvargc(y,parameter.cvx,ALG_PARAMETER.cvx);
+        
 %         save([outpath,'estim_DGN_cvx_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
     end
 end

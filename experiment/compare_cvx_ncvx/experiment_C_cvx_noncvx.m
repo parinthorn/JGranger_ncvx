@@ -31,17 +31,17 @@ for jj=1:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = jointvargc_optimizedPD(y,parameter.ncvx,ALG_PARAMETER.ncvx);
+    M = jointvargc(y,parameter.ncvx,ALG_PARAMETER.ncvx);
     
-    save([outpath,'estim_CGN_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+%     save([outpath,'estim_CGN_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end
 %% CVX
 
-for jj=1:realz
+for jj=10:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = jointvargc_optimizedPD(y,parameter.cvx,ALG_PARAMETER.cvx);
-    save([outpath,'estim_CGN_cvx_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
+    M = jointvargc(y,parameter.cvx,ALG_PARAMETER.cvx);
+%     save([outpath,'estim_CGN_cvx_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 
 end

@@ -31,11 +31,16 @@ for ii=3:4
     for jj=1:m
         % generate data from given seed
         model = E{2,ii,2,jj};
+        trSy_total = 0;
+            trSe_total = 0;
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            C{kk} = Ak;
+            [~, trSy, trSe] = compute_ar_SNR(Ak, sigmasq, [n, p]);
+            trSy_total = trSy_total+trSy;
+            trSe_total = trSe_total+trSe;
+
         end
-        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        SNR_new = 10*log10(trSy_total/trSe_total);
         arr1 = [arr1 SNR_new];
         
         SNR.exp_CGN_K5(ii-2,jj) = max(max(abs(model.A(:))));
@@ -45,11 +50,16 @@ for jj=1:100
     for ii=1:2
         % generate data from given seed
         model = E{3,3,ii,jj};
+        trSy_total = 0;
+            trSe_total = 0;
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            C{kk} = Ak;
+            [~, trSy, trSe] = compute_ar_SNR(Ak, sigmasq, [n, p]);
+            trSy_total = trSy_total+trSy;
+            trSe_total = trSe_total+trSe;
+
         end
-        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        SNR_new = 10*log10(trSy_total/trSe_total);
         arr2 = [arr2 SNR_new];
         SNR.exp_FGN_K5(ii,jj) = max(max(abs(model.A(:))));
     end
@@ -61,36 +71,54 @@ for jj=1:100
     for ii=1:2
         % generate data from given seed
         model = E{2,3,ii,jj};
+        trSy_total = 0;
+            trSe_total = 0;
         for kk =1:K
             Ak = model.A(:,:,:,kk);
-            C{kk} = Ak;
+            [~, trSy, trSe] = compute_ar_SNR(Ak, sigmasq, [n, p]);
+            trSy_total = trSy_total+trSy;
+            trSe_total = trSe_total+trSe;
+
         end
-        SNR_new = compute_ar_SNR(blkdiag(C{:}), sigmasq, [n*K, p]);
+        SNR_new = 10*log10(trSy_total/trSe_total);
         arr3 = [arr3 SNR_new];
         
         SNR.exp_DGN_K50(ii,jj) = max(max(abs(model.A(:))));
     end
 end
 
-x =  [SNR.exp_CGN_K5(:) SNR.exp_FGN_K5(:) SNR.exp_DGN_K50(:)];
+% x =  [SNR.exp_CGN_K5(:) SNR.exp_FGN_K5(:) SNR.exp_DGN_K50(:)];
 
 
-histogram(x, 'Normalization','probability')
+% histogram(x, 'Normalization','probability')
 %%
 close all
 subplot(1,3,1)
-histogram(arr1)
+histogram(arr1, 'Normalization','probability')
+ylim([0 0.4])
 xlabel("SNR (dB)")
 ylabel("Occurrence frequency")
-title("Data for CGN")
+title("Data for CGN (K=5)")
 subplot(1,3,2)
-histogram(arr2)
+histogram(arr2, 'Normalization','probability')
+ylim([0 0.4])
 xlabel("SNR (dB)")
-title("Data for FGN(K=5)")
+title("Data for FGN (K=5)")
 subplot(1,3,3)
-histogram(arr3)
+histogram(arr3, 'Normalization','probability')
+ylim([0 0.4])
 xlabel("SNR (dB)")
 title("Data for DGN (K=50)")
+
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.9;
+% pp(4) = pp(4)*0.7;
+set(gcf, 'Position', pp);
+figurepath = './results2plot/figures/';
+exportgraphics(gcf,[figurepath,'SNR_histogram.png'])
+exportgraphics(gcf,[figurepath,'SNR_histogram.eps'],'ContentType','vector')
+
 %% No. 21 Bootstrapping
 clear
 clc
@@ -650,10 +678,23 @@ print([figurepath,'reviewer_response_exp_CGN_ROC_sample', int2str(oo)],'-dpng','
 end
 
 %% fMRI ACF, PACF
+
+clear
+clc
+selected_TDC = {'0010023';'0010024';'0010070';'0010088';'0010092';'0010112';'0010122';'0010123';'0010128';'1000804';'1435954';'3163200';'3243657';'3845761';'4079254';'8692452';'8834383';'9750701'};
+selected_ADHD_C = {'0010013';'0010017';'0010019';'0010022';'0010025';'0010037';'0010042';'0010048';'0010050';'0010086';'0010109';'1187766';'1283494';'1918630';'1992284';'2054438';'2107638';'2497695'};
+y_TDC = concat_real_data(selected_TDC,116,'nyu',0);
+y_ADHD_C = concat_real_data(selected_ADHD_C,116,'nyu',0); % load data in format (n,T,K)
+y_TDC = y_TDC-mean(y_TDC,2);
+y_ADHD_C = y_ADHD_C-mean(y_ADHD_C,2);
+K = size(y_TDC,3);
+y_total = cat(3,y_TDC,y_ADHD_C);
+y_total = y_total-mean(y_total,2); % detrend in time axis
+
+
 figurepath = './results2plot/figures/';
 
 cnt = 0;
-clear fMRI
 for ii=1:116
     for jj=1:36
         cnt=cnt+1;
@@ -701,7 +742,11 @@ set(findall(gcf,'-property','FontSize'),'FontSize',18)
 pp = get(0, 'Screensize');
 pp(3) = pp(3)*1;
 set(gcf, 'Position', pp);
-print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-dpng','-r300')
-print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-depsc','-r300')
+% print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-dpng','-r300')
+% print([figurepath,'reviewer_response_fMRI_ACF_PACF'],'-depsc','-r300')
+
+%% computation time
+
+
 
 

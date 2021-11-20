@@ -31,7 +31,7 @@ for jj=1:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = jointvargc_optimizedPD(y,parameter.ncvx,ALG_PARAMETER.ncvx);
+    M = jointvargc(y,parameter.ncvx,ALG_PARAMETER.ncvx);
     
     save([outpath,'estim_DGN_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 end
@@ -41,7 +41,7 @@ for jj=1:realz
     % generate data from given seed
     model = E{2,jj}; % type D
     y = sim_VAR(model.A,T,1,model.seed,0);
-    M = jointvargc_optimizedPD(y,parameter.ncvx,ALG_PARAMETER.ncvx);
+    M = jointvargc(y,parameter.ncvx,ALG_PARAMETER.ncvx);
     save([outpath,'estim_DGN_cvx_T150_',mname{ii},'percent','_lag',int2str(p_est),'_K',int2str(K),'_',int2str(jj)],'M')
 
 end

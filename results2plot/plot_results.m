@@ -51,7 +51,7 @@ P(:,:,2) = -MEDIAN(:,:,2)+MEDIAN(:,1,2);
 P(2,:,:) = -P(2,:,:);
 % table
 % printtable([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name)
- printtable_withtoprow([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name,{'Common density: 10%','Common density: 20%'})
+printtable_withtoprow([M(:,:,1)*100 M(:,:,2)*100],[STD(:,:,1)*100 STD(:,:,2)*100],{table_head_show{:},table_head_show{:}},row_name,{'Common density: 10%','Common density: 20%'})
 
 hh = tiledlayout(2,2);
 hh.TileSpacing = 'none';
@@ -62,39 +62,39 @@ for ii=1:2
     
     
     
-        for dd=1:2 % this should be
-            clear ARR
-            ax(dd) = nexttile;
-            for jj=1:4
+    for dd=1:2 % this should be
+        clear ARR
+        ax(dd) = nexttile;
+        for jj=1:4
             ARR(:,jj) = summary(ii,jj,dd,:);
-            end
-            boxplot(100*ARR)
-            
-            if ii==2
+        end
+        boxplot(100*ARR)
+        
+        if ii==2
             a = get(get(gca,'children'),'children');   % Get the handles of all the objects
             t = get(a,'tag');   % List the names of all the objects
             box1 = a(9:12);   % The 7th object is the first box
             set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
-            end
-            
-            if ii==1
+        end
+        
+        if ii==1
             title(density_name{dd})
             set(gca,'xticklabel',[])
-                
-            else
-                set(gca,'xticklabel',table_head_show)
-                ylim([0 55])
-            end
-            grid on
-            if dd==1
-                ylabel([row_name{ii},' (%)'])
-            else
-                
-                set(gca,'yticklabel',[])
-                linkaxes([ax(1) ax(2)],'y')
-            end
-            set(findobj(gca,'type','line'),'linew',3)
+            
+        else
+            set(gca,'xticklabel',table_head_show)
+            ylim([0 55])
         end
+        grid on
+        if dd==1
+            ylabel([row_name{ii},' (%)'])
+        else
+            
+            set(gca,'yticklabel',[])
+            linkaxes([ax(1) ax(2)],'y')
+        end
+        set(findobj(gca,'type','line'),'linew',3)
+    end
     
     
 end
@@ -165,38 +165,38 @@ for ii=1:2
     
     
     
-        for dd=1:2 % this should be
-            clear ARR
-            ax(dd) = nexttile;
-            for jj=1:4
+    for dd=1:2 % this should be
+        clear ARR
+        ax(dd) = nexttile;
+        for jj=1:4
             ARR(:,jj) = summary(ii,jj,dd,:);
-            end
-            boxplot(100*ARR)
-            if ii==2
+        end
+        boxplot(100*ARR)
+        if ii==2
             a = get(get(gca,'children'),'children');   % Get the handles of all the objects
             t = get(a,'tag');   % List the names of all the objects
             box1 = a(9:12);   % The 7th object is the first box
             set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
-            end
-            
-            if ii==1
+        end
+        
+        if ii==1
             title(density_name{dd})
             set(gca,'xticklabel',[])
-                
-            else
-                set(gca,'xticklabel',table_head_show)
-%                 ylim([0 55])
-            end
-            grid on
-            if dd==1
-                ylabel([row_name{ii},' (%)'])
-            else
-                
-                set(gca,'yticklabel',[])
-                linkaxes([ax(1) ax(2)],'y')
-            end
-            set(findobj(gca,'type','line'),'linew',3)
+            
+        else
+            set(gca,'xticklabel',table_head_show)
+            %                 ylim([0 55])
         end
+        grid on
+        if dd==1
+            ylabel([row_name{ii},' (%)'])
+        else
+            
+            set(gca,'yticklabel',[])
+            linkaxes([ax(1) ax(2)],'y')
+        end
+        set(findobj(gca,'type','line'),'linew',3)
+    end
     
     
 end
@@ -252,11 +252,11 @@ summary = zeros(6,4,2,100);
 for jj=1:length(table_head)
     
     for ii=1:length(row_name)
-
+        
         for kk=1:length(K_list)
-        if ii==6
-            result.(table_head{jj}).(K_list{kk}).(toggle).bias = result.(table_head{jj}).(K_list{kk}).bias;
-        end            
+            if ii==6
+                result.(table_head{jj}).(K_list{kk}).(toggle).bias = result.(table_head{jj}).(K_list{kk}).bias;
+            end
             dd=2;
             M(ii,jj,kk) = mean(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
             STD(ii,jj,kk) = std(result.(table_head{jj}).(K_list{kk}).(toggle).(row_name{ii})(dd,:));
@@ -315,7 +315,7 @@ for ii=1:2
         end
         if ii==1
             set(gca,'xticklabel',[])
-            title(table_head_show{jj}) 
+            title(table_head_show{jj})
         else
             
             set(gca,'xticklabel',{'5','50'})
@@ -387,38 +387,38 @@ for ii=1:2
     
     
     
-        for dd=1:2 % this should be
-            clear ARR
-            ax(dd) = nexttile;
-            for jj=1:4
+    for dd=1:2 % this should be
+        clear ARR
+        ax(dd) = nexttile;
+        for jj=1:4
             ARR(:,jj) = summary(ii,jj,dd,:);
-            end
-            boxplot(100*ARR)
-            if ii==2
+        end
+        boxplot(100*ARR)
+        if ii==2
             a = get(get(gca,'children'),'children');   % Get the handles of all the objects
             t = get(a,'tag');   % List the names of all the objects
             box1 = a(9:12);   % The 7th object is the first box
             set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
-            end
-            
-            if ii==1
+        end
+        
+        if ii==1
             title(density_name{dd})
             set(gca,'xticklabel',[])
-                
-            else
-                set(gca,'xticklabel',table_head_show)
-%                 ylim([0 55])
-            end
-            grid on
-            if dd==1
-                ylabel([row_name{ii},' (%)'])
-            else
-                
-                set(gca,'yticklabel',[])
-                linkaxes([ax(1) ax(2)],'y')
-            end
-            set(findobj(gca,'type','line'),'linew',3)
+            
+        else
+            set(gca,'xticklabel',table_head_show)
+            %                 ylim([0 55])
         end
+        grid on
+        if dd==1
+            ylabel([row_name{ii},' (%)'])
+        else
+            
+            set(gca,'yticklabel',[])
+            linkaxes([ax(1) ax(2)],'y')
+        end
+        set(findobj(gca,'type','line'),'linew',3)
+    end
     
     
 end
@@ -460,19 +460,19 @@ MEDIAN = zeros(3,2,5);
 summary = zeros(3,2,5,100);
 type_acc = {'ncvx','cvx'};
 for jj=1:length(table_head)
-                if jj==1
-                toggle= 'common';
-            else
-                toggle = 'total';
-            end
+    if jj==1
+        toggle= 'common';
+    else
+        toggle = 'total';
+    end
     for ii=1:length(row_name)
-
+        
         for t=1:2
-                            if ii==6
-            result.(table_head{jj}).(type_acc{t}).(toggle).bias = result.(table_head{jj}).(type_acc{t}).bias;
-        end
+            if ii==6
+                result.(table_head{jj}).(type_acc{t}).(toggle).bias = result.(table_head{jj}).(type_acc{t}).bias;
+            end
             dd=2;
-
+            
             M(jj,t,ii) = mean(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             STD(jj,t,ii) = std(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
             MEDIAN(jj,t,ii) = median(result.(table_head{jj}).(type_acc{t}).(toggle).(row_name{ii})(dd,:));
@@ -482,7 +482,7 @@ for jj=1:length(table_head)
 end
 M = permute(M,[3,2,1]);
 STD = permute(STD,[3,2,1]);
-MEDIAN = permute(MEDIAN,[3,2,1]); 
+MEDIAN = permute(MEDIAN,[3,2,1]);
 
 O(:,:,1) = -M(:,:,1)+M(:,1,1);
 O(:,:,2) = -M(:,:,2)+M(:,1,2);
@@ -507,7 +507,7 @@ density = {'1%','5%'};
 formulation_name = {'common part','total part','total part'};
 cvx_list = {'CGN','cvx-CGN';'DGN','cvx-DGN';'FGN','cvx-FGN'};
 dd=2;
- % [C,D,F] x [ncvx, cvx] x [F1, FPR, TPR, ACC , MCC]
+% [C,D,F] x [ncvx, cvx] x [F1, FPR, TPR, ACC , MCC]
 for ii=1:2
     for jj=1:3
         ax(jj) = nexttile;
@@ -521,7 +521,7 @@ for ii=1:2
             t = get(a,'tag');   % List the names of all the objects
             box1 = a(5:6);   % The 7th object is the first box
             set(box1, 'Color', [0 0.5 0]);   % Set the color of the first box to green
-            end
+        end
         
         
         if ii==1
@@ -564,46 +564,46 @@ figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 method_path = {'CGN_ALL_RESULT.mat','CGN_CVX_ALL_RESULT.mat'};
 for mm=1:2
-load([resource_path,method_path{mm}])
-ii =2;sample = 6;
-sample_acc = ALL_RESULT(1,sample);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmpval(1,:)=[metrics.F1];max1val = {max(tmpval(1,:))};
-
-sample_acc = ALL_RESULT(2,sample);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmpval(2,:)=[metrics.F1];max2val = {max(tmpval(2,:))};
-% tt=tiledlayout(1,2,'padding','none','tilespacing','none');
-
-tmp_avg = zeros(2,30);
-max1_avg = 0;
-max2_avg = 0;
-for jj=1:100
-sample_acc = ALL_RESULT(1,jj);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.FPR];max1 = {max(tmp(1,:))};
-
-sample_acc = ALL_RESULT(2,jj);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.FPR];max2 = {max(tmp(2,:))};
-
-tmp_avg = tmp_avg+tmp/100;
-max1_avg = max1_avg+max1{1}/100;
-max2_avg = max2_avg+max2{1}/100;
-end
-FPR_array{mm} = tmp_avg;
-
-tmp_avg = zeros(2,30);
-max1_avg = 0;
-max2_avg = 0;
-for jj=1:100
-sample_acc = ALL_RESULT(1,jj);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.TPR];max1 = {max(tmp(1,:))};
-
-sample_acc = ALL_RESULT(2,jj);
-metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.TPR];max2 = {max(tmp(2,:))};
-
-tmp_avg = tmp_avg+tmp/100;
-max1_avg = max1_avg+max1{1}/100;
-max2_avg = max2_avg+max2{1}/100;
-end
-TPR_array{mm} = tmp_avg;
+    load([resource_path,method_path{mm}])
+    ii =2;sample = 6;
+    sample_acc = ALL_RESULT(1,sample);
+    metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmpval(1,:)=[metrics.F1];max1val = {max(tmpval(1,:))};
+    
+    sample_acc = ALL_RESULT(2,sample);
+    metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmpval(2,:)=[metrics.F1];max2val = {max(tmpval(2,:))};
+    % tt=tiledlayout(1,2,'padding','none','tilespacing','none');
+    
+    tmp_avg = zeros(2,30);
+    max1_avg = 0;
+    max2_avg = 0;
+    for jj=1:100
+        sample_acc = ALL_RESULT(1,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.FPR];max1 = {max(tmp(1,:))};
+        
+        sample_acc = ALL_RESULT(2,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.FPR];max2 = {max(tmp(2,:))};
+        
+        tmp_avg = tmp_avg+tmp/100;
+        max1_avg = max1_avg+max1{1}/100;
+        max2_avg = max2_avg+max2{1}/100;
+    end
+    FPR_array{mm} = tmp_avg;
+    
+    tmp_avg = zeros(2,30);
+    max1_avg = 0;
+    max2_avg = 0;
+    for jj=1:100
+        sample_acc = ALL_RESULT(1,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(1,:)=[metrics.TPR];max1 = {max(tmp(1,:))};
+        
+        sample_acc = ALL_RESULT(2,jj);
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; tmp(2,:)=[metrics.TPR];max2 = {max(tmp(2,:))};
+        
+        tmp_avg = tmp_avg+tmp/100;
+        max1_avg = max1_avg+max1{1}/100;
+        max2_avg = max2_avg+max2{1}/100;
+    end
+    TPR_array{mm} = tmp_avg;
 end
 plot(100*[FPR_array{1};FPR_array{2}]',100*[TPR_array{1};TPR_array{2}]','Linewidth',4)
 legend('CGN on common density 10%','CGN on common density 20%','cvx-CGN on common density 10%','cvx-CGN on common density 20%','location','southeast')
@@ -644,38 +644,38 @@ type_list_show = {'common part','differential part'};
 score_type = 'F1';
 text_label = {'Diff. density 1%','Diff. density 5%'};
 for dd=2:2
-sample_acc = ALL_RESULT(dd,sample);
-
-
-
-for ii=1:length(type_list)
-    nexttile;
-    metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
-    bestcase = max(metrics);
-    metrics = reshape(metrics,[30,30]);
-    imagesc(100*metrics)
-%     grid on
-%     text_show = sprintf([type_list_show{ii},' best ',score_type,' score: %2.1f'],100*bestcase);
-    text_show = type_list_show{ii};
-    title(text_show)
-    axis('square')
-    colormap((1-gray).^0.4)
-    caxis([0,100])
-    set(gca,'xticklabel',[],'yticklabel',[])
-    if ii==2
-%         rr= colorbar('location','eastoutside');
-%         set(get(rr,'label'),'string','F1 (%)');
-    end
-    if ii==1
-ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
-    end
-    xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+    sample_acc = ALL_RESULT(dd,sample);
     
-    set(gca,'FontSize',36)
     
-%     set(gca,)
-end
-
+    
+    for ii=1:length(type_list)
+        nexttile;
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
+        bestcase = max(metrics);
+        metrics = reshape(metrics,[30,30]);
+        imagesc(100*metrics)
+        %     grid on
+        %     text_show = sprintf([type_list_show{ii},' best ',score_type,' score: %2.1f'],100*bestcase);
+        text_show = type_list_show{ii};
+        title(text_show)
+        axis('square')
+        colormap((1-gray).^0.4)
+        caxis([0,100])
+        set(gca,'xticklabel',[],'yticklabel',[])
+        if ii==2
+            %         rr= colorbar('location','eastoutside');
+            %         set(get(rr,'label'),'string','F1 (%)');
+        end
+        if ii==1
+            ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
+        end
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+        
+        set(gca,'FontSize',36)
+        
+        %     set(gca,)
+    end
+    
 end
 rr=colorbar('FontSize',36);
 rr.Title.String='F1 (%)';
@@ -698,45 +698,45 @@ type_list_show = {'common part','differential part'};
 score_type = 'F1';
 text_label = {'Diff. density 1%','Diff. density 5%'};
 for dd=2:2
-sample_acc = ALL_RESULT(dd,sample);
-
-
-
-for ii=1:length(type_list)
-    nexttile;
-    metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
-    bestcase = max(metrics);
-    metrics = reshape(metrics,[30,30]);
-    imagesc(100*metrics)
-%     grid on
-%     text_show = sprintf([type_list_show{ii},' best ',score_type,' score: %2.1f'],100*bestcase);
-    text_show = type_list_show{ii};
-    title(text_show)
-    axis('square')
-    colormap((1-gray).^0.4)
-    caxis([0,100])
-    set(gca,'xticklabel',[],'yticklabel',[])
-    if ii==2
-%         rr= colorbar('location','eastoutside');
-%         set(get(rr,'label'),'string','F1 (%)');
-    end
-    if ii==1
-ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
-    end
-    xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+    sample_acc = ALL_RESULT(dd,sample);
     
-    set(gca,'FontSize',36)
     
-%     set(gca,)
-end
-
+    
+    for ii=1:length(type_list)
+        nexttile;
+        metrics = [sample_acc.model_acc]; metrics= [metrics.(type_list{ii})]; metrics=[metrics.F1];
+        bestcase = max(metrics);
+        metrics = reshape(metrics,[30,30]);
+        imagesc(100*metrics)
+        %     grid on
+        %     text_show = sprintf([type_list_show{ii},' best ',score_type,' score: %2.1f'],100*bestcase);
+        text_show = type_list_show{ii};
+        title(text_show)
+        axis('square')
+        colormap((1-gray).^0.4)
+        caxis([0,100])
+        set(gca,'xticklabel',[],'yticklabel',[])
+        if ii==2
+            %         rr= colorbar('location','eastoutside');
+            %         set(get(rr,'label'),'string','F1 (%)');
+        end
+        if ii==1
+            ylabel('$\leftarrow\lambda_{1}$','Interpreter','latex')
+        end
+        xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex')
+        
+        set(gca,'FontSize',36)
+        
+        %     set(gca,)
+    end
+    
 end
 rr=colorbar('FontSize',36);
 rr.Title.String='F1 (%)';
 set(gcf,'WindowState','fullscreen')
 % saveas(gcf,[figurepath,'exp_DGN_supp_K50'])
 % print([figurepath,'exp_DGN_supp_K50'],'-painters','-depsc','-r300')
-    
+
 %% exp_FGN_supp (cvx)
 
 clear
@@ -785,20 +785,20 @@ for dd=1:2
     hold on
     scatter(J_best(selected_index),I_best(selected_index),300,'sr','filled')
     scatter(J_score(selected_index),I_score(selected_index),150,'ob','filled')
-%     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
+    %     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
     hold off
     if dd==2
-    legend('maximum F1 index','eBIC selected index','FontSize',28)
+        legend('maximum F1 index','eBIC selected index','FontSize',28)
     end
-%     grid on
+    %     grid on
     text_show = sprintf([type_list_show{1},' ',score_type,' score: %2.1f'],100*F1_avg);
-%     title(text_show)
+    %     title(text_show)
     axis('square')
     colormap((1-gray).^0.4)
     caxis([0,100])
     set(gca,'xticklabel',[],'yticklabel',[])
     if dd==1
-%                 colorbar('Location','westoutside')
+        %                 colorbar('Location','westoutside')
         xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
         
         set(gca,'xaxisLocation','top')
@@ -874,20 +874,20 @@ for dd=1:2
     hold on
     scatter(J_best(selected_index),I_best(selected_index),300,'sr','filled')
     scatter(J_score(selected_index),I_score(selected_index),150,'ob','filled')
-%     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
+    %     plot([J_best(selected_index) J_score(selected_index)]',[I_best(selected_index) I_score(selected_index)]','-k','LineWidth',4)
     hold off
     if dd==2
-    legend('maximum F1 index','eBIC selected index','FontSize',28)
+        legend('maximum F1 index','eBIC selected index','FontSize',28)
     end
-%     grid on
+    %     grid on
     text_show = sprintf([type_list_show{1},' ',score_type,' score: %2.1f'],100*F1_avg);
-%     title(text_show)
+    %     title(text_show)
     axis('square')
     colormap((1-gray).^0.4)
     caxis([0,100])
     set(gca,'xticklabel',[],'yticklabel',[])
     if dd==1
-%                 colorbar('Location','westoutside')
+        %                 colorbar('Location','westoutside')
         xlabel('$\lambda_{2}\rightarrow$','Interpreter','latex','FontSize',38)
         
         set(gca,'xaxisLocation','top')
@@ -914,7 +914,7 @@ set(gcf, 'Position', pp);
 % print([figurepath,'exp_FGN_supp_noncvx'],'-painters','-depsc','-r300')
 %%
 clear
-clf 
+clf
 clc
 close all
 figurepath = './results2plot/figures/';
@@ -940,10 +940,10 @@ hold off
 colormap((gray).^(0.4))
 
 % legend('FGN','cvx-FGN')
-    xlabel('estimated model density','FontSize',36)
-    ylabel('Probability','FontSize',36)
-    ylim([0 0.4])
-    grid on
+xlabel('estimated model density','FontSize',36)
+ylabel('Probability','FontSize',36)
+ylim([0 0.4])
+grid on
 set(gca,'FontSize',36)
 load([resource_path,'LLHcorrected_result_adaptive_cvx_formulationS_5percent_lag1_K5_5.mat'])
 Mcvx = M;
@@ -961,16 +961,16 @@ histogram(tmp, 'BinWidth', width,'Normalization','probability')
 hold off
 colormap((gray).^(0.4))
 legend('FGN','cvx-FGN')
-    xlabel('estimated model density','FontSize',36)
+xlabel('estimated model density','FontSize',36)
 %     ylabel('probability','FontSize',36)
-    ylim([0 0.4])
-    grid on
+ylim([0 0.4])
+grid on
 
 set(gca,'FontSize',36,'yticklabel',[])
 set(gcf,'WindowState','fullscreen')
 % saveas(gcf,[figurepath,'exp_FGN_densityhistogram'])
 % print([figurepath,'exp_FGN_densityhistogram'],'-depsc','-r300')
-    
+
 %% supplementary material
 figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
@@ -983,7 +983,7 @@ H = randn(n*p,N,K);
 [yc,gc] = vectorize_VAR(Y,H,[n,p,K,N]);
 
 IND_DIAG = 1:n+1:n^2; % indices of diagonal elements
-P1 = speye(n^2); 
+P1 = speye(n^2);
 P1(IND_DIAG,:) = [];
 P = sparse(kron(P1,speye(p*K)));
 Dtmp = diffmat(n,p,K);
@@ -1046,7 +1046,7 @@ set(gcf,'WindowState','fullscreen')
 n=5;p=10;K=5;
 T= 80;
 IND_DIAG = 1:n+1:n^2; % indices of diagonal elements
-P1 = speye(n^2); 
+P1 = speye(n^2);
 P1(IND_DIAG,:) = [];
 P = sparse(kron(P1,speye(p*K)));
 Dtmp = diffmat(n,p,K);
@@ -1057,8 +1057,8 @@ D = sparse(Dtmp*P);
 figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 Connectivity_List = [25,31; ...
-                     26,32; ...
-                     27,40];
+    26,32; ...
+    27,40];
 Adj = zeros(116,116);
 Adj(25,31) = -1;
 Adj(26,32) = 1;
@@ -1070,8 +1070,8 @@ writematrix(Adj,[figurepath,'VisualizeReal.txt'],'Delimiter','\t')
 figurepath = './results2plot/figures/';
 resource_path = './results2plot/';
 Connectivity_List = [25,31; ...
-                     26,32; ...
-                     27,40];
+    26,32; ...
+    27,40];
 Adj = zeros(116,116);
 % Adj(25,31) = -1;
 % Adj(26,32) = 1;
@@ -1188,7 +1188,7 @@ xlabel('iterations $(k)$','Interpreter','latex')
 h=ylabel('$\frac{\Vert x_{k+1}-x_{k} \Vert_{2}}{\Vert x_{k} \Vert_{2}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
-set(h, 'FontSize', 60) 
+set(h, 'FontSize', 60)
 set(gcf,'WindowState','fullscreen')
 ylim([10^-7,2*sqrt(2)])
 print([figurepath,'algperf_xreldiff_cvx_',formulation],'-depsc','-r300')
@@ -1205,7 +1205,7 @@ xlabel('iterations $(k)$','Interpreter','latex')
 h=ylabel('$\frac{F(x_{k})-p^{*}}{p^{*}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
-set(h, 'FontSize', 60) 
+set(h, 'FontSize', 60)
 set(gcf,'WindowState','fullscreen')
 ylim([10^-11,2*sqrt(2)])
 print([figurepath,'algperf_objreldiff_cvx_',formulation],'-depsc','-r300')
@@ -1219,7 +1219,7 @@ xlabel('iterations $(k)$','Interpreter','latex')
 h=ylabel('$\frac{\Vert x_{k+1}-x_{k} \Vert_{2}}{\Vert x_{k} \Vert_{2}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
-set(h, 'FontSize', 60) 
+set(h, 'FontSize', 60)
 set(gcf,'WindowState','fullscreen')
 ylim([10^-7,2*sqrt(2)])
 print([figurepath,'algperf_xreldiff_ncvx_',formulation],'-depsc','-r300')
@@ -1236,7 +1236,7 @@ xlabel('iterations $(k)$','Interpreter','latex')
 h=ylabel('$\frac{F(x_{k})-p^{*}}{p^{*}}$','Interpreter','latex');
 % set(get(gca,'ylabel'),'rotation',0)
 set(gca,'fontsize',36)
-set(h, 'FontSize', 60) 
+set(h, 'FontSize', 60)
 set(gcf,'WindowState','fullscreen')
 ylim([10^-8,2*sqrt(2)])
 print([figurepath,'algperf_objreldiff_ncvx_',formulation],'-depsc','-r300')
@@ -1411,9 +1411,9 @@ G = [];
 BLKH = zeros(N,n*p*K,K);
 E1 = zeros(K,1); E1(1) = 1;
 PLOT_G = zeros(n*N, p*n^2*K,K);
-for k=1:K,
+for k=1:K
     H0 = zeros(n,N,p);
-    for j=1:p,
+    for j=1:p
         H0(:,:,j) = H((j-1)*n+1:j*n,:,k);
     end
     ind = linindex(n,N,p,'col');
@@ -1434,18 +1434,14 @@ G = sparse(G);
 tt = tiledlayout(3,3,'Padding','compact','TileSpacing','compact');
 color = {[1,0,0],[0,0.5,0],[0,0,1]};
 for k=1:K
-
-    
-    
-    
-        nexttile(3*k-2);
+    nexttile(3*k-2);
     hAxes = gca;
     imagesc(hAxes, ones(n*T,1))
     colormap( hAxes , [1 1 1;color{k}] )
     pbaspect([6 length(b) 1])
     set(gca,'xticklabel',[],'yticklabel',[])
     ylabel(sprintf('$v^{(%d)}$',k),'Interpreter','latex')
-%     axis('square')
+    %     axis('square')
     grid on
     grid minor
     set(gca,'FontSize',30)
@@ -1453,13 +1449,13 @@ for k=1:K
         xlabel('$b$','Interpreter','latex')
     end
     
-        nexttile(3*k-1);
+    nexttile(3*k-1);
     hAxes = gca;
     imagesc(hAxes, PLOT_G(:,:,k)~=0)
     colormap( hAxes , [1 1 1;color{k}] )
     set(gca,'xticklabel',[],'yticklabel',[])
     ylabel(sprintf('$G^{(%d)}$',k),'Interpreter','latex')
-%     axis('square')
+    %     axis('square')
     grid on
     grid minor
     set(gca,'FontSize',30)
@@ -1472,6 +1468,500 @@ colormap( hAxes , [1,0,0;0,0.5,0;0,0,1] )
 pbaspect([5 length(x) 1])
 set(gca,'xticklabel',[],'yticklabel',[])
 xlabel('$x$','Interpreter','latex')
-    set(gca,'FontSize',30)
+set(gca,'FontSize',30)
 grid on
 grid minor
+
+%% REVIEWER RESPONSE RV. 1
+
+
+%% plot ground-truth
+clear
+clc
+model_parameter_path = './experiment/model_parameters/';
+n = 20; % time-series dimension
+p = 2;  % ground-truth VAR order
+K = 3; % number of models
+realization = 1; % number of model's realizations
+common_density = [0.1]; % for p=1, common GC network density [We actually used only 0.1, 0.2]
+differential_density = [0.05]; % differential GC network density
+model = {'common','differential','similar'}; % type of similarity
+mname = {'C','D','S'};
+cnt = 0;
+E=cell(length(model),length(common_density),length(differential_density),realization);
+for m=1:length(model)
+    for d=1:length(common_density)
+        opts.common_density = common_density(d);
+        for diff_d =1:length(differential_density)
+            opts.differential_density = differential_density(diff_d);
+            opts.type = model{m};
+            
+            for b=1:realization %number of [C,S,D] VAR model generated
+                if strcmp(mname{m},'D')
+                    E{m,d,diff_d,b} = gen_multi_VAR([n,p,K],opts,E{1,d,diff_d,b}.A); % look for C type model [code 1] to generate D type
+                else
+                    E{m,d,diff_d,b} = gen_multi_VAR([n,p,K],opts);
+                end
+            end
+        end
+    end
+end
+
+sample_model = 1;
+tt = tiledlayout(K,3);
+tt.TileSpacing = 'None';
+tt.Padding = 'None';
+mname = {'common','differential','fused'};
+figurepath = './results2plot/figures/';
+for ii=1:3
+    for kk =1:K
+        
+        model = E{ii,1,1,sample_model};
+        GC = model.GC(:,:,1:K);
+        A = model.A;
+        A = squeeze(sqrt(sum(A.^2,3)));
+        
+        
+        
+        [n,~,K] = size(A);
+        commonNZ = ones(n,n)-eye(n);
+        diag_ind = 1:n+1:n^2;
+        for zz=1:K
+            tmp = A(:,:,zz);
+            commonNZ = commonNZ & (tmp~=0);
+        end
+        s = [];
+        
+        tmp = A(:,:,kk);
+        nexttile;
+        
+        imagesc(tmp)
+        set(gca,'box','on', 'BoxStyle','full')
+        
+        
+        hold on
+        spy(tmp.*(1-commonNZ),30,'r')
+        hold off
+        
+        set(gca,'xticklabel',[],'yticklabel',[],'xlabel',[])
+        if ii==1
+            title(sprintf('model #%d', kk))
+            
+        end
+        if kk==1
+            ylabel(mname{ii})
+        end
+    end
+    hold off
+    colormap((1-gray))
+    
+    
+end
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1/3;
+pp(4) = pp(4)*1/3;
+pp = pp+200;
+set(gcf, 'Position', pp);
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+% print([figurepath,'reviewer_response_sampleGC'],'-painters','-depsc','-r300')
+% print([figurepath,'reviewer_response_sampleGC'],'-painters','-dpng','-r300')
+
+%% fMRI connectogram visualization [D2K, F2K, C18K]
+clear
+clc
+clf
+close all
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
+load('.\experiment\ADHD\AAL_116.mat')
+
+
+filename_list = {'estim_C18K', 'estim_D2K', 'estim_F2K'};
+for file_index = 1:length(filename_list)
+    clf
+    close all
+    file_name  = filename_list{file_index};
+    load([inpath,file_name])
+    Right_Left_permutation = [116,115,114,113,112,111,110,109,107,105,103,101,99,97,95,93,91,89,87,85,83,81,79,77,75,73,71,69,67,65,63,61,59,57,55,53,51,49,47,45,43,41,39,37,35,33,31,29,27,25,23,21,19,17,15,13,11,9,7,5,3,1,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108];
+    
+    if strcmp(file_name, 'estim_C18K')
+        unstable_TDC = [5, 6, 11, 14, 17];
+        unstable_ADHD = [5];
+        GC_TDC = M.TDC.model(M.TDC.index.eBIC).GC;
+        GC_TDC(:,:,unstable_TDC) = [];
+        GC_ADHD = M.TDC.model(M.TDC.index.eBIC).GC;
+        GC_ADHD(:,:,unstable_ADHD) = [];
+        
+        
+        GC.total(:,:,1) = mean(GC_TDC,3);
+        GC.total(:,:,2) = mean(GC_ADHD,3);
+    else
+        GC.total = M.model(M.index.eBIC).GC;
+    end
+    
+    GC_TDC = GC.total(:,:,1).*(1-eye(116));
+    GC_ADHD = GC.total(:,:,2).*(1-eye(116));
+    selected_index_TDC = find(GC_TDC);
+    selected_index_ADHD = find(GC_ADHD);
+    [~,I_TDC] = sort(abs(GC_TDC(selected_index_TDC)),'descend');
+    [~,I_ADHD] = sort(abs(GC_ADHD(selected_index_ADHD)),'descend');
+    
+    GC_TDC_toplot = zeros(116,116);
+    GC_ADHD_toplot = zeros(116,116);
+    
+    first_n_rank = 50;
+    
+    for ii=1:first_n_rank
+        % for ii=1:length(selected_index_TDC)
+        [ee,cc] = ind2sub([116,116],selected_index_TDC(I_TDC(ii)));
+        
+        
+        GC_TDC_toplot(ee, cc) = GC.total(ee, cc, 1);
+        
+        
+    end
+    
+    for ii=1:first_n_rank
+        % for ii=1:length(selected_index_ADHD)
+        
+        [ee,cc] = ind2sub([116,116],selected_index_ADHD(I_ADHD(ii)));
+        GC_ADHD_toplot(ee, cc) = GC.total(ee, cc, 2);
+        
+        
+    end
+    ROI_color = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,6,6,6,6,5,5,5,5,5,5,4,4,4,4,4,4,3,3,3,3,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1];
+    
+    Right_Left_permutation = Right_Left_permutation([89:116, 1:88]);
+    ROI_color = ROI_color([89:116, 1:88]);
+    myColorMap = zeros(116,3);
+    
+    myLabel = AAL_116.name(Right_Left_permutation);
+    
+    ROI_name = {'Posterior Fossa', ...
+        'Temporal lobe', ...
+        'Central Structures', ...
+        'Parietal Lobe', ...
+        'Occipital Lobe', ...
+        'Insula and Cingulate Gyri', ...
+        'Frontal Lobe'};
+    
+    for jj = 1:116
+        newStr = strrep(myLabel{jj},'_',' ');
+        myLabel{jj} = newStr;
+        scale = 0.8;
+        switch ROI_color(jj)
+            case 1
+                xx = [1 0 0].*scale;
+            case 2
+                xx = [0 1 0].*scale;
+            case 3
+                xx = [0 0 1].*scale;
+            case 4
+                xx = [1 1 0].*scale;
+            case 5
+                xx = [1 0 1].*scale;
+            case 6
+                xx = [0 1 1].*scale;
+            case 7
+                xx = [0.5 0.6 0.8].*scale;
+        end
+        myColorMap(jj, :) = xx;
+        
+    end
+    figurepath = './results2plot/figures/';
+    figure(1)
+    % nexttile;
+    % myColorMap = lines(length(GC_TDC_toplot));
+    h1=circularGraph(GC_TDC_toplot(Right_Left_permutation, Right_Left_permutation)','Colormap',myColorMap,'Label',myLabel);
+    pp = get(0, 'Screensize');
+    pp(3) = pp(3)*1;
+    set(gcf, 'Position', pp);
+    delete(h1.ShowButton)
+    delete(h1.HideButton)
+    exportgraphics(gcf,[figurepath,'reviewer_response_',file_name,'_circular_TDC.png'],'ContentType','vector')
+    exportgraphics(gcf,[figurepath,'reviewer_response_',file_name,'_circular_TDC.eps'],'ContentType','vector')
+    
+    % nexttile;
+    figure(2)
+    h2=circularGraph(GC_ADHD_toplot(Right_Left_permutation, Right_Left_permutation)','Colormap',myColorMap,'Label',myLabel);
+    pp = get(0, 'Screensize');
+    pp(3) = pp(3)*1;
+    delete(h2.ShowButton)
+    delete(h2.HideButton)
+    set(gcf, 'Position', pp);
+    exportgraphics(gcf,[figurepath,'reviewer_response_',file_name,'_circular_ADHD.png'])
+    exportgraphics(gcf,[figurepath,'reviewer_response_',file_name,'_circular_ADHD.eps'])
+end
+
+figure(3)
+hold on
+for jj=1:7
+    switch jj
+        case 1
+            xx = [1 0 0].*scale;
+        case 2
+            xx = [0 1 0].*scale;
+        case 3
+            xx = [0 0 1].*scale;
+        case 4
+            xx = [1 1 0].*scale;
+        case 5
+            xx = [1 0 1].*scale;
+        case 6
+            xx = [0 1 1].*scale;
+        case 7
+            xx = [0.5 0.6 0.8].*scale;
+    end
+    plot(NaN,NaN,'.','Color',xx, 'MarkerSize',69);
+end
+hold off
+lh = legend(ROI_name);
+lh.Position(1) = 0.5 - lh.Position(3)/2;
+lh.Position(2) = 0.518 - lh.Position(4)/2;
+set(gca,'FontSize', 32, 'xticklabel',[], 'yticklabel',[])
+
+exportgraphics(gcf,[figurepath,'reviewer_response_fMRI_legend.png'],'ContentType','vector')
+exportgraphics(gcf,[figurepath,'reviewer_response_fMRI_legend.eps'],'ContentType','vector')
+%% fMRI connectogram visualization [D2K bootstrap]
+
+clear
+clc
+inpath = 'G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\';
+load('.\experiment\ADHD\AAL_116.mat')
+
+bootstrap_path = dir('G:\My Drive\0FROM_SHARED_DRIVE\THESIS\Real_data\experiment_real_data_result\estim_D2K_seed_*_bootstrap_*_DIAGCOV.mat');
+GC.total = zeros(116,116, 2);
+GC.repetition = zeros(116, 116, 2);
+
+bootstrap_sample = length(bootstrap_path);
+
+for xx=1:bootstrap_sample
+    fprintf("bootstrap sample No. %d\n", xx)
+    
+    load([inpath,bootstrap_path(xx).name])
+    
+    GC.total = GC.total +  (M.model(M.index.eBIC).GC)/bootstrap_sample;  % to filter with mean
+    GC.repetition = GC.repetition + (M.model(M.index.eBIC).GC~=0)/bootstrap_sample;  % to filter with occurence
+end
+
+
+clf
+close all
+GC_TDC = GC.total(:,:,1).*(1-eye(116)).*(GC.repetition(:, :, 1)>0.95);
+GC_ADHD = GC.total(:,:,2).*(1-eye(116)).*(GC.repetition(:, :, 2)>0.95);
+GC_TDC_toplot = GC_TDC;
+GC_ADHD_toplot = GC_ADHD;
+
+ROI_color = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,6,6,6,6,5,5,5,5,5,5,4,4,4,4,4,4,3,3,3,3,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1];
+Right_Left_permutation = [116,115,114,113,112,111,110,109,107,105,103,101,99,97,95,93,91,89,87,85,83,81,79,77,75,73,71,69,67,65,63,61,59,57,55,53,51,49,47,45,43,41,39,37,35,33,31,29,27,25,23,21,19,17,15,13,11,9,7,5,3,1,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108];
+Right_Left_permutation = Right_Left_permutation([89:116, 1:88]);
+ROI_color = ROI_color([89:116, 1:88]);
+myColorMap = zeros(116,3);
+
+myLabel = AAL_116.name(Right_Left_permutation);
+
+ROI_name = {'Posterior Fossa', ...
+    'Temporal lobe', ...
+    'Central Structures', ...
+    'Parietal Lobe', ...
+    'Occipital Lobe', ...
+    'Insula and Cingulate Gyri', ...
+    'Frontal Lobe'};
+
+for jj = 1:116
+    newStr = strrep(myLabel{jj},'_',' ');
+    myLabel{jj} = newStr;
+    scale = 0.8;
+    switch ROI_color(jj)
+        case 1
+            xx = [1 0 0].*scale;
+        case 2
+            xx = [0 1 0].*scale;
+        case 3
+            xx = [0 0 1].*scale;
+        case 4
+            xx = [1 1 0].*scale;
+        case 5
+            xx = [1 0 1].*scale;
+        case 6
+            xx = [0 1 1].*scale;
+        case 7
+            xx = [0.5 0.6 0.8].*scale;
+    end
+    myColorMap(jj, :) = xx;
+    
+end
+figurepath = './results2plot/figures/';
+figure(1)
+% nexttile;
+% myColorMap = lines(length(GC_TDC_toplot));
+h1=circularGraph(GC_TDC_toplot(Right_Left_permutation, Right_Left_permutation)','Colormap',myColorMap,'Label',myLabel);
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1;
+set(gcf, 'Position', pp);
+delete(h1.ShowButton)
+delete(h1.HideButton)
+exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_TDC_first50.png'],'ContentType','vector')
+exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_TDC_first50.eps'],'ContentType','vector')
+
+figure(2)
+h2=circularGraph(GC_ADHD_toplot(Right_Left_permutation, Right_Left_permutation)','Colormap',myColorMap,'Label',myLabel);
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1;
+set(gcf, 'Position', pp);
+delete(h2.ShowButton)
+delete(h2.HideButton)
+exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_ADHD_first50.png'],'ContentType','vector')
+exportgraphics(gcf,[figurepath,'reviewer_response_estim_D2Kbootstrap_circular_ADHD_first50.eps'],'ContentType','vector')
+%% case n=100
+
+clear
+clc
+performance_path = './results2plot/';
+
+load([performance_path,'reviewer_response_CVX_CGN_result'],'R')
+load([performance_path,'reviewer_response_CVX_CGN_ALL_RESULT'],'ALL_RESULT')
+R_cvx = R;
+ALL_RESULT_CVX = ALL_RESULT;
+
+load([performance_path,'reviewer_response_CGN_result'],'R')
+load([performance_path,'reviewer_response_CGN_ALL_RESULT'],'ALL_RESULT')
+R_ncvx=R;
+
+ALL_RESULT_NCVX = ALL_RESULT;
+
+group_index = [ones(1, 100) 2*ones(1, 100)];
+
+group_index = cell(200, 1);
+group_index(1:100) = {'CGN'};
+group_index(101:200) = {'cvx-CGN'};
+
+performance_name = {'F1', 'MCC', 'TPR', 'FPR', 'ACC'};
+
+ARRcvx_to_plot = zeros(100, 6);
+ARRncvx_to_plot = zeros(100, 6);
+
+tt = tiledlayout(1,6);
+
+for ii = 1:length(performance_name)
+    tmp = R_cvx.common.(performance_name{ii})';
+    DATA = [R_ncvx.common.(performance_name{ii})'; tmp];
+    
+    
+    ax(ii) = nexttile;
+    
+    
+    
+    boxplot(100*DATA, group_index)
+    title(performance_name{ii})
+    
+    if ii == 1
+        ylabel('performance index')
+    end
+    if ii == 4
+        ylim([0 1.2])
+    end
+    if ii == 3
+        ylim([90 100])
+    end
+    if ii == 5
+        ylim([95 100])
+    end
+    set(findobj(gca,'type','line'),'linew',3)
+    ytickformat('percentage')
+    xtickangle(15)
+    %     a = get(gca,'XTickLabel');
+    %     set(gca,'XTickLabel',a,'FontName','Times','fontsize',18)
+end
+linkaxes([ax(1) ax(2)])
+% linkaxes([ax(3) ax(5)])
+% for ii = 1:length(performance_name)
+%     ax(ii).YTickLabel = strcat(ax(ii).YTickLabel,'%');
+%     ax(ii).XAxis.FontSize = 10;
+% end
+
+DATA = [R_ncvx.bias'; R_cvx.bias'];
+
+
+axb = nexttile;
+boxplot(100*DATA, group_index);
+set(findobj(gca,'type','line'),'linew',3)
+axb.YTickLabel = strcat(axb.YTickLabel,'%');
+title('Estimation error')
+xtickangle(15)
+
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*1;
+pp(4) = pp(4)*75;
+pp(2) = pp(2) + 100;
+set(gcf, 'Position', pp);
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+for ii = 1:length(performance_name)
+    %     ax(ii).YTickLabel = strcat(ax(ii).YTickLabel,'%');
+    ax(ii).XAxis.FontSize = 25;
+end
+axb.XAxis.FontSize = 25;
+figurepath = './results2plot/figures/';
+exportgraphics(gcf,[figurepath,'n100_eBIC_results.eps'],'ContentType','vector')
+exportgraphics(gcf,[figurepath,'n100_eBIC_results.png'])
+
+
+%% plot ROC
+clc
+close all
+clear
+performance_path = './results2plot/';
+
+load([performance_path,'reviewer_response_CVX_CGN_result'],'R')
+load([performance_path,'reviewer_response_CVX_CGN_ALL_RESULT'],'ALL_RESULT')
+R_cvx = R;
+ALL_RESULT_CVX = ALL_RESULT;
+
+load([performance_path,'reviewer_response_CGN_result'],'R')
+load([performance_path,'reviewer_response_CGN_ALL_RESULT'],'ALL_RESULT')
+R_ncvx=R;
+
+ALL_RESULT_NCVX = ALL_RESULT;
+
+figure(1)
+% cvx-CGN
+
+FPR_array = zeros(1,30);
+TPR_array = zeros(1,30);
+for ii=1:length(ALL_RESULT_CVX)
+    tmp = [ALL_RESULT_CVX(ii).model_acc.common]; FPR = [tmp.FPR]; TPR=[tmp.TPR];
+    
+    FPR_array = FPR_array+FPR/100;
+    TPR_array = TPR_array+TPR/100;
+end
+plot(FPR_array, TPR_array, '.-b', 'LineWidth', 4)
+hold on
+
+FPR_array = zeros(1,30);
+TPR_array = zeros(1,30);
+for ii=1:length(ALL_RESULT_NCVX)
+    if isempty(ALL_RESULT_NCVX(ii).model_acc)
+        continue
+    end
+    tmp = [ALL_RESULT_NCVX(ii).model_acc.common]; FPR = [tmp.FPR]; TPR=[tmp.TPR];
+    
+    FPR_array = FPR_array+FPR/100;
+    TPR_array = TPR_array+TPR/100;
+end
+plot(FPR_array, TPR_array, '--r', 'LineWidth', 4)
+hold off
+
+legend('cvx-CGN', 'CGN')
+xlabel('FPR')
+ylabel('TPR')
+xlim([0 1])
+ylim([0 1])
+axis('square')
+
+
+pp = get(0, 'Screensize');
+pp(3) = pp(3)*0.75;
+set(gcf, 'Position', pp);
+set(findall(gcf,'-property','FontSize'),'FontSize',28)
+figurepath = './results2plot/figures/';
+exportgraphics(gcf,[figurepath,'n100_ROC_results.eps'],'ContentType','vector')
+exportgraphics(gcf,[figurepath,'n100_ROC_results.png'])
